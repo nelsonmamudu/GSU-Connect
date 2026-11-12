@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GSU Connect</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7f5;--ink:#13201b;--muted:#5b6b64;--line:#cfd9d4;--brand:#1c6b52;--brand-ink:#fff;--err:#b3261e;--ok:#1c6b52;--field:#fff;color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1714;--ink:#e8f0ec;--muted:#93a69d;--line:#2a3a33;--brand:#4cc29a;--brand-ink:#0a1611;--err:#ff8a80;--ok:#4cc29a;--field:#16211c}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;min-height:100vh;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+main{max-width:420px;margin:0 auto;padding:40px 22px 56px}
+h1{font-size:2.4rem;line-height:1;margin:0 0 6px;font-weight:800;letter-spacing:-.03em}
+.sub{color:var(--muted);margin:0 0 28px}
+.tabs{display:flex;border-bottom:1.5px solid var(--line);margin-bottom:22px}
+.tabs button{flex:1;background:none;border:0;padding:12px 0;font:inherit;font-weight:500;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1.5px;cursor:pointer}
+.tabs button[aria-selected=true]{color:var(--ink);border-color:var(--brand);font-weight:700}
+label{display:block;font-weight:500;margin:16px 0 6px}
+.hint{display:block;font-size:.85rem;color:var(--muted);font-weight:400;margin-top:2px}
+input,select{width:100%;padding:13px 14px;font:inherit;color:var(--ink);background:var(--field);border:1.5px solid var(--line);border-radius:8px}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--brand);outline-offset:1px}
+.go{width:100%;margin-top:26px;padding:14px;font:inherit;font-weight:700;background:var(--brand);color:var(--brand-ink);border:0;border-radius:8px;cursor:pointer}
+.go:disabled{opacity:.6;cursor:wait}
+.msg{margin-top:18px;padding:12px 14px;border-radius:8px;border-left:4px solid;font-size:.95rem}
+.msg.err{color:var(--err);border-color:var(--err)}
+.msg.ok{color:var(--ok);border-color:var(--ok)}
+.hidden{display:none}
+.me{padding:16px 0;border-top:1.5px solid var(--line);border-bottom:1.5px solid var(--line);margin:22px 0}
+.me b{font-size:1.2rem}
+</style>
+</head>
+<body>
+<main>
+  <h1>GSU Connect</h1>
+  <p class="sub">The messenger for Gombe State University students and staff.</p>
+
+  <section id="auth">
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-login" aria-selected="true">Log in</button>
+      <button role="tab" id="tab-signup" aria-selected="false">Create account</button>
+    </div>
+
+    <form id="login" onsubmit="return false">
+      <label for="l-matric">Matric number</label>
+      <input id="l-matric" autocomplete="username" placeholder="UG20/SCSL/1046" required>
+      <label for="l-pass">Password</label>
+      <input id="l-pass" type="password" autocomplete="current-password" required>
+      <button class="go" type="submit">Log in</button>
+    </form>
+
+    <form id="signup" class="hidden" onsubmit="return false">
+      <label for="s-name">Full name</label>
+      <input id="s-name" autocomplete="name" required>
+      <label for="s-matric">Matric number</label>
+      <input id="s-matric" placeholder="UG20/SCSL/1046" required>
+      <label for="s-dept">Department</label>
+      <input id="s-dept" placeholder="Science Laboratory Technology" required>
+      <label for="s-level">Level</label>
+      <select id="s-level" required>
+        <option value="">Choose your level</option>
+        <option>100</option><option>200</option><option>300</option><option>400</option><option>500</option>
+      </select>
+      <label for="s-pass">Password<span class="hint">At least 6 characters. Write it down, there is no email reset.</span></label>
+      <input id="s-pass" type="password" autocomplete="new-password" minlength="6" required>
+      <label for="s-id">Photo of your student ID card<span class="hint">Used once to check you are a GSU student, then deleted. Max 3 MB.</span></label>
+      <input id="s-id" type="file" accept="image/*" required>
+      <button class="go" type="submit">Create account</button>
+    </form>
+    <div id="msg" class="msg hidden" role="status"></div>
+  </section>
+
+  <section id="home" class="hidden">
+    <div class="me"><b id="h-name"></b><br><span id="h-info" class="sub"></span></div>
+    <p>You are in. Group chats come in the next step.</p>
+    <button class="go" id="logout" type="button">Log out</button>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" onerror="this.onerror=null;var s=document.createElement('script');s.src='https://unpkg.com/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';document.head.appendChild(s)"></script>
+<script>
+// 1. Paste your own values from Supabase: Project Settings > API
+const SUPABASE_URL = 'https://wctkyqydjoepgmlhfsiw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjdGt5cXlkam9lcGdtbGhmc2l3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ0OTQwNjYsImV4cCI6MjExMDA3MDA2Nn0.p1lbYQ4gDrpmsYbsnOXDut2Fq3rdIao74S99wtP0A9U'; // the anon (public) key only, never the service_role key
+let sb = null;
+// Created on first use, so the page still responds if the Supabase library is slow or blocked
+function ready() {
+  if (!sb && window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  if (sb) return true;
+  say('The app could not load its login library. Check your internet connection, open this page in Chrome, and try again.', 'err');
+  return false;
+}
+
+const $ = id => document.getElementById(id);
+const MATRIC = /^[a-z0-9]+(\/[a-z0-9]+){2,}$/i;
+// Supabase logs in with an email, so each matric number becomes a private login address
+const toEmail = m => m.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '@gsuconnect.app';
+
+function say(text, kind) {
+  const m = $('msg'); m.textContent = text; m.className = 'msg ' + kind;
+}
+function clearMsg() { $('msg').className = 'msg hidden'; }
+function show(tab) {
+  const login = tab === 'login';
+  $('login').classList.toggle('hidden', !login);
+  $('signup').classList.toggle('hidden', login);
+  $('tab-login').setAttribute('aria-selected', login);
+  $('tab-signup').setAttribute('aria-selected', !login);
+  clearMsg();
+}
+$('tab-login').onclick = () => show('login');
+$('tab-signup').onclick = () => show('signup');
+
+function busy(form, on) { form.querySelector('.go').disabled = on; }
+
+$('signup').onsubmit = async e => {
+  e.preventDefault(); clearMsg();
+  if (!ready()) return;
+  const f = e.target;
+  const matric = $('s-matric').value.trim().toUpperCase();
+  const file = $('s-id').files[0];
+  if (!MATRIC.test(matric)) return say('Enter your matric number with slashes, like UG20/SCSL/1046.', 'err');
+  if (!file || !file.type.startsWith('image/')) return say('Choose a photo of your ID card.', 'err');
+  if (file.size > 3 * 1024 * 1024) return say('That photo is over 3 MB. Take a smaller photo or lower the quality.', 'err');
+
+  busy(f, true);
+  try {
+    const { data, error } = await sb.auth.signUp({ email: toEmail(matric), password: $('s-pass').value });
+    if (error) throw error;
+    if (!data.session) throw new Error('Email confirmation is still on in Supabase. Turn it off under Authentication settings.');
+    const uid = data.user.id;
+
+    const { error: pErr } = await sb.from('profiles').insert({
+      id: uid, full_name: $('s-name').value.trim(), matric_no: matric,
+      department: $('s-dept').value.trim(), level: $('s-level').value
+    });
+    if (pErr) throw pErr;
+
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const { error: uErr } = await sb.storage.from('id-cards').upload(uid + '/id.' + ext, file, { upsert: true });
+    await sb.auth.signOut();
+    if (uErr) return say('Account created, but the ID photo did not upload. Log in later and tell your approver.', 'err');
+    f.reset(); show('login');
+    say('Account created. An approver will check your details, then you can log in.', 'ok');
+  } catch (err) {
+    const t = String(err.message || err);
+    say(/already registered/i.test(t) ? 'This matric number already has an account. Log in instead.' : t, 'err');
+  }
+  busy(f, false);
+};
+
+$('login').onsubmit = async e => {
+  e.preventDefault(); clearMsg();
+  if (!ready()) return;
+  const f = e.target; busy(f, true);
+  const { data, error } = await sb.auth.signInWithPassword({ email: toEmail($('l-matric').value), password: $('l-pass').value });
+  if (error) { busy(f, false); return say('Wrong matric number or password. Check both and try again.', 'err'); }
+  await enter(data.user.id);
+  busy(f, false);
+};
+
+async function enter(uid) {
+  const { data: p } = await sb.from('profiles').select('*').eq('id', uid).single();
+  if (!p || p.status !== 'approved') {
+    await sb.auth.signOut();
+    return say(p && p.status === 'rejected'
+      ? 'Your sign-up was not approved. Contact your class rep or department helper.'
+      : 'Your account is waiting for approval. Try again later.', 'err');
+  }
+  $('h-name').textContent = p.full_name;
+  $('h-info').textContent = p.department + ', ' + p.level + ' level (' + p.role + ')';
+  $('auth').classList.add('hidden'); $('home').classList.remove('hidden');
+}
+
+$('logout').onclick = async () => {
+  if (sb) await sb.auth.signOut();
+  $('home').classList.add('hidden'); $('auth').classList.remove('hidden'); show('login');
+};
+
+window.addEventListener('load', () => {
+  if (window.supabase && ready()) sb.auth.getSession().then(({ data }) => { if (data.session) enter(data.session.user.id); });
+});
+</script>
+</body>
+</html>
