@@ -297,6 +297,34 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
   };
 }
 
+/**
+ * Verifies the signed-in user's current password against Supabase Auth.
+ * Used before sensitive account changes (password change, recovery email
+ * change, account deletion). Throws an Error with a user-friendly message
+ * when verification fails.
+ */
+export async function verifyOwnPassword(
+  currentPassword: string,
+  action = 'continuing'
+): Promise<void> {
+  if (!currentPassword) {
+    throw new Error('Please enter your current password.');
+  }
+  const { data: userData, error: userErr } = await supabase.auth.getUser();
+  if (userErr || !userData.user) {
+    throw new Error(`Please sign in again before ${action}.`);
+  }
+  if (userData.user.email) {
+    const { error: verifyErr } = await supabase.auth.signInWithPassword({
+      email: userData.user.email,
+      password: currentPassword,
+    });
+    if (verifyErr) {
+      throw new Error('Password is incorrect.');
+    }
+  }
+}
+
 export async function signInUser(identifier: string, password: string): Promise<void> {
   const authEmail = await resolveLoginEmail(identifier);
   const { error } = await supabase.auth.signInWithPassword({
@@ -331,12 +359,18 @@ export async function requestPasswordReset(identifier: string): Promise<void> {
 
 /**
  * Updates the signed-in user's recovery email (used in Profile settings).
+ * The current password is required because password-reset links are sent to
+ * this address — changing it must prove fresh knowledge of the password.
  */
-export async function updateRecoveryEmail(newEmail: string): Promise<void> {
+export async function updateRecoveryEmail(
+  newEmail: string,
+  currentPassword: string
+): Promise<void> {
   const clean = newEmail.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
     throw new Error('Please enter a valid email address.');
   }
+  await verifyOwnPassword(currentPassword, 'updating your recovery email');
   const { error } = await supabase.rpc('set_recovery_email', { new_email: clean });
   if (error) {
     throw new Error(error.message);

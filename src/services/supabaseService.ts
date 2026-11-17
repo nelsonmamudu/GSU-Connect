@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import {
   signUpUser as authSignUpUser,
   uploadIdCardFile,
+  verifyOwnPassword,
   type SignUpInput,
 } from './authService';
 import {
@@ -37,6 +38,7 @@ import {
   DepartmentItem,
   formatAudioDuration,
   formatCallLogDuration,
+  formatLevelLabel,
   getCustomGroupAccessKeys,
   getMessageSnippet,
   isValidEmailDomain,
@@ -1483,19 +1485,7 @@ export async function changeOwnPassword(
     throw new Error('New password must be different from your current password.');
   }
 
-  const { data: userData, error: userErr } = await supabase.auth.getUser();
-  if (userErr || !userData.user) {
-    throw new Error('Please sign in again before changing your password.');
-  }
-  if (userData.user.email) {
-    const { error: verifyErr } = await supabase.auth.signInWithPassword({
-      email: userData.user.email,
-      password: currentPassword,
-    });
-    if (verifyErr) {
-      throw new Error('Current password is incorrect.');
-    }
-  }
+  await verifyOwnPassword(currentPassword, 'changing your password');
 
   const { error: updateErr } = await supabase.auth.updateUser({
     password: newPassword,
@@ -1514,23 +1504,7 @@ export async function changeOwnPassword(
 export async function requestOwnAccountDeletion(
   password: string
 ): Promise<'deleted' | 'manual_required'> {
-  if (!password) {
-    throw new Error('Please enter your password.');
-  }
-
-  const { data: userData, error: userErr } = await supabase.auth.getUser();
-  if (userErr || !userData.user) {
-    throw new Error('Please sign in again before deleting your account.');
-  }
-  if (userData.user.email) {
-    const { error: verifyErr } = await supabase.auth.signInWithPassword({
-      email: userData.user.email,
-      password,
-    });
-    if (verifyErr) {
-      throw new Error('Password is incorrect.');
-    }
-  }
+  await verifyOwnPassword(password, 'deleting your account');
 
   const { error } = await supabase.rpc('delete_own_account');
   if (!error) {
@@ -1713,7 +1687,7 @@ export async function createAdminGroup(
     }
     accessKey = `deptLevel:${department}|${level}`;
     groupType = 'custom';
-    const lvlLabel = level === 'Staff' ? 'Staff' : `${level}L`;
+    const lvlLabel = formatLevelLabel(level);
     introText = `Cohort group for ${department} (${lvlLabel}).`;
   } else if (input.scopeType === 'invited') {
     accessKey = 'invited';

@@ -850,7 +850,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                   >
                     {RESOURCE_LEVELS.map((lvl) => (
                       <option key={lvl} value={lvl}>
-                        {lvl === 'General' ? 'General' : `${lvl}L`}
+                        {lvl === 'General' ? 'General' : `${lvl} Level`}
                       </option>
                     ))}
                   </select>

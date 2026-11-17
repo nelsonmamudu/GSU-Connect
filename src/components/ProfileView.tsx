@@ -154,6 +154,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [loadingRecovery, setLoadingRecovery] = useState(true);
   const [editingRecovery, setEditingRecovery] = useState(false);
   const [recoveryInput, setRecoveryInput] = useState('');
+  const [recoveryPassword, setRecoveryPassword] = useState('');
   const [savingRecovery, setSavingRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
 
@@ -283,12 +284,17 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setRecoveryError('Please enter a valid email address.');
       return;
     }
+    if (!recoveryPassword) {
+      setRecoveryError('Please enter your current password.');
+      return;
+    }
     setRecoveryError(null);
     setSavingRecovery(true);
     try {
-      await updateRecoveryEmail(cleaned);
+      await updateRecoveryEmail(cleaned, recoveryPassword);
       setRecoveryEmail(cleaned);
       setEditingRecovery(false);
+      setRecoveryPassword('');
       showSavedToast('Recovery email updated.');
     } catch (err) {
       setRecoveryError(err instanceof Error ? err.message : 'Could not update recovery email.');
@@ -824,6 +830,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 type="button"
                 onClick={() => {
                   setRecoveryInput(recoveryEmail);
+                  setRecoveryPassword('');
                   setRecoveryError(null);
                   setEditingRecovery(true);
                 }}
@@ -873,6 +880,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     disabled={savingRecovery}
                     onClick={() => {
                       setEditingRecovery(false);
+                      setRecoveryPassword('');
                       setRecoveryError(null);
                     }}
                     className="min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer"
@@ -881,6 +889,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   </button>
                 </div>
               </div>
+              <input
+                type="password"
+                required
+                autoComplete="current-password"
+                value={recoveryPassword}
+                onChange={(e) => {
+                  setRecoveryPassword(e.target.value);
+                  setRecoveryError(null);
+                }}
+                placeholder="Enter your current password to confirm"
+                aria-label="Current password"
+                className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
+              />
               {recoveryError && (
                 <p className="text-xs text-rose-600 dark:text-rose-400">{recoveryError}</p>
               )}

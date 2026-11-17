@@ -962,8 +962,12 @@ export function isUserOnline(
 export function getInitials(fullName: string): string {
   const parts = fullName.trim().split(/\s+/).filter(Boolean);
   if (parts.length === 0) return 'GS';
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  // Skip purely numeric tokens (e.g. the "006" in seeded "TEST User 006")
+  // so initials come from real name words.
+  const meaningful = parts.filter((part) => /[^\p{N}]/u.test(part));
+  const tokens = meaningful.length > 0 ? meaningful : parts;
+  if (tokens.length === 1) return tokens[0].slice(0, 2).toUpperCase();
+  return (tokens[0][0] + tokens[tokens.length - 1][0]).toUpperCase();
 }
 
 export function formatFileSize(bytes: number): string {

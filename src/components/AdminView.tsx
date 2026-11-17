@@ -1558,7 +1558,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       : group.accessKey === 'invited'
                         ? 'Custom · Invite-only'
                         : group.accessKey?.startsWith('deptLevel:')
-                          ? `Custom · ${group.department} (${group.level === 'Staff' ? 'Staff' : group.level ? `${group.level}L` : 'All'})`
+                          ? `Custom · ${group.department} (${group.level ? formatLevelLabel(group.level) : 'All'})`
                           : group.accessKey?.startsWith('dept:')
                             ? `Custom · ${group.department}`
                             : 'Custom · All GSU';

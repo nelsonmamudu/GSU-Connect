@@ -112,7 +112,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search saved notes, senders, or chats..."
+              placeholder="Search starred messages..."
               className="w-full min-h-[42px] pl-10 pr-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
             />
             {searchQuery && (
