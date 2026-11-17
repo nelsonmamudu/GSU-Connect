@@ -1,0 +1,6 @@
+{
+  "name": "GSU Connect",
+  "description": "The official student messenger for Gombe State University.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
