@@ -231,7 +231,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         endTime,
         venue,
         courseCode,
-        department: isAdmin ? department : currentUser.department,
+        department: canManage ? department : currentUser.department,
         level,
       };
       if (editingEvent) {
@@ -782,6 +782,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                           {d.name}
                         </option>
                       ))}
+                    </select>
+                  ) : canManage ? (
+                    <select
+                      id="calDept"
+                      value={department === 'All GSU' ? 'All GSU' : currentUser.department}
+                      onChange={(e) => setDepartment(e.target.value)}
+                      className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    >
+                      <option value={currentUser.department}>{currentUser.department} (your department)</option>
+                      <option value="All GSU">All GSU (University-wide)</option>
                     </select>
                   ) : (
                     <input

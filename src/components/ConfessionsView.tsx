@@ -131,11 +131,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
     });
 
     if (sortBy === 'top' && viewMode === 'feed') {
-      return [...filtered].sort((a, b) => {
-        const upA = Object.values(a.upvotes || {}).filter(Boolean).length;
-        const upB = Object.values(b.upvotes || {}).filter(Boolean).length;
-        return upB - upA;
-      });
+      return [...filtered].sort((a, b) => (b.upvoteCount || 0) - (a.upvoteCount || 0));
     }
     return filtered;
   }, [
@@ -188,10 +184,14 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
   const handleUpvote = async (post: CampusConfession) => {
     if (upvotingId || post.status !== 'approved') return;
     setBannerError(null);
-    const currentlyUpvoted = Boolean(post.upvotes?.[currentUser.uid]);
     setUpvotingId(post.id);
     try {
-      await toggleConfessionUpvote(post.id, currentUser.uid, currentlyUpvoted);
+      const { upvoted, upvoteCount } = await toggleConfessionUpvote(post.id);
+      // The feed refreshes itself via the sync broadcast; keep the
+      // local "mine" list consistent immediately too.
+      setMySubmissions((prev) =>
+        prev.map((p) => (p.id === post.id ? { ...p, upvotedByMe: upvoted, upvoteCount } : p))
+      );
     } catch (err) {
       setBannerError(err instanceof Error ? err.message : 'Could not update upvote.');
     } finally {
@@ -432,8 +432,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
         <>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {visiblePosts.map((post) => {
-            const upvoteCount = Object.values(post.upvotes || {}).filter(Boolean).length;
-            const hasUpvoted = Boolean(post.upvotes?.[currentUser.uid]);
+            const upvoteCount = post.upvoteCount || 0;
+            const hasUpvoted = Boolean(post.upvotedByMe);
             const canDelete = isAdmin;
             const revealedAuthor = revealedAuthors[post.id];
             const authorChecked = Object.prototype.hasOwnProperty.call(revealedAuthors, post.id);

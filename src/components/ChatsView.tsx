@@ -1178,7 +1178,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       if (starredIdSet.has(msg.id)) {
         await unstarMessageForUser(currentUser.uid, msg.id);
       } else {
-        await starMessageForUser(currentUser.uid, activeChat, msg, getChatDisplayTitle(activeChat));
+        await starMessageForUser(currentUser.uid, activeChat, msg);
       }
     } catch (err) {
       setSendError(err instanceof Error ? err.message : 'Could not update saved message.');
@@ -1265,10 +1265,10 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
     }
   };
 
-  const handleToggleReaction = (msgId: string, emoji: string, remove: boolean) => {
+  const handleToggleReaction = (msgId: string, emoji: string) => {
     if (!activeChat || isDmBlocked) return;
     setReactionPickerMsgId(null);
-    toggleMessageReaction(activeChat.id, msgId, currentUser.uid, emoji, remove).catch((err) => {
+    toggleMessageReaction(activeChat.id, msgId, currentUser.uid, emoji).catch((err) => {
       console.error('Failed toggling reaction:', err);
     });
   };
@@ -3348,7 +3348,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   key={emoji}
                                   type="button"
                                   data-reaction-area="true"
-                                  onClick={() => handleToggleReaction(msg.id, emoji, selected)}
+                                  onClick={() => handleToggleReaction(msg.id, emoji)}
                                   title={selected ? `Remove ${label}` : label}
                                   aria-label={selected ? `Remove ${label} reaction` : `React with ${label}`}
                                   aria-pressed={selected}
@@ -4234,7 +4234,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               type="button"
                               disabled={isMsgPending || isDmBlocked}
                               onClick={() =>
-                                handleToggleReaction(msg.id, group.emoji, group.reactedByMe)
+                                handleToggleReaction(msg.id, group.emoji)
                               }
                               title={`${group.users.join(', ')}`}
                               aria-label={`${group.emoji} ${group.count} (${group.users.join(', ')})`}

@@ -555,7 +555,8 @@ export interface CampusConfession {
   category: ConfessionCategory;
   text: string;
   status: ConfessionStatus;
-  upvotes: Record<string, boolean>;
+  upvoteCount: number;
+  upvotedByMe: boolean;
   moderatedBy?: string;
   createdAt?: Timestamp | null;
   updatedAt?: Timestamp | null;

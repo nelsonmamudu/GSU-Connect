@@ -96,7 +96,7 @@ export const PUBLIC_PROFILE_COLUMNS =
 const OWN_PROFILE_COLUMNS =
   'id, full_name, role, status, matric_no, staff_id, department, level, photo_url, avatar_id, last_seen, study_courses, study_bio, email, phone, blocked_users, id_card_path, rejection_reason, assigned_reviewer_id, is_alumni, is_exempt, verify_deadline, alumni_verified_at, expires_at, created_at, updated_at';
 
-const PUBLIC_CONFESSION_COLUMNS = 'id, content, status, upvotes, created_at';
+const PUBLIC_CONFESSION_COLUMNS = 'id, content, status, created_at';
 
 const USERS_PAGE_SIZE = 30;
 const PENDING_PAGE_SIZE = 50;
@@ -638,7 +638,6 @@ interface ConfessionRow {
   id: string;
   content?: string | null;
   status?: string | null;
-  upvotes?: string[] | null;
   created_at?: string | null;
 }
 
@@ -1170,22 +1169,62 @@ interface ConfessionMetaEnvelope {
   updatedAt?: string;
 }
 
-function mapConfessionRow(row: ConfessionRow): CampusConfession {
+function mapConfessionRow(
+  row: ConfessionRow,
+  upvote?: { count: number; mine: boolean }
+): CampusConfession {
   const { meta, plainText } = decodeEnvelope<ConfessionMetaEnvelope>(row.content);
-  const upvotesMap: Record<string, boolean> = {};
-  (Array.isArray(row.upvotes) ? row.upvotes : []).forEach((uid) => {
-    upvotesMap[uid] = true;
-  });
   return {
     id: row.id,
     category: meta?.category || 'Confession',
     text: meta?.text ?? plainText ?? '',
     status: ((row.status as ConfessionStatus) || 'pending'),
-    upvotes: upvotesMap,
+    upvoteCount: upvote?.count ?? 0,
+    upvotedByMe: upvote?.mine ?? false,
     moderatedBy: meta?.moderatedBy,
     createdAt: toAppTimestamp(row.created_at),
     updatedAt: toAppTimestamp(meta?.updatedAt || row.created_at),
   };
+}
+
+interface UpvoteCountRow {
+  confession_id: string;
+  upvote_count: number | string | null;
+}
+
+// Fetch upvote aggregates (counts are public; voter identities are not)
+// and the current user's own votes (RLS shows only own rows).
+async function fetchConfessionUpvoteState(
+  ids: string[]
+): Promise<Map<string, { count: number; mine: boolean }>> {
+  const map = new Map<string, { count: number; mine: boolean }>();
+  const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
+  if (uniqueIds.length === 0) return map;
+
+  const [countsRes, ownRes] = await Promise.all([
+    supabase
+      .from('confession_upvote_counts')
+      .select('confession_id, upvote_count')
+      .in('confession_id', uniqueIds),
+    supabase.from('confession_upvotes').select('confession_id').in('confession_id', uniqueIds),
+  ]);
+  (countsRes.data as UpvoteCountRow[] | null)?.forEach((row) => {
+    map.set(row.confession_id, {
+      count: Number(row.upvote_count) || 0,
+      mine: false,
+    });
+  });
+  (ownRes.data as Array<{ confession_id: string }> | null)?.forEach((row) => {
+    const current = map.get(row.confession_id) || { count: 0, mine: false };
+    current.mine = true;
+    map.set(row.confession_id, current);
+  });
+  return map;
+}
+
+async function mapConfessionRowsWithUpvotes(rows: ConfessionRow[]): Promise<CampusConfession[]> {
+  const state = await fetchConfessionUpvoteState(rows.map((r) => r.id));
+  return rows.map((row) => mapConfessionRow(row, state.get(row.id)));
 }
 
 function mapCallRowToVoiceCallSession(
@@ -2133,25 +2172,10 @@ export async function voteOnPoll(
   if (!chatId || !messageId || !uid) return;
   if (!Number.isInteger(optionIndex) || optionIndex < 0) return;
 
-  const { data: row, error: fetchErr } = await supabase
-    .from('messages')
-    .select('content')
-    .eq('id', messageId)
-    .maybeSingle();
-  if (fetchErr || !row) return;
-
-  const { meta } = decodeEnvelope<MessageMetaEnvelope>((row as MessageRow).content);
-  if (!meta) return;
-
-  const nextVotes = { ...(meta.pollVotes || {}), [uid]: optionIndex };
-  const updatedContent = encodeEnvelope({ __gsu: 1, ...meta, pollVotes: nextVotes });
-  if (updatedContent.length > MAX_MESSAGE_CONTENT_LENGTH) {
-    throw new Error('This poll has reached the maximum vote capacity.');
-  }
-  const { error } = await supabase
-    .from('messages')
-    .update({ content: updatedContent })
-    .eq('id', messageId);
+  const { error } = await supabase.rpc('vote_on_poll', {
+    p_message_id: messageId,
+    p_option_index: optionIndex,
+  });
   if (error) throw new Error(error.message);
   emitTableSync('messages', chatId);
 }
@@ -2328,31 +2352,13 @@ export async function toggleMessageReaction(
   chatId: string,
   messageId: string,
   uid: string,
-  emoji: string,
-  remove: boolean
+  emoji: string
 ): Promise<void> {
   if (!chatId || !messageId || !uid || !emoji) return;
-  const { data: row } = await supabase
-    .from('messages')
-    .select('reactions')
-    .eq('id', messageId)
-    .maybeSingle();
-  if (!row) return;
-
-  const current =
-    row.reactions && typeof row.reactions === 'object' && !Array.isArray(row.reactions)
-      ? { ...(row.reactions as Record<string, string>) }
-      : {};
-  if (remove) {
-    delete current[uid];
-  } else {
-    current[uid] = emoji;
-  }
-
-  const { error } = await supabase
-    .from('messages')
-    .update({ reactions: current })
-    .eq('id', messageId);
+  const { error } = await supabase.rpc('toggle_message_reaction', {
+    p_message_id: messageId,
+    p_emoji: emoji,
+  });
   if (error) throw new Error(error.message);
   emitTableSync('messages', chatId);
 }
@@ -2404,37 +2410,12 @@ export async function deleteMessageForEveryone(
   actor: AppUser
 ): Promise<void> {
   if (!chatId || !messageId || !actor.uid) return;
-  const { data: row } = await supabase
-    .from('messages')
-    .select('content')
-    .eq('id', messageId)
-    .maybeSingle();
-  const { meta } = decodeEnvelope<MessageMetaEnvelope>((row as MessageRow | null)?.content);
-
-  const deletedContent = encodeEnvelope({
-    __gsu: 1,
-    text: DELETED_MESSAGE_PLACEHOLDER,
-    senderName: meta?.senderName,
-    senderRole: meta?.senderRole,
-    messageType: 'text',
-    deletedAt: new Date().toISOString(),
-    deletedBy: actor.uid,
-    deletedByName: clampStr(actor.fullName, 50) || 'Member',
+  const { error } = await supabase.rpc('delete_message_for_everyone', {
+    p_message_id: messageId,
   });
-
-  const { error } = await supabase
-    .from('messages')
-    .update({
-      content: deletedContent,
-      is_deleted: true,
-      reactions: {},
-      media_url: null,
-      file_name: null,
-      is_view_once: false,
-    })
-    .eq('id', messageId);
   if (error) throw new Error(error.message);
   emitTableSync('messages', chatId);
+  emitTableSync('starred', actor.uid);
 }
 
 export async function openViewOnceMessage(
@@ -2443,35 +2424,9 @@ export async function openViewOnceMessage(
   readerUid: string
 ): Promise<void> {
   if (!chatId || !messageId || !readerUid) return;
-  const { data: row } = await supabase
-    .from('messages')
-    .select('content, viewed_by')
-    .eq('id', messageId)
-    .maybeSingle();
-  if (!row) return;
-
-  const msgRow = row as MessageRow;
-  const { meta } = decodeEnvelope<MessageMetaEnvelope>(msgRow.content);
-  const viewedBy = Array.from(
-    new Set([...(Array.isArray(msgRow.viewed_by) ? msgRow.viewed_by : []), readerUid])
-  );
-  const updatedContent = fitEnvelopeWithinLimit({
-    ...(meta || {}),
-    __gsu: 1,
-    text: 'Opened',
-    viewOnceOpenedAt: new Date().toISOString(),
-    viewOnceOpenedBy: readerUid,
+  const { error } = await supabase.rpc('open_view_once_message', {
+    p_message_id: messageId,
   });
-
-  const { error } = await supabase
-    .from('messages')
-    .update({
-      content: updatedContent,
-      media_url: null,
-      file_name: null,
-      viewed_by: viewedBy,
-    })
-    .eq('id', messageId);
   if (error) throw new Error(error.message);
   emitTableSync('messages', chatId);
 }
@@ -2512,55 +2467,31 @@ export async function unpinMessageInGroup(chatId: string): Promise<void> {
   );
 }
 
+// Star toggle via security-definer RPC. Both star and unstar funnel here;
+// the RPC flips the caller's entry in starred_by (the UI branches on the
+// known star state, so the toggle direction is always the intended one).
+async function toggleStar(chatId: string, messageId: string, uid: string): Promise<void> {
+  const { error } = await supabase.rpc('toggle_message_star', {
+    p_message_id: messageId,
+  });
+  if (error) throw new Error(error.message);
+  emitTableSync('starred', uid);
+  if (chatId) emitTableSync('messages', chatId);
+}
+
 export async function starMessageForUser(
   uid: string,
   chat: ChatThread,
-  message: ChatMessage,
-  _displayChatName: string
+  message: ChatMessage
 ): Promise<void> {
   if (!uid || !chat.id || !message.id || message.deletedAt) return;
-  const { data: row } = await supabase
-    .from('messages')
-    .select('starred_by')
-    .eq('id', message.id)
-    .maybeSingle();
-
-  const existing = Array.isArray((row as MessageRow | null)?.starred_by)
-    ? ((row as MessageRow).starred_by as string[])
-    : [];
-  const next = Array.from(new Set([...existing, uid]));
-
-  const { error } = await supabase
-    .from('messages')
-    .update({ starred_by: next })
-    .eq('id', message.id);
-  if (error) throw new Error(error.message);
-  emitTableSync('starred', uid);
-  emitTableSync('messages', chat.id);
+  await toggleStar(chat.id, message.id, uid);
 }
 
 export async function unstarMessageForUser(uid: string, messageId: string): Promise<void> {
   if (!uid || !messageId) return;
-  const { data: row } = await supabase
-    .from('messages')
-    .select('chat_id, starred_by')
-    .eq('id', messageId)
-    .maybeSingle();
-
-  const existing = Array.isArray((row as MessageRow | null)?.starred_by)
-    ? ((row as MessageRow).starred_by as string[])
-    : [];
-  const next = existing.filter((id) => id !== uid);
-
-  const { error } = await supabase
-    .from('messages')
-    .update({ starred_by: next })
-    .eq('id', messageId);
-  if (error) throw new Error(error.message);
-  emitTableSync('starred', uid);
-  if ((row as MessageRow | null)?.chat_id) {
-    emitTableSync('messages', (row as MessageRow).chat_id);
-  }
+  // The chat id is unknown here; emit the starred sync so lists refresh.
+  await toggleStar('', messageId, uid);
 }
 
 // ============================================================
@@ -3333,10 +3264,13 @@ export async function createCalendarEvent(
   const endTime = clampStr(input.endTime, 20);
   const venue = clampStr(input.venue, 100);
   const courseCode = clampStr(input.courseCode.toUpperCase(), 20);
+  const requestedDept = clampStr(input.department || '', 80);
   const department =
     author.role === 'admin'
-      ? clampStr(input.department || 'All GSU', 80)
-      : clampStr(author.department, 80);
+      ? requestedDept || 'All GSU'
+      : requestedDept.toLowerCase() === 'all gsu'
+        ? 'All GSU'
+        : clampStr(author.department, 80);
 
   if (title.length < 2) throw new Error('Title must be at least 2 characters.');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Please choose a valid date.');
@@ -3391,10 +3325,13 @@ export async function updateCalendarEvent(
   const endTime = clampStr(input.endTime, 20);
   const venue = clampStr(input.venue, 100);
   const courseCode = clampStr(input.courseCode.toUpperCase(), 20);
+  const requestedDept = clampStr(input.department || '', 80);
   const department =
     author.role === 'admin'
-      ? clampStr(input.department || 'All GSU', 80)
-      : clampStr(author.department, 80);
+      ? requestedDept || 'All GSU'
+      : requestedDept.toLowerCase() === 'all gsu'
+        ? 'All GSU'
+        : clampStr(author.department, 80);
 
   if (title.length < 2) throw new Error('Title must be at least 2 characters.');
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Please choose a valid date.');
@@ -4023,7 +3960,6 @@ export async function createConfession(
     author_id: author.uid,
     content,
     status: initialStatus,
-    upvotes: [],
     created_at: nowIso,
   });
   if (error) throw new Error(error.message);
@@ -4035,7 +3971,7 @@ export async function fetchMyConfessions(): Promise<CampusConfession[]> {
   const { data, error } = await supabase.rpc('my_confessions');
   if (error) throw new Error(error.message);
   const rows = Array.isArray(data) ? (data as ConfessionRow[]) : [];
-  return rows.map(mapConfessionRow);
+  return mapConfessionRowsWithUpvotes(rows);
 }
 
 export async function fetchConfessionAuthor(cid: string): Promise<AppUser | null> {
@@ -4102,30 +4038,24 @@ export async function moderateConfession(
   emitTableSync('confessions');
 }
 
+// Toggles the caller's upvote via the security-definer RPC.
+// Returns the server-authoritative state so the UI can update immediately.
 export async function toggleConfessionUpvote(
-  confessionId: string,
-  uid: string,
-  currentlyUpvoted: boolean
-): Promise<void> {
-  if (!confessionId || !uid) return;
-  const { data: existing } = await supabase
-    .from('confessions')
-    .select('upvotes')
-    .eq('id', confessionId)
-    .maybeSingle();
-  const list = Array.isArray((existing as ConfessionRow | null)?.upvotes)
-    ? ((existing as ConfessionRow).upvotes as string[])
-    : [];
-  const next = currentlyUpvoted
-    ? list.filter((id) => id !== uid)
-    : Array.from(new Set([...list, uid]));
-
-  const { error } = await supabase
-    .from('confessions')
-    .update({ upvotes: next })
-    .eq('id', confessionId);
+  confessionId: string
+): Promise<{ upvoted: boolean; upvoteCount: number }> {
+  if (!confessionId) return { upvoted: false, upvoteCount: 0 };
+  const { data, error } = await supabase.rpc('toggle_confession_upvote', {
+    p_confession_id: confessionId,
+  });
   if (error) throw new Error(error.message);
+  const row = Array.isArray(data)
+    ? (data as Array<{ upvoted?: boolean; upvote_count?: number | string }>)[0]
+    : (data as { upvoted?: boolean; upvote_count?: number | string } | null);
   emitTableSync('confessions');
+  return {
+    upvoted: Boolean(row?.upvoted),
+    upvoteCount: Number(row?.upvote_count) || 0,
+  };
 }
 
 export async function deleteConfession(confessionId: string): Promise<void> {
@@ -4839,7 +4769,10 @@ export function subscribeToWorkspaceData(
     if (Array.isArray(data)) {
       currentConfessionRows = data as ConfessionRow[];
       paginationState.hasMoreConfessions = data.length === CONFESSIONS_PAGE_SIZE;
-      handlers.onConfessions(currentConfessionRows.map(mapConfessionRow));
+      mapConfessionRowsWithUpvotes(currentConfessionRows).then((items) => {
+        if (!active) return;
+        handlers.onConfessions(items);
+      });
       emitPagination();
     }
   };
@@ -5131,7 +5064,10 @@ export function subscribeToWorkspaceData(
       const rows = data as ConfessionRow[];
       currentConfessionRows = mergeById(currentConfessionRows, rows);
       paginationState.hasMoreConfessions = rows.length === CONFESSIONS_PAGE_SIZE;
-      handlers.onConfessions(currentConfessionRows.map(mapConfessionRow));
+      mapConfessionRowsWithUpvotes(currentConfessionRows).then((items) => {
+        if (!active) return;
+        handlers.onConfessions(items);
+      });
       emitPagination();
       return;
     }
@@ -5201,6 +5137,9 @@ export function subscribeToWorkspaceData(
       refreshRideErrands()
     )
     .on('postgres_changes', { event: '*', schema: 'public', table: 'confessions' }, () =>
+      refreshConfessions()
+    )
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'confession_upvotes' }, () =>
       refreshConfessions()
     )
     .on('postgres_changes', { event: '*', schema: 'public', table: 'message_reports' }, () =>
