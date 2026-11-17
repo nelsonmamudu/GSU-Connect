@@ -525,10 +525,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {filteredResources.map((item) => {
             const canDelete =
-              item.authorId === currentUser.uid ||
-              currentUser.role === 'admin' ||
-              (['classRep', 'deptHelper', 'lecturer'].includes(currentUser.role) &&
-                item.department === currentUser.department);
+              item.authorId === currentUser.uid || currentUser.role === 'admin';
             const isPreviewable =
               getFilePreviewKind(item.mimeType, item.fileName, item.fileData) !== null;
             return (

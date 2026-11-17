@@ -453,7 +453,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   {dayEvents.map((ev) => {
                     const style = EVENT_TYPE_STYLES[ev.eventType] || EVENT_TYPE_STYLES.campus_event;
                     const canModifyEntry =
-                      isAdmin || (canManage && ev.department === currentUser.department);
+                      isAdmin || (canManage && ev.authorId === currentUser.uid);
 
                     return (
                       <article

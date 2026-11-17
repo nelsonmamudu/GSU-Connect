@@ -265,6 +265,41 @@ function getPublicStorageUrl(
   return data.publicUrl;
 }
 
+
+function extractPublicUrlObjectPath(
+  publicUrl: string | null | undefined,
+  bucket: string
+): string | null {
+  if (!publicUrl) return null;
+  const marker = `/object/public/${bucket}/`;
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) return null;
+  const objectPath = publicUrl.slice(idx + marker.length).split('?')[0];
+  try {
+    return objectPath ? decodeURIComponent(objectPath) : null;
+  } catch {
+    return objectPath || null;
+  }
+}
+
+/**
+ * Best-effort storage cleanup after a row delete. Never throws: an orphaned
+ * object is preferable to a failed delete of the owning row. Storage RLS
+ * still applies (e.g. only the owner may remove chat-media objects).
+ */
+async function removeStorageObjectBestEffort(
+  bucket: 'avatars' | 'chat-media' | 'chat-files' | 'resources',
+  objectPath: string | null
+): Promise<void> {
+  if (!objectPath) return;
+  try {
+    const { error } = await supabase.storage.from(bucket).remove([objectPath]);
+    if (error) console.warn(`Storage cleanup warning (${bucket}/${objectPath}):`, error.message);
+  } catch (err) {
+    console.warn('Storage cleanup warning:', err);
+  }
+}
+
 const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
 
 async function createCachedSignedUrl(
@@ -3105,6 +3140,8 @@ export async function createAcademicResource(
     course_code: courseCode,
     downloads: 0,
     file_url: publicUrl,
+    file_type: mimeType,
+    uploaded_by: author.uid,
     created_at: new Date().toISOString(),
   });
   if (error) throw new Error(error.message);
@@ -3120,8 +3157,18 @@ export async function incrementResourceDownload(resourceId: string): Promise<voi
 
 export async function deleteAcademicResource(resourceId: string): Promise<void> {
   if (!resourceId) return;
+  const { data: existing } = await supabase
+    .from('resources')
+    .select('file_url')
+    .eq('id', resourceId)
+    .maybeSingle();
+  const objectPath = extractPublicUrlObjectPath(
+    (existing as { file_url?: string | null } | null)?.file_url,
+    'resources'
+  );
   const { error } = await supabase.from('resources').delete().eq('id', resourceId);
   if (error) throw new Error(error.message);
+  await removeStorageObjectBestEffort('resources', objectPath);
   emitTableSync('resources');
 }
 
@@ -3228,8 +3275,23 @@ export async function updateMarketplaceListing(
 
 export async function deleteMarketplaceListing(listingId: string): Promise<void> {
   if (!listingId) return;
+  const { data: existing } = await supabase
+    .from('marketplace_listings')
+    .select('images')
+    .eq('id', listingId)
+    .maybeSingle();
+  const images = Array.isArray((existing as { images?: unknown } | null)?.images)
+    ? ((existing as { images: unknown[] }).images as unknown[])
+    : [];
   const { error } = await supabase.from('marketplace_listings').delete().eq('id', listingId);
   if (error) throw new Error(error.message);
+  for (const image of images) {
+    if (typeof image !== 'string') continue;
+    await removeStorageObjectBestEffort(
+      'chat-media',
+      extractPublicUrlObjectPath(image, 'chat-media')
+    );
+  }
   emitTableSync('marketplace_listings');
 }
 
@@ -3468,8 +3530,18 @@ export async function markCampusStatusViewed(
 
 export async function deleteCampusStatus(statusId: string): Promise<void> {
   if (!statusId) return;
+  const { data: existing } = await supabase
+    .from('statuses')
+    .select('media_url')
+    .eq('id', statusId)
+    .maybeSingle();
+  const objectPath = extractPublicUrlObjectPath(
+    (existing as { media_url?: string | null } | null)?.media_url,
+    'chat-media'
+  );
   const { error } = await supabase.from('statuses').delete().eq('id', statusId);
   if (error) throw new Error(error.message);
+  await removeStorageObjectBestEffort('chat-media', objectPath);
   emitTableSync('statuses');
 }
 
@@ -3837,6 +3909,7 @@ export async function createRideErrand(
     departure_time: departureTime,
     seats_available: seatsOrSlots,
     note,
+    posted_by: author.uid,
     created_at: nowIso,
   });
   if (error) throw new Error(error.message);

@@ -1240,11 +1240,11 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
     setSendError(null);
     try {
       await deleteMessageForEveryone(activeChat.id, confirmDeleteMsg.id, currentUser);
-      if (
-        activeChat.type !== 'dm' &&
-        activeChat.pinnedMessageId === confirmDeleteMsg.id &&
-        ['admin', 'classRep', 'lecturer'].includes(currentUser.role)
-      ) {
+      if (activeChat.type !== 'dm' && activeChat.pinnedMessageId === confirmDeleteMsg.id) {
+        // Any sender can end up deleting their own message while it is pinned,
+        // and privileged moderators can delete anyone's message — either way the
+        // pin must not linger on a removed message. Best effort: the server
+        // enforces chat-update permissions, so log and move on if it fails.
         unpinMessageInGroup(activeChat.id).catch((err) => {
           console.error('Failed unpinning deleted message:', err);
         });

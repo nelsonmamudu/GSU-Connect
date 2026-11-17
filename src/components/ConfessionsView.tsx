@@ -44,8 +44,10 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
   loadingMore = false,
   onLoadMore,
 }) => {
-  const isModerator = ['admin', 'classRep', 'deptHelper'].includes(currentUser.role);
+  // The hardened database only lets admins change a confession's status
+  // (guard_confession_update trigger), so moderation UI is admin-only.
   const isAdmin = currentUser.role === 'admin';
+  const isModerator = isAdmin;
   const [viewMode, setViewMode] = useState<ConfessionViewMode>('feed');
   const [categoryFilter, setCategoryFilter] = useState<ConfessionCategory | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -109,8 +111,6 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
     () => (isModerator ? confessions.filter((c) => c.status === 'pending') : []),
     [confessions, isModerator]
   );
-
-  const myIds = useMemo(() => new Set(mySubmissions.map((c) => c.id)), [mySubmissions]);
 
   const visiblePosts = useMemo(() => {
     const base =
@@ -434,7 +434,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
           {visiblePosts.map((post) => {
             const upvoteCount = Object.values(post.upvotes || {}).filter(Boolean).length;
             const hasUpvoted = Boolean(post.upvotes?.[currentUser.uid]);
-            const canDelete = myIds.has(post.id) || isAdmin;
+            const canDelete = isAdmin;
             const revealedAuthor = revealedAuthors[post.id];
             const authorChecked = Object.prototype.hasOwnProperty.call(revealedAuthors, post.id);
 

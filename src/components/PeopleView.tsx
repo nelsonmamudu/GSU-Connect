@@ -178,11 +178,12 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
         const coursesStr = (u.studyCourses || []).join(' ').toLowerCase();
         const spotStr = (u.studySpot || '').toLowerCase();
         const canSeeId = canViewMemberIdNumber(currentUser, u.uid);
+        const normalizedQ = q.replace(/[^a-z0-9]/g, '');
         return (
           u.fullName.toLowerCase().includes(q) ||
           (canSeeId &&
             (u.idNumber.toLowerCase().includes(q) ||
-              u.idNumberNormalized.includes(q.replace(/[^a-z0-9]/g, '')))) ||
+              (normalizedQ.length > 0 && u.idNumberNormalized.includes(normalizedQ)))) ||
           u.department.toLowerCase().includes(q) ||
           coursesStr.includes(q) ||
           spotStr.includes(q)
