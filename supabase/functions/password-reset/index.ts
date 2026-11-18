@@ -14,7 +14,7 @@
 //   BREVO_SENDER_EMAIL  — a sender address verified in Brevo
 //   APP_URL             — the deployed app URL (used as the reset redirect)
 
-import { createClient } from 'jsr:@supabase/supabase-js@2';
+// Keep this entry point self-contained for dashboard and Management API deploys.
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -63,6 +63,41 @@ function json(body: unknown, status = 200, extraHeaders: Record<string, string> 
       ...extraHeaders,
     },
   });
+}
+
+async function supabaseJson<T>(
+  baseUrl: string,
+  serviceKey: string,
+  path: string,
+  { query, body }: { query?: Record<string, string>; body?: Record<string, unknown> } = {},
+): Promise<T | null> {
+  try {
+    const url = new URL(path, baseUrl);
+    if (query) url.search = new URLSearchParams(query).toString();
+
+    const headers = new Headers({
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+      Accept: 'application/json',
+    });
+    if (body) headers.set('Content-Type', 'application/json');
+
+    const res = await fetch(url, {
+      method: body ? 'POST' : 'GET',
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+      redirect: 'error',
+    });
+    if (!res.ok) {
+      // The path is a code constant. Never log the URL, request, or response body.
+      console.error('password-reset: Supabase request failed', path, res.status);
+      return null;
+    }
+    return await res.json() as T;
+  } catch {
+    console.error('password-reset: Supabase request or JSON parsing failed', path);
+    return null;
+  }
 }
 
 // Mirrors public.norm_hash: hex(sha256(lower(btrim(txt))))
@@ -190,23 +225,23 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Enforce rate limit BEFORE checking secrets or looking up any account.
     if (supabaseUrl && serviceKey) {
-      const admin = createClient(supabaseUrl, serviceKey, {
-        auth: { autoRefreshToken: false, persistSession: false },
-      });
-
-      let allowed = true;
-      const { data: rpcAllowed, error: rateErr } = await admin.rpc(
-        'consume_password_reset_rate_limit',
+      let allowed: boolean;
+      const rpcAllowed = await supabaseJson<boolean>(
+        supabaseUrl,
+        serviceKey,
+        '/rest/v1/rpc/consume_password_reset_rate_limit',
         {
-          p_ip_hash: ipHash,
-          p_identifier_hash: identifierRateHash,
-          p_window_seconds: WINDOW_SECONDS,
-          p_ip_max: IP_MAX_REQUESTS,
-          p_identifier_max: IDENTIFIER_MAX_REQUESTS,
-        }
+          body: {
+            p_ip_hash: ipHash,
+            p_identifier_hash: identifierRateHash,
+            p_window_seconds: WINDOW_SECONDS,
+            p_ip_max: IP_MAX_REQUESTS,
+            p_identifier_max: IDENTIFIER_MAX_REQUESTS,
+          },
+        },
       );
 
-      if (!rateErr && typeof rpcAllowed === 'boolean') {
+      if (typeof rpcAllowed === 'boolean') {
         allowed = rpcAllowed;
       } else {
         const nowMs = Date.now();
@@ -256,12 +291,19 @@ Deno.serve(async (req: Request): Promise<Response> => {
         if (!lookupHashes.includes(phoneHash)) lookupHashes.push(phoneHash);
       }
 
-      const { data: lookup } = await admin
-        .from('public_lookups')
-        .select('auth_email, owner_id')
-        .in('hash_id', lookupHashes)
-        .limit(1)
-        .maybeSingle();
+      const lookups = await supabaseJson<{ auth_email: string; owner_id: string }[]>(
+        supabaseUrl,
+        serviceKey,
+        '/rest/v1/public_lookups',
+        {
+          query: {
+            select: 'auth_email,owner_id',
+            hash_id: `in.(${lookupHashes.join(',')})`,
+            limit: '1',
+          },
+        },
+      );
+      const lookup = lookups?.[0];
 
       if (!lookup?.auth_email || !lookup?.owner_id) {
         await waitResponseFloor(startedAt);
@@ -269,36 +311,46 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
 
       // 2. Get the recovery email stored for this account.
-      const { data: recovery } = await admin
-        .from('account_recovery')
-        .select('email')
-        .eq('user_id', lookup.owner_id)
-        .maybeSingle();
-      const toEmail = recovery?.email;
+      const recovery = await supabaseJson<{ email: string }[]>(
+        supabaseUrl,
+        serviceKey,
+        '/rest/v1/account_recovery',
+        { query: { select: 'email', user_id: `eq.${lookup.owner_id}` } },
+      );
+      const toEmail = recovery?.length === 1 ? recovery[0]?.email : undefined;
       if (!toEmail) {
         await waitResponseFloor(startedAt);
         return genericSuccess();
       }
 
       // 3. Generate a Supabase password-recovery link for the auth account.
-      const { data: linkData, error: linkError } = await admin.auth.generateLink({
-        type: 'recovery',
-        email: lookup.auth_email,
-        options: { redirectTo: safeAppUrl },
-      });
-      if (linkError || !linkData?.properties?.hashed_token) {
-        console.error('password-reset: generateLink failed', linkError?.status ?? 'unknown');
+      const linkData = await supabaseJson<{ hashed_token: string }>(
+        supabaseUrl,
+        serviceKey,
+        '/auth/v1/admin/generate_link',
+        {
+          query: { redirect_to: safeAppUrl },
+          body: { type: 'recovery', email: lookup.auth_email },
+        },
+      );
+      // Auth's raw response contains hashed_token at the top level.
+      if (typeof linkData?.hashed_token !== 'string' || !linkData.hashed_token) {
+        if (linkData) console.error('password-reset: Auth response missing recovery token');
         await waitResponseFloor(startedAt);
         return genericSuccess();
       }
 
-      const resetUrl =
-        `${supabaseUrl}/auth/v1/verify?token=${encodeURIComponent(linkData.properties.hashed_token)}` +
-        `&type=recovery&redirect_to=${encodeURIComponent(safeAppUrl)}`;
+      const resetUrl = new URL('/auth/v1/verify', supabaseUrl);
+      resetUrl.search = new URLSearchParams({
+        token: linkData.hashed_token,
+        type: 'recovery',
+        redirect_to: safeAppUrl,
+      }).toString();
 
       // 4. Email the link to the recovery address via Brevo.
       const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
+        redirect: 'error',
         headers: {
           'api-key': brevoKey,
           'Content-Type': 'application/json',
@@ -314,7 +366,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
               <p>We received a request to reset the password for your GSU Connect account.
               Click the button below to choose a new password. This link expires in 1 hour.</p>
               <p style="margin: 24px 0;">
-                <a href="${escapeHtmlAttr(resetUrl)}"
+                <a href="${escapeHtmlAttr(resetUrl.toString())}"
                    style="background: #047857; color: #ffffff; padding: 12px 24px; border-radius: 12px; text-decoration: none; font-weight: bold;">
                   Set New Password
                 </a>

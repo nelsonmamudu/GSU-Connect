@@ -658,8 +658,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   Reset your password
                 </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  Enter your Matric Number, Staff ID, phone number, or email. We will send
-                  a reset link to the email on your account.
+                  Enter your Matric Number, Staff ID, registered phone number, or GSU sign-in
+                  email. Your recovery email is where the link goes, not what you enter here.
                 </p>
               </div>
 
@@ -669,9 +669,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   <div className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">
                     <p className="font-semibold">Check your inbox</p>
                     <p className="text-xs mt-1">
-                      If an account exists for that ID, a password reset link has been sent
-                      to the email on file. The link expires in 1 hour. Check your spam
-                      folder if you do not see it.
+                      If your sign-in details match an account with a recovery email, look
+                      for a reset link in that inbox. The link expires in 1 hour. Check your
+                      spam folder if you do not see it.
                     </p>
                   </div>
                 </div>
@@ -679,7 +679,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label htmlFor="forgotIdentifier" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Matric Number, Staff ID, Phone, or Email
+                      Matric Number, Staff ID, Phone, or GSU Sign-in Email
                     </label>
                     <input
                       id="forgotIdentifier"
@@ -689,7 +689,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       maxLength={120}
                       value={forgotIdentifier}
                       onChange={(e) => setForgotIdentifier(e.target.value)}
-                      placeholder="Matric, Staff ID, phone or email"
+                      placeholder="Matric, Staff ID, phone or GSU email"
                       className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm font-mono focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
                     />
                   </div>

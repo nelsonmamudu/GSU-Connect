@@ -447,10 +447,9 @@ export async function signInUser(identifier: string, password: string): Promise<
 
 /**
  * Requests a password reset for a Matric Number, Staff ID, Phone Number, or
- * Email. The `password-reset` edge function resolves the account, looks up
- * the recovery email on file, and sends a reset link there. It always
- * returns success so the form cannot be used to probe for registered
- * accounts.
+ * GSU sign-in email. The `password-reset` edge function sends the link to
+ * the recovery email on file and returns the same generic response for
+ * matched and unmatched accounts.
  */
 export async function requestPasswordReset(identifier: string): Promise<void> {
   if (/[\x00-\x1F\x7F]/.test(identifier)) {
