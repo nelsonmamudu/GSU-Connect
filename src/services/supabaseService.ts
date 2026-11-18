@@ -1201,14 +1201,22 @@ async function fetchConfessionUpvoteState(
   const uniqueIds = Array.from(new Set(ids.filter(Boolean)));
   if (uniqueIds.length === 0) return map;
 
-  const [countsRes, ownRes] = await Promise.all([
-    supabase
-      .from('confession_upvote_counts')
-      .select('confession_id, upvote_count')
-      .in('confession_id', uniqueIds),
+  const [rpcCountsRes, ownRes] = await Promise.all([
+    supabase.rpc('get_confession_upvote_counts', { p_confession_ids: uniqueIds }),
     supabase.from('confession_upvotes').select('confession_id').in('confession_id', uniqueIds),
   ]);
-  (countsRes.data as UpvoteCountRow[] | null)?.forEach((row) => {
+
+  let countRows = rpcCountsRes.data as UpvoteCountRow[] | null;
+  if (rpcCountsRes.error) {
+    // Fallback to the view only if the RPC migration has not been applied yet.
+    const viewRes = await supabase
+      .from('confession_upvote_counts')
+      .select('confession_id, upvote_count')
+      .in('confession_id', uniqueIds);
+    countRows = viewRes.data as UpvoteCountRow[] | null;
+  }
+
+  countRows?.forEach((row) => {
     map.set(row.confession_id, {
       count: Number(row.upvote_count) || 0,
       mine: false,
@@ -1333,7 +1341,7 @@ export async function resolveProfilesByIds(ids: string[]): Promise<Record<string
   for (let i = 0; i < missing.length; i += 100) {
     const chunk = missing.slice(i, i + 100);
     const { data, error } = await supabase
-      .from('profiles')
+      .from('public_profiles')
       .select(PUBLIC_PROFILE_COLUMNS)
       .in('id', chunk);
     if (error || !Array.isArray(data)) continue;
@@ -1381,23 +1389,65 @@ export async function getPendingUserIdCardSignedUrl(
   };
 }
 
+function writeCachedOwnProfile(profile: AppUser): void {
+  writeLocalStorage(`gsu_cached_profile_${profile.uid}`, {
+    ...profile,
+    createdAt: profile.createdAt?.toISOString() ?? null,
+    updatedAt: profile.updatedAt?.toISOString() ?? null,
+    lastSeen: profile.lastSeen?.toISOString() ?? null,
+  });
+}
+
+function readCachedOwnProfile(uid: string): AppUser | null {
+  const cached = readLocalStorage<Record<string, unknown> | null>(
+    `gsu_cached_profile_${uid}`,
+    null
+  );
+  if (!cached || typeof cached !== 'object' || cached.uid !== uid) return null;
+  return {
+    ...(cached as unknown as AppUser),
+    createdAt: toAppTimestamp(cached.createdAt as string | null),
+    updatedAt: toAppTimestamp(cached.updatedAt as string | null),
+    lastSeen: toAppTimestamp(cached.lastSeen as string | null),
+  };
+}
+
+function removeCachedOwnProfile(uid: string): void {
+  try {
+    localStorage.removeItem(`gsu_cached_profile_${uid}`);
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 export async function fetchProfileById(uid: string): Promise<AppUser | null> {
   if (!uid) return null;
-  const [{ data: profileRow, error }, { data: memberRows }] = await Promise.all([
-    supabase.from('profiles').select(OWN_PROFILE_COLUMNS).eq('id', uid).maybeSingle(),
-    supabase
-      .from('chat_members')
-      .select('chat_id, is_pinned')
-      .eq('user_id', uid)
-      .eq('is_pinned', true),
-  ]);
-  if (error || !profileRow) return null;
-  const pinnedIds = Array.isArray(memberRows)
-    ? (memberRows as ChatMemberRow[]).map((m) => m.chat_id)
-    : [];
-  const mapped = mapProfileRowToAppUser(profileRow as ProfileRow, pinnedIds);
-  profileCache.set(mapped.uid, mapped);
-  return mapped;
+  try {
+    const [{ data: profileRow, error }, { data: memberRows }] = await Promise.all([
+      supabase.from('profiles').select(OWN_PROFILE_COLUMNS).eq('id', uid).maybeSingle(),
+      supabase
+        .from('chat_members')
+        .select('chat_id, is_pinned')
+        .eq('user_id', uid)
+        .eq('is_pinned', true),
+    ]);
+    if (error) {
+      return readCachedOwnProfile(uid);
+    }
+    if (!profileRow) {
+      removeCachedOwnProfile(uid);
+      return null;
+    }
+    const pinnedIds = Array.isArray(memberRows)
+      ? (memberRows as ChatMemberRow[]).map((m) => m.chat_id)
+      : [];
+    const mapped = mapProfileRowToAppUser(profileRow as ProfileRow, pinnedIds);
+    profileCache.set(mapped.uid, mapped);
+    writeCachedOwnProfile(mapped);
+    return mapped;
+  } catch {
+    return readCachedOwnProfile(uid);
+  }
 }
 
 export async function updateUserLastSeen(uid: string): Promise<void> {
@@ -1671,8 +1721,8 @@ export async function verifyAlumniAccount(): Promise<void> {
 export async function adminSetAlumniExempt(userId: string, exempt: boolean): Promise<void> {
   if (!userId) throw new Error('User ID is required.');
   const { error } = await supabase.rpc('admin_set_alumni_exempt', {
-    user_id: userId,
-    exempt,
+    p_user_id: userId,
+    p_exempt: exempt,
   });
   if (error) {
     throw new Error(error.message);
@@ -1683,7 +1733,7 @@ export async function adminSetAlumniExempt(userId: string, exempt: boolean): Pro
 export async function adminExpireUser(userId: string): Promise<void> {
   if (!userId) throw new Error('User ID is required.');
   const { error } = await supabase.rpc('admin_expire_user', {
-    user_id: userId,
+    p_user_id: userId,
   });
   if (error) {
     throw new Error(error.message);
@@ -2818,7 +2868,7 @@ export function flushApproveOrRejectKeepalive(
 
 export async function countActiveAdmins(): Promise<number> {
   const { count, error } = await supabase
-    .from('profiles')
+    .from('public_profiles')
     .select('id', { count: 'exact', head: true })
     .eq('role', 'admin')
     .eq('status', 'approved');
@@ -2988,7 +3038,7 @@ export async function countUsersInDepartment(departmentName: string): Promise<nu
   const clean = clampStr(departmentName, 80);
   if (!clean) return 0;
   const { count, error } = await supabase
-    .from('profiles')
+    .from('public_profiles')
     .select('id', { count: 'exact', head: true })
     .eq('department', clean);
   if (error) throw new Error(error.message);
@@ -4292,81 +4342,125 @@ export function subscribeToWorkspaceData(
   let chatDebounceTimer: number | null = null;
 
   const refreshProfiles = async () => {
-    const approvedPromise = supabase
-      .from('profiles')
-      .select(PUBLIC_PROFILE_COLUMNS)
-      .eq('status', 'approved')
-      .order('full_name', { ascending: true })
-      .limit(USERS_PAGE_SIZE);
+    try {
+      const approvedPromise = supabase
+        .from('public_profiles')
+        .select(PUBLIC_PROFILE_COLUMNS)
+        .eq('status', 'approved')
+        .order('full_name', { ascending: true })
+        .limit(USERS_PAGE_SIZE);
 
-    const pendingPromise = isReviewer
-      ? (role === 'admin'
-          ? supabase
-              .from('profiles')
-              .select(PUBLIC_PROFILE_COLUMNS)
-              .eq('status', 'pending')
-              .order('created_at', { ascending: false })
-              .limit(PENDING_PAGE_SIZE)
-          : supabase
-              .from('profiles')
-              .select(PUBLIC_PROFILE_COLUMNS)
-              .eq('status', 'pending')
-              .eq('department', userDept)
-              .order('created_at', { ascending: false })
-              .limit(PENDING_PAGE_SIZE))
-      : Promise.resolve({ data: [] as ProfileRow[], error: null });
-
-    const allUsersPromise =
-      role === 'admin'
-        ? supabase
-            .from('profiles')
-            .select(PUBLIC_PROFILE_COLUMNS)
-            .order('created_at', { ascending: false })
-            .limit(USERS_PAGE_SIZE)
+      const pendingPromise = isReviewer
+        ? (role === 'admin'
+            ? supabase
+                .from('public_profiles')
+                .select(PUBLIC_PROFILE_COLUMNS)
+                .eq('status', 'pending')
+                .order('created_at', { ascending: false })
+                .limit(PENDING_PAGE_SIZE)
+            : supabase
+                .from('public_profiles')
+                .select(PUBLIC_PROFILE_COLUMNS)
+                .eq('status', 'pending')
+                .eq('department', userDept)
+                .order('created_at', { ascending: false })
+                .limit(PENDING_PAGE_SIZE))
         : Promise.resolve({ data: [] as ProfileRow[], error: null });
 
-    const [approvedRes, pendingRes, allRes] = await Promise.all([
-      approvedPromise,
-      pendingPromise,
-      allUsersPromise,
-    ]);
-    if (!active) return;
+      const allUsersPromise =
+        role === 'admin'
+          ? supabase
+              .from('public_profiles')
+              .select(PUBLIC_PROFILE_COLUMNS)
+              .order('created_at', { ascending: false })
+              .limit(USERS_PAGE_SIZE)
+          : Promise.resolve({ data: [] as ProfileRow[], error: null });
 
-    if (approvedRes.error) {
-      reportError(`Unable to load campus members: ${approvedRes.error.message}`);
-    } else {
-      reportError(null);
+      const [approvedRes, pendingRes, allRes] = await Promise.all([
+        approvedPromise,
+        pendingPromise,
+        allUsersPromise,
+      ]);
+      if (!active) return;
+
+      if (approvedRes.error) {
+        reportError(`Unable to load campus members: ${approvedRes.error.message}`);
+      } else {
+        reportError(null);
+      }
+
+      if (Array.isArray(approvedRes.data)) {
+        const mapped = (approvedRes.data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
+        absorbProfiles(mapped);
+        currentApprovedUsers = mapped;
+        paginationState.hasMoreApprovedUsers = mapped.length === USERS_PAGE_SIZE;
+        handlers.onApprovedUsers(currentApprovedUsers);
+      }
+
+      if (Array.isArray(pendingRes.data)) {
+        const mapped = (pendingRes.data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
+        absorbProfiles(mapped);
+        currentPendingUsers = mapped;
+        paginationState.hasMorePendingUsers = isReviewer && mapped.length === PENDING_PAGE_SIZE;
+        handlers.onPendingUsers(currentPendingUsers);
+      }
+
+      if (role === 'admin' && Array.isArray(allRes.data)) {
+        const mapped = (allRes.data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
+        absorbProfiles(mapped);
+        currentAllUsers = mapped;
+        paginationState.hasMoreAllUsers = mapped.length === USERS_PAGE_SIZE;
+        handlers.onAllUsers(currentAllUsers);
+      } else if (role !== 'admin') {
+        currentAllUsers = [];
+        paginationState.hasMoreAllUsers = false;
+        handlers.onAllUsers([]);
+      }
+
+      emitPagination();
+    } catch (err) {
+      if (!active) return;
+      reportError(
+        err instanceof Error
+          ? `Unable to load campus members: ${err.message}`
+          : 'Unable to load campus members.'
+      );
     }
+  };
 
-    if (Array.isArray(approvedRes.data)) {
-      const mapped = (approvedRes.data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
-      absorbProfiles(mapped);
-      currentApprovedUsers = mapped;
-      paginationState.hasMoreApprovedUsers = mapped.length === USERS_PAGE_SIZE;
-      handlers.onApprovedUsers(currentApprovedUsers);
+  const cachedChatsStorageKey = `gsu_cached_chats_${uid}`;
+
+  const hydrateCachedChats = () => {
+    const cached = readLocalStorage<Array<Record<string, unknown>>>(cachedChatsStorageKey, []);
+    if (!Array.isArray(cached) || cached.length === 0) return;
+    const restored: ChatThread[] = cached
+      .filter((c) => c && typeof c === 'object' && typeof c.id === 'string')
+      .map((c) => ({
+        ...(c as unknown as ChatThread),
+        lastMessageAt: toAppTimestamp(c.lastMessageAt as string | null),
+        createdAt: toAppTimestamp(c.createdAt as string | null),
+        updatedAt: toAppTimestamp(c.updatedAt as string | null),
+        pinnedAt: toAppTimestamp(c.pinnedAt as string | null),
+        radarUpdatedAt: toAppTimestamp(c.radarUpdatedAt as string | null),
+      }));
+    if (restored.length > 0 && active) {
+      latestChatsMap = new Map(restored.map((c) => [c.id, c]));
+      handlers.onChats(restored);
     }
+  };
 
-    if (Array.isArray(pendingRes.data)) {
-      const mapped = (pendingRes.data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
-      absorbProfiles(mapped);
-      currentPendingUsers = mapped;
-      paginationState.hasMorePendingUsers = isReviewer && mapped.length === PENDING_PAGE_SIZE;
-      handlers.onPendingUsers(currentPendingUsers);
-    }
-
-    if (role === 'admin' && Array.isArray(allRes.data)) {
-      const mapped = (allRes.data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
-      absorbProfiles(mapped);
-      currentAllUsers = mapped;
-      paginationState.hasMoreAllUsers = mapped.length === USERS_PAGE_SIZE;
-      handlers.onAllUsers(currentAllUsers);
-    } else if (role !== 'admin') {
-      currentAllUsers = [];
-      paginationState.hasMoreAllUsers = false;
-      handlers.onAllUsers([]);
-    }
-
-    emitPagination();
+  const persistCachedChats = (visibleChats: ChatThread[]) => {
+    writeLocalStorage(
+      cachedChatsStorageKey,
+      visibleChats.map((c) => ({
+        ...c,
+        lastMessageAt: c.lastMessageAt?.toISOString() ?? null,
+        createdAt: c.createdAt?.toISOString() ?? null,
+        updatedAt: c.updatedAt?.toISOString() ?? null,
+        pinnedAt: c.pinnedAt?.toISOString() ?? null,
+        radarUpdatedAt: c.radarUpdatedAt?.toISOString() ?? null,
+      }))
+    );
   };
 
   const computeAndEmitChats = () => {
@@ -4413,6 +4507,7 @@ export function subscribeToWorkspaceData(
 
     latestChatsMap = nextChatMap;
     handlers.onChats(visibleChats);
+    persistCachedChats(visibleChats);
 
     const localReads = readLocalStorage<Record<string, number>>(`gsu_chat_reads_${uid}`, {});
     const unreadMap: Record<string, number> = {};
@@ -4535,52 +4630,63 @@ export function subscribeToWorkspaceData(
 
   const refreshChatsImmediate = async () => {
     lastChatFetchAt = Date.now();
-    const [chatsRes, membersRes] = await Promise.all([
-      supabase.from('chats').select('*').limit(150),
-      supabase.from('chat_members').select('*').eq('user_id', uid).limit(150),
-    ]);
-    if (!active) return;
+    try {
+      const [chatsRes, membersRes] = await Promise.all([
+        supabase.from('chats').select('*').limit(150),
+        supabase.from('chat_members').select('*').eq('user_id', uid).limit(150),
+      ]);
+      if (!active) return;
 
-    if (chatsRes.error) {
-      reportError(`Unable to load chats: ${chatsRes.error.message}`);
-    } else {
+      if (chatsRes.error) {
+        reportError(`Unable to load chats: ${chatsRes.error.message}`);
+        if (latestChatRows.length === 0) hydrateCachedChats();
+        return;
+      }
       reportError(null);
-    }
 
-    if (Array.isArray(chatsRes.data)) latestChatRows = chatsRes.data as ChatRow[];
-    if (Array.isArray(membersRes.data)) latestMemberRows = membersRes.data as ChatMemberRow[];
+      if (Array.isArray(chatsRes.data)) latestChatRows = chatsRes.data as ChatRow[];
+      if (Array.isArray(membersRes.data)) latestMemberRows = membersRes.data as ChatMemberRow[];
 
-    const dmIds = latestChatRows.filter((c) => c.is_group === false).map((c) => c.id);
-    const dmParticipantsMap = new Map<string, string[]>();
-    const dmPeerIds: string[] = [];
-    if (dmIds.length > 0) {
-      const { data: dmMemberRows } = await supabase
-        .from('chat_members')
-        .select('chat_id, user_id')
-        .in('chat_id', dmIds);
-      if (Array.isArray(dmMemberRows)) {
-        for (const r of dmMemberRows as { chat_id: string; user_id: string }[]) {
-          const list = dmParticipantsMap.get(r.chat_id) || [];
-          if (!list.includes(r.user_id)) list.push(r.user_id);
-          dmParticipantsMap.set(r.chat_id, list);
-          if (r.user_id !== uid) dmPeerIds.push(r.user_id);
-        }
-        for (const [chatId, userIds] of dmParticipantsMap.entries()) {
-          if (userIds.length >= 2) {
-            cacheDmChatPair(userIds[0], userIds[1], chatId);
+      const dmIds = latestChatRows.filter((c) => c.is_group === false).map((c) => c.id);
+      const dmParticipantsMap = new Map<string, string[]>();
+      const dmPeerIds: string[] = [];
+      if (dmIds.length > 0) {
+        const { data: dmMemberRows } = await supabase
+          .from('chat_members')
+          .select('chat_id, user_id')
+          .in('chat_id', dmIds);
+        if (Array.isArray(dmMemberRows)) {
+          for (const r of dmMemberRows as { chat_id: string; user_id: string }[]) {
+            const list = dmParticipantsMap.get(r.chat_id) || [];
+            if (!list.includes(r.user_id)) list.push(r.user_id);
+            dmParticipantsMap.set(r.chat_id, list);
+            if (r.user_id !== uid) dmPeerIds.push(r.user_id);
+          }
+          for (const [chatId, userIds] of dmParticipantsMap.entries()) {
+            if (userIds.length >= 2) {
+              cacheDmChatPair(userIds[0], userIds[1], chatId);
+            }
           }
         }
       }
-    }
-    latestDmParticipants = dmParticipantsMap;
-    computeAndEmitChats();
-    rebuildDmGroupMsgChannel();
-    if (dmPeerIds.length > 0) {
-      ensureProfilesLoaded(dmPeerIds)
-        .then((changed) => {
-          if (changed && active) computeAndEmitChats();
-        })
-        .catch(() => undefined);
+      latestDmParticipants = dmParticipantsMap;
+      computeAndEmitChats();
+      rebuildDmGroupMsgChannel();
+      if (dmPeerIds.length > 0) {
+        ensureProfilesLoaded(dmPeerIds)
+          .then((changed) => {
+            if (changed && active) computeAndEmitChats();
+          })
+          .catch(() => undefined);
+      }
+    } catch (err) {
+      if (!active) return;
+      if (latestChatRows.length === 0) hydrateCachedChats();
+      reportError(
+        err instanceof Error
+          ? `Unable to load chats: ${err.message}`
+          : 'Unable to load chats.'
+      );
     }
   };
 
@@ -4881,12 +4987,13 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreApprovedUsers') {
       const from = currentApprovedUsers.length;
-      const { data } = await supabase
-        .from('profiles')
+      const { data, error } = await supabase
+        .from('public_profiles')
         .select(PUBLIC_PROFILE_COLUMNS)
         .eq('status', 'approved')
         .order('full_name', { ascending: true })
         .range(from, from + USERS_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const nextUsers = (data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
       absorbProfiles(nextUsers);
@@ -4906,19 +5013,20 @@ export function subscribeToWorkspaceData(
       const q =
         role === 'admin'
           ? supabase
-              .from('profiles')
+              .from('public_profiles')
               .select(PUBLIC_PROFILE_COLUMNS)
               .eq('status', 'pending')
               .order('created_at', { ascending: false })
               .range(from, from + PENDING_PAGE_SIZE - 1)
           : supabase
-              .from('profiles')
+              .from('public_profiles')
               .select(PUBLIC_PROFILE_COLUMNS)
               .eq('status', 'pending')
               .eq('department', userDept)
               .order('created_at', { ascending: false })
               .range(from, from + PENDING_PAGE_SIZE - 1);
-      const { data } = await q;
+      const { data, error } = await q;
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const nextUsers = (data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
       absorbProfiles(nextUsers);
@@ -4935,11 +5043,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreAllUsers' && role === 'admin') {
       const from = currentAllUsers.length;
-      const { data } = await supabase
-        .from('profiles')
+      const { data, error } = await supabase
+        .from('public_profiles')
         .select(PUBLIC_PROFILE_COLUMNS)
         .order('created_at', { ascending: false })
         .range(from, from + USERS_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const nextUsers = (data as ProfileRow[]).map((r) => mapProfileRowToAppUser(r));
       absorbProfiles(nextUsers);
@@ -4956,11 +5065,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreAnnouncements') {
       const from = currentAnnouncements.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('announcements')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + ANNOUNCEMENTS_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as AnnouncementRow[];
       currentAnnouncements = mergeById(currentAnnouncements, rows);
@@ -4973,11 +5083,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreCalendarEvents') {
       const from = currentEventRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('events')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + EVENTS_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as EventRow[];
       currentEventRows = mergeById(currentEventRows, rows);
@@ -4989,11 +5100,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreResources') {
       const from = currentResourceRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('resources')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + RESOURCES_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as ResourceRow[];
       currentResourceRows = mergeById(currentResourceRows, rows);
@@ -5005,11 +5117,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreMarketplace') {
       const from = currentMarketplaceRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('marketplace_listings')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + MARKETPLACE_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as MarketplaceRow[];
       currentMarketplaceRows = mergeById(currentMarketplaceRows, rows);
@@ -5022,11 +5135,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreStatuses') {
       const from = currentStatusRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('statuses')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + STATUSES_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as StatusRow[];
       currentStatusRows = mergeById(currentStatusRows, rows);
@@ -5039,11 +5153,12 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreRideErrands') {
       const from = currentRideErrandRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('rides_errands')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + RIDES_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as RideErrandRow[];
       currentRideErrandRows = mergeById(currentRideErrandRows, rows);
@@ -5055,30 +5170,31 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMoreConfessions') {
       const from = currentConfessionRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('confessions')
         .select(PUBLIC_CONFESSION_COLUMNS)
         .order('created_at', { ascending: false })
         .range(from, from + CONFESSIONS_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as ConfessionRow[];
       currentConfessionRows = mergeById(currentConfessionRows, rows);
       paginationState.hasMoreConfessions = rows.length === CONFESSIONS_PAGE_SIZE;
-      mapConfessionRowsWithUpvotes(currentConfessionRows).then((items) => {
-        if (!active) return;
-        handlers.onConfessions(items);
-      });
+      const items = await mapConfessionRowsWithUpvotes(currentConfessionRows);
+      if (!active) return;
+      handlers.onConfessions(items);
       emitPagination();
       return;
     }
 
     if (key === 'hasMoreReports' && role === 'admin') {
       const from = currentReportRows.length;
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('message_reports')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + REPORTS_PAGE_SIZE - 1);
+      if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;
       const rows = data as MessageReportRow[];
       currentReportRows = mergeById(currentReportRows, rows);
@@ -5091,24 +5207,29 @@ export function subscribeToWorkspaceData(
 
   const runAllInitial = () => {
     reportError(null);
-    refreshProfiles().then(() => {
-      if (!active) return;
-      refreshChatsImmediate().then(() => {
+    refreshProfiles()
+      .then(() => {
         if (!active) return;
-        refreshStarred();
-        refreshReports();
-        refreshIncomingCalls();
-      });
-      refreshAnnouncements();
-      refreshCalendarEvents();
-      refreshResources();
-      refreshMarketplace();
-      refreshStatuses();
-      refreshRideErrands();
-      refreshConfessions();
-    });
+        refreshChatsImmediate()
+          .then(() => {
+            if (!active) return;
+            void refreshStarred().catch(() => undefined);
+            void refreshReports().catch(() => undefined);
+            void refreshIncomingCalls().catch(() => undefined);
+          })
+          .catch(() => undefined);
+        void refreshAnnouncements().catch(() => undefined);
+        void refreshCalendarEvents().catch(() => undefined);
+        void refreshResources().catch(() => undefined);
+        void refreshMarketplace().catch(() => undefined);
+        void refreshStatuses().catch(() => undefined);
+        void refreshRideErrands().catch(() => undefined);
+        void refreshConfessions().catch(() => undefined);
+      })
+      .catch(() => undefined);
   };
 
+  hydrateCachedChats();
   runAllInitial();
 
   const workspaceChannel = supabase
@@ -5309,29 +5430,40 @@ export function subscribeToChatRoom(
   };
 
   const loadLatestMessages = async () => {
-    const { data, error } = await supabase
-      .from('messages')
-      .select('*')
-      .eq('chat_id', chatId)
-      .order('created_at', { ascending: false })
-      .limit(CHAT_MESSAGES_PAGE_SIZE);
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .eq('chat_id', chatId)
+        .order('created_at', { ascending: false })
+        .limit(CHAT_MESSAGES_PAGE_SIZE);
 
-    if (!active) return;
-    if (error) {
-      console.warn('Error loading chat messages:', error.message);
-      handlers.onMessages([]);
-      handlers.onHasMoreOlder?.(false);
-      return;
-    }
+      if (!active) return;
+      if (error) {
+        console.warn('Error loading chat messages:', error.message);
+        if (messageRowsMap.size === 0) {
+          handlers.onMessages([]);
+          handlers.onHasMoreOlder?.(false);
+        }
+        return;
+      }
 
-    const rows = (data as MessageRow[]) || [];
-    for (const row of rows) {
-      messageRowsMap.set(row.id, row);
+      const rows = (data as MessageRow[]) || [];
+      for (const row of rows) {
+        messageRowsMap.set(row.id, row);
+      }
+      if (messageRowsMap.size <= CHAT_MESSAGES_PAGE_SIZE) {
+        hasMoreOlder = rows.length === CHAT_MESSAGES_PAGE_SIZE;
+      }
+      emitMessagesFromMap();
+    } catch (err) {
+      if (!active) return;
+      console.warn('Network error loading chat messages:', err);
+      if (messageRowsMap.size === 0) {
+        handlers.onMessages([]);
+        handlers.onHasMoreOlder?.(false);
+      }
     }
-    if (messageRowsMap.size <= CHAT_MESSAGES_PAGE_SIZE) {
-      hasMoreOlder = rows.length === CHAT_MESSAGES_PAGE_SIZE;
-    }
-    emitMessagesFromMap();
   };
 
   const loadOlderMessages = async (): Promise<boolean> => {
@@ -5345,7 +5477,8 @@ export function subscribeToChatRoom(
         .lt('created_at', oldestCreatedAt)
         .order('created_at', { ascending: false })
         .limit(CHAT_MESSAGES_PAGE_SIZE);
-      if (!active || error || !Array.isArray(data)) return false;
+      if (error) throw new Error(error.message);
+      if (!active || !Array.isArray(data)) return false;
 
       const rows = data as MessageRow[];
       hasMoreOlder = rows.length === CHAT_MESSAGES_PAGE_SIZE;

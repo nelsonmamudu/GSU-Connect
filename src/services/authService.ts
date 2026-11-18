@@ -27,6 +27,96 @@ export interface SignUpInput {
 
 export type SupabaseAuthUser = User;
 
+interface ThrottleConfig {
+  minIntervalMs: number;
+  maxAttempts: number;
+  windowMs: number;
+  actionLabel: string;
+}
+
+const MEMORY_THROTTLE = new Map<string, number[]>();
+
+function readThrottleTimestamps(bucket: string, windowMs: number, nowMs: number): number[] {
+  const cutoff = nowMs - windowMs;
+  let list = MEMORY_THROTTLE.get(bucket);
+  if (!list) {
+    try {
+      const raw = localStorage.getItem(`gsu_throttle_${bucket}`);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          list = parsed.filter((v): v is number => typeof v === 'number' && Number.isFinite(v));
+        }
+      }
+    } catch {
+      // Ignore storage read errors
+    }
+  }
+  return (list ?? []).filter((ts) => ts > cutoff);
+}
+
+function writeThrottleTimestamps(bucket: string, timestamps: number[]): void {
+  MEMORY_THROTTLE.set(bucket, timestamps);
+  try {
+    localStorage.setItem(`gsu_throttle_${bucket}`, JSON.stringify(timestamps));
+  } catch {
+    // Ignore storage quota errors
+  }
+}
+
+function assertClientThrottle(bucket: string, cfg: ThrottleConfig): void {
+  const nowMs = Date.now();
+  const recent = readThrottleTimestamps(bucket, cfg.windowMs, nowMs);
+  const lastMs = recent[recent.length - 1] ?? 0;
+
+  if (lastMs && nowMs - lastMs < cfg.minIntervalMs) {
+    const waitSec = Math.max(1, Math.ceil((cfg.minIntervalMs - (nowMs - lastMs)) / 1000));
+    throw new Error(
+      `Please wait ${waitSec} second${waitSec === 1 ? '' : 's'} before ${cfg.actionLabel}.`
+    );
+  }
+
+  if (recent.length >= cfg.maxAttempts) {
+    const oldest = recent[0] ?? nowMs;
+    const waitSec = Math.max(1, Math.ceil((oldest + cfg.windowMs - nowMs) / 1000));
+    throw new Error(
+      `Too many attempts. Please wait ${waitSec} second${waitSec === 1 ? '' : 's'} and try again.`
+    );
+  }
+
+  recent.push(nowMs);
+  writeThrottleTimestamps(bucket, recent);
+}
+
+function clearClientThrottle(bucket: string): void {
+  MEMORY_THROTTLE.delete(bucket);
+  try {
+    localStorage.removeItem(`gsu_throttle_${bucket}`);
+  } catch {
+    // Ignore storage errors
+  }
+}
+
+export function clearCachedWorkspaceStorage(): void {
+  try {
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const k = localStorage.key(i);
+      if (
+        k &&
+        (k.startsWith('gsu_cached_profile_') || k.startsWith('gsu_cached_chats_'))
+      ) {
+        keysToRemove.push(k);
+      }
+    }
+    for (const k of keysToRemove) {
+      localStorage.removeItem(k);
+    }
+  } catch {
+    // Ignore storage errors
+  }
+}
+
 function clampStr(val: string, max: number): string {
   return val.trim().slice(0, max);
 }
@@ -96,12 +186,15 @@ export async function uploadIdCardFile(uid: string, file: File): Promise<string>
 
 /**
  * Resolves a Matric Number, Staff ID, Phone Number, or Email via the
- * `resolve_login` RPC.
+ * `resolve_login` RPC (returns only the minimal internal auth email).
  */
 export async function resolveLoginEmail(rawIdentifier: string): Promise<string> {
   const trimmed = rawIdentifier.trim();
   const isEmailInput = trimmed.includes('@');
 
+  if (trimmed.length > 120) {
+    throw new Error('Identifier is too long.');
+  }
   if (isEmailInput) {
     const emailLower = trimmed.toLowerCase();
     if (emailLower.length < 5 || !emailLower.includes('.')) {
@@ -111,16 +204,23 @@ export async function resolveLoginEmail(rawIdentifier: string): Promise<string> 
     throw new Error('Please enter a valid matric number, Staff ID, phone number, or email.');
   }
 
+  assertClientThrottle('login', {
+    minIntervalMs: 1000,
+    maxAttempts: 5,
+    windowMs: 120_000,
+    actionLabel: 'signing in again',
+  });
+
+  if (isEmailInput && trimmed.toLowerCase().endsWith('@gsuconnect.app')) {
+    return trimmed.toLowerCase();
+  }
+
   try {
     const { data, error } = await supabase.rpc('resolve_login', {
       identifier: trimmed,
     });
     if (!error && typeof data === 'string' && data.includes('@')) {
       return data.trim().toLowerCase();
-    }
-    if (!error && data && typeof data === 'object' && 'auth_email' in data) {
-      const authEmail = String((data as { auth_email?: unknown }).auth_email || '').trim();
-      if (authEmail.includes('@')) return authEmail.toLowerCase();
     }
   } catch {
     // Fall back below if RPC does not return a mapped email
@@ -139,7 +239,14 @@ export async function checkIdentifierExists(
 ): Promise<boolean> {
   const clean = idNumber.trim();
   const normalized = normalizeIdNumber(clean);
-  if (normalized.length < 3) return false;
+  if (normalized.length < 3 || clean.length > 120) return false;
+
+  assertClientThrottle('signup_check', {
+    minIntervalMs: 1000,
+    maxAttempts: 5,
+    windowMs: 120_000,
+    actionLabel: 'checking again',
+  });
 
   const lookupTypes: ('matric' | 'staff_id')[] =
     accountType === 'staff'
@@ -335,6 +442,7 @@ export async function signInUser(identifier: string, password: string): Promise<
   if (error) {
     throw new Error(error.message);
   }
+  clearClientThrottle('login');
 }
 
 /**
@@ -345,15 +453,37 @@ export async function signInUser(identifier: string, password: string): Promise<
  * accounts.
  */
 export async function requestPasswordReset(identifier: string): Promise<void> {
+  if (/[\x00-\x1F\x7F]/.test(identifier)) {
+    throw new Error('Please enter a valid Matric Number, Staff ID, phone number, or email.');
+  }
   const trimmed = identifier.trim();
-  if (trimmed.length < 3) {
+  if (trimmed.length < 3 || trimmed.length > 120) {
     throw new Error('Please enter your Matric Number, Staff ID, phone number, or email.');
   }
+  if (trimmed.includes('@')) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) {
+      throw new Error('Please enter a valid email address.');
+    }
+  } else if (normalizeIdNumber(trimmed).length < 3) {
+    throw new Error('Please enter your Matric Number, Staff ID, phone number, or email.');
+  }
+
+  assertClientThrottle('password_reset', {
+    minIntervalMs: 2000,
+    maxAttempts: 3,
+    windowMs: 120_000,
+    actionLabel: 'requesting another reset link',
+  });
+
   const { error } = await supabase.functions.invoke('password-reset', {
     body: { identifier: trimmed },
   });
   if (error) {
-    throw new Error(error.message || 'Could not send the reset email. Please try again.');
+    const status = (error as { context?: { status?: number } })?.context?.status;
+    if (status === 429) {
+      throw new Error('Too many password reset requests. Please wait a few minutes and try again.');
+    }
+    throw new Error('Could not send the reset email. Please check your connection and try again.');
   }
 }
 
@@ -378,6 +508,7 @@ export async function updateRecoveryEmail(
 }
 
 export async function signOutUser(): Promise<void> {
+  clearCachedWorkspaceStorage();
   const { error } = await supabase.auth.signOut();
   if (error) {
     throw new Error(error.message);
@@ -398,6 +529,9 @@ export function subscribeToAuthState(
     });
 
   const { data } = supabase.auth.onAuthStateChange((event, session) => {
+    if (event === 'SIGNED_OUT') {
+      clearCachedWorkspaceStorage();
+    }
     if (active) callback(event, session);
   });
 

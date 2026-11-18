@@ -48,8 +48,19 @@ function formatAuthError(err: unknown): string {
   if (lower.includes('password should be at least') || lower.includes('weak')) {
     return 'Password must be at least 8 characters.';
   }
+  if (lower.includes('please wait') && (lower.includes('second') || lower.includes('minute'))) {
+    return raw;
+  }
   if (lower.includes('rate limit') || lower.includes('too many')) {
     return 'Too many attempts. Please wait a moment and try again.';
+  }
+  if (
+    lower.includes('failed to fetch') ||
+    lower.includes('networkerror') ||
+    lower.includes('network request failed') ||
+    lower.includes('load failed')
+  ) {
+    return 'Network error. Please check your internet connection and try again.';
   }
   return raw;
 }
