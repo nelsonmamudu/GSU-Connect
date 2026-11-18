@@ -586,6 +586,13 @@ function MainApp() {
     setLoadingMoreKey(key);
     try {
       await workspaceHandleRef.current.loadMore(key);
+      setWorkspaceError(null);
+    } catch (err) {
+      setWorkspaceError(
+        err instanceof Error
+          ? `Unable to load more items: ${err.message}`
+          : 'Unable to load more items. Please check your connection and try again.'
+      );
     } finally {
       setLoadingMoreKey(null);
     }
@@ -902,6 +909,44 @@ function MainApp() {
             <GraduationCap className="w-6 h-6" />
           </div>
           <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Loading GSU Connect...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (authUser && !currentUser && !isOnline) {
+    return (
+      <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex flex-col items-center justify-center p-4 sm:p-6">
+        <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-7 sm:p-8 space-y-5 text-center shadow-xs">
+          <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+            <WifiOff className="w-8 h-8" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+              You&apos;re offline
+            </h1>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              We couldn&apos;t load your GSU Connect profile yet because there&apos;s no internet connection.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-2.5">
+            <button
+              type="button"
+              onClick={refreshOwnProfile}
+              className="flex-1 min-h-[46px] rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Retry
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                signOutUser().catch(() => undefined);
+              }}
+              className="flex-1 min-h-[46px] rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold transition-colors cursor-pointer"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </div>
     );

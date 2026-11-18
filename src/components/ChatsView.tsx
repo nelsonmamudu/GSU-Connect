@@ -2878,7 +2878,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={() => {
                       const peer = getDmPeer(activeChat);
                       if (peer) {
-                        Promise.resolve(onStartVoiceCall(peer)).catch(() => undefined);
+                        Promise.resolve(onStartVoiceCall(peer)).catch((err) => {
+                          setSendError(
+                            err instanceof Error
+                              ? err.message
+                              : 'Unable to start voice call right now.'
+                          );
+                        });
                       }
                     }}
                     aria-label="Start voice call"
@@ -3115,6 +3121,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 if (diff > 0) container.scrollTop += diff;
                               }
                             });
+                          } catch (err) {
+                            setSendError(
+                              err instanceof Error
+                                ? `Could not load older messages: ${err.message}`
+                                : 'Could not load older messages. Check your connection and try again.'
+                            );
                           } finally {
                             setLoadingOlderMessages(false);
                           }

@@ -1321,6 +1321,19 @@ export const AdminView: React.FC<AdminViewProps> = ({
             </div>
           )}
 
+          {filteredAllUsers.length === 0 ? (
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
+              <Users className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
+              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                No matching users
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {userSearch.trim()
+                  ? `No campus members matched "${userSearch.trim()}".`
+                  : 'No user accounts have loaded yet.'}
+              </p>
+            </div>
+          ) : (
           <div className="space-y-2.5">
             {filteredAllUsers.map((user) => {
               const isSelf = user.uid === currentUser.uid;
@@ -1481,6 +1494,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               );
             })}
           </div>
+          )}
           {hasMoreAllUsers && onLoadMore && (
             <div className="flex justify-center pt-2">
               <button
