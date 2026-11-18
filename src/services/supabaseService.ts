@@ -1341,7 +1341,7 @@ export async function resolveProfilesByIds(ids: string[]): Promise<Record<string
   for (let i = 0; i < missing.length; i += 100) {
     const chunk = missing.slice(i, i + 100);
     const { data, error } = await supabase
-      .from('profiles')
+      .from('public_profiles')
       .select(PUBLIC_PROFILE_COLUMNS)
       .in('id', chunk);
     if (error || !Array.isArray(data)) continue;
@@ -2868,7 +2868,7 @@ export function flushApproveOrRejectKeepalive(
 
 export async function countActiveAdmins(): Promise<number> {
   const { count, error } = await supabase
-    .from('profiles')
+    .from('public_profiles')
     .select('id', { count: 'exact', head: true })
     .eq('role', 'admin')
     .eq('status', 'approved');
@@ -3038,7 +3038,7 @@ export async function countUsersInDepartment(departmentName: string): Promise<nu
   const clean = clampStr(departmentName, 80);
   if (!clean) return 0;
   const { count, error } = await supabase
-    .from('profiles')
+    .from('public_profiles')
     .select('id', { count: 'exact', head: true })
     .eq('department', clean);
   if (error) throw new Error(error.message);
@@ -4344,7 +4344,7 @@ export function subscribeToWorkspaceData(
   const refreshProfiles = async () => {
     try {
       const approvedPromise = supabase
-        .from('profiles')
+        .from('public_profiles')
         .select(PUBLIC_PROFILE_COLUMNS)
         .eq('status', 'approved')
         .order('full_name', { ascending: true })
@@ -4353,13 +4353,13 @@ export function subscribeToWorkspaceData(
       const pendingPromise = isReviewer
         ? (role === 'admin'
             ? supabase
-                .from('profiles')
+                .from('public_profiles')
                 .select(PUBLIC_PROFILE_COLUMNS)
                 .eq('status', 'pending')
                 .order('created_at', { ascending: false })
                 .limit(PENDING_PAGE_SIZE)
             : supabase
-                .from('profiles')
+                .from('public_profiles')
                 .select(PUBLIC_PROFILE_COLUMNS)
                 .eq('status', 'pending')
                 .eq('department', userDept)
@@ -4370,7 +4370,7 @@ export function subscribeToWorkspaceData(
       const allUsersPromise =
         role === 'admin'
           ? supabase
-              .from('profiles')
+              .from('public_profiles')
               .select(PUBLIC_PROFILE_COLUMNS)
               .order('created_at', { ascending: false })
               .limit(USERS_PAGE_SIZE)
@@ -4988,7 +4988,7 @@ export function subscribeToWorkspaceData(
     if (key === 'hasMoreApprovedUsers') {
       const from = currentApprovedUsers.length;
       const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select(PUBLIC_PROFILE_COLUMNS)
         .eq('status', 'approved')
         .order('full_name', { ascending: true })
@@ -5013,13 +5013,13 @@ export function subscribeToWorkspaceData(
       const q =
         role === 'admin'
           ? supabase
-              .from('profiles')
+              .from('public_profiles')
               .select(PUBLIC_PROFILE_COLUMNS)
               .eq('status', 'pending')
               .order('created_at', { ascending: false })
               .range(from, from + PENDING_PAGE_SIZE - 1)
           : supabase
-              .from('profiles')
+              .from('public_profiles')
               .select(PUBLIC_PROFILE_COLUMNS)
               .eq('status', 'pending')
               .eq('department', userDept)
@@ -5044,7 +5044,7 @@ export function subscribeToWorkspaceData(
     if (key === 'hasMoreAllUsers' && role === 'admin') {
       const from = currentAllUsers.length;
       const { data, error } = await supabase
-        .from('profiles')
+        .from('public_profiles')
         .select(PUBLIC_PROFILE_COLUMNS)
         .order('created_at', { ascending: false })
         .range(from, from + USERS_PAGE_SIZE - 1);

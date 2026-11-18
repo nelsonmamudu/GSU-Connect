@@ -24,10 +24,23 @@ interface VoiceCallModalProps {
   onClose: () => void;
 }
 
+const TURN_URL = import.meta.env.VITE_TURN_URL?.trim();
+const TURN_USERNAME = import.meta.env.VITE_TURN_USERNAME?.trim();
+const TURN_CREDENTIAL = import.meta.env.VITE_TURN_CREDENTIAL?.trim();
+
 const RTC_CONFIG: RTCConfiguration = {
   iceServers: [
     { urls: 'stun:stun.l.google.com:19302' },
     { urls: 'stun:stun1.l.google.com:19302' },
+    ...(TURN_URL
+      ? [
+          {
+            urls: TURN_URL.split(',').map((u: string) => u.trim()).filter(Boolean),
+            ...(TURN_USERNAME ? { username: TURN_USERNAME } : {}),
+            ...(TURN_CREDENTIAL ? { credential: TURN_CREDENTIAL } : {}),
+          },
+        ]
+      : []),
   ],
 };
 
@@ -748,6 +761,12 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
         {micWarning && (
           <p className="text-[11px] text-amber-300 bg-amber-950/60 border border-amber-800/60 rounded-xl px-3 py-2">
             {micWarning}
+          </p>
+        )}
+
+        {rtcConnectionState === 'failed' && (
+          <p className="text-[11px] text-rose-200 bg-rose-950/60 border border-rose-800/60 rounded-xl px-3 py-2">
+            Audio connection failed. One of the networks may be blocking direct peer-to-peer calls.
           </p>
         )}
 

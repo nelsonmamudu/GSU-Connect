@@ -411,4 +411,85 @@ update storage.buckets
      'application/x-zip-compressed',
      'application/octet-stream'
    ]
- where id = 'resources';
+   where id = 'resources';
+
+-- -----------------------------------------------------------------------------
+-- 7. Profiles column-level privacy isolation
+-- -----------------------------------------------------------------------------
+-- Direct reads on public.profiles are restricted to the row owner so that
+-- sensitive columns (email, phone, blocked_users, id_card_path, etc.) are
+-- never readable on other users' rows via the PostgREST API.
+-- Public/directory reads use the public.public_profiles view below, which
+-- projects only non-sensitive profile columns and preserves the exact
+-- visibility rules (own row, assigned/dept reviewer, or approved member).
+create or replace function public.is_blocked_between(p_a uuid, p_b uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1
+      from public.profiles a
+      join public.profiles b on b.id = p_b
+     where a.id = p_a
+       and (
+         p_b = any(coalesce(a.blocked_users, '{}'::uuid[]))
+         or p_a = any(coalesce(b.blocked_users, '{}'::uuid[]))
+       )
+  );
+$$;
+
+revoke all on function public.is_blocked_between(uuid, uuid) from public, anon;
+grant execute on function public.is_blocked_between(uuid, uuid) to authenticated;
+
+drop policy if exists "calls start" on public.calls;
+create policy "calls start"
+  on public.calls
+  for insert
+  to authenticated
+  with check (
+    caller_id = (select auth.uid())
+    and receiver_id <> (select auth.uid())
+    and public.is_approved()
+    and not public.is_blocked_between(caller_id, receiver_id)
+  );
+
+create or replace view public.public_profiles
+with (security_barrier = true) as
+select
+  p.id,
+  p.full_name,
+  p.role,
+  p.status,
+  p.matric_no,
+  p.staff_id,
+  p.department,
+  p.level,
+  p.photo_url,
+  p.avatar_id,
+  p.last_seen,
+  p.study_courses,
+  p.study_bio,
+  p.is_alumni,
+  p.is_exempt,
+  p.verify_deadline,
+  p.alumni_verified_at,
+  p.expires_at,
+  p.created_at
+from public.profiles p
+where p.id = (select auth.uid())
+   or public.can_review(p.id)
+   or (public.is_approved() and p.status = 'approved');
+
+revoke all on public.public_profiles from public, anon;
+grant select on public.public_profiles to authenticated;
+
+revoke all on public.profiles from public, anon;
+drop policy if exists "profiles read" on public.profiles;
+create policy "profiles read"
+  on public.profiles
+  for select
+  to authenticated
+  using (id = (select auth.uid()));
