@@ -244,6 +244,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const switchMode = (next: AuthMode) => {
     setMode(next);
     setError(null);
+    setForgotIdentifier('');
     setForgotSent(false);
   };
 
@@ -673,6 +674,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       for a reset link in that inbox. The link expires in 1 hour. Check your
                       spam folder if you do not see it.
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => switchMode('forgot')}
+                      className="mt-2 text-xs font-semibold underline underline-offset-2 min-h-[44px] cursor-pointer"
+                    >
+                      Try a different sign-in ID
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -684,6 +692,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                     <input
                       id="forgotIdentifier"
                       type="text"
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      spellCheck={false}
                       required
                       minLength={3}
                       maxLength={120}
