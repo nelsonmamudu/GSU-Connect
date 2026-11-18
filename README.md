@@ -30,6 +30,7 @@ calling Supabase or sending email:
 deno test supabase/functions/password-reset/index_test.ts
 ```
 
+Apply the password-reset recovery email migration before deploying the function.
 To deploy via the Supabase CLI:
 
 ```sh
@@ -41,4 +42,6 @@ password resets before signing in. Configure `BREVO_API_KEY`,
 `BREVO_SENDER_EMAIL` (a verified sender), and `APP_URL` in Edge Function secrets.
 `APP_URL` should point to the deployed app and be allowed in Auth redirect settings.
 To test email delivery, use a test account's Matric Number, Staff ID, registered
-phone number, or GSU sign-in email. The link goes to the recovery email on file.
+phone number, GSU sign-in email, or uniquely assigned recovery email. A shared
+recovery email requires the sign-in ID. The link always goes to the recovery email
+on file.

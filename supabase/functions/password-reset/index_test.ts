@@ -157,6 +157,57 @@ Deno.test('rate-limits, resolves a phone lookup, and sends the generated link on
   await assertGenericSuccess(response);
 });
 
+Deno.test('resolves an email through the private recovery RPC when no sign-in matches', async () => {
+  const emailInput = 'Recovery@Example.invalid';
+  const { response, calls: [rate, lookup, resolve, auth, mail] } =
+    await exercise(post(` ${emailInput} `), [
+      Response.json(true),
+      Response.json([]),
+      Response.json([{
+        auth_email: AUTH_EMAIL,
+        recovery_email: RECOVERY_EMAIL,
+      }]),
+      Response.json({ hashed_token: 'test-recovery-token' }),
+      new Response(null, { status: 201 }),
+    ]);
+  assert.equal((await rate.json()).p_identifier_hash, sha256(RECOVERY_EMAIL));
+  assert.equal(new URL(lookup.url).pathname, '/rest/v1/public_lookups');
+  assert.equal(
+    resolve.url,
+    `${SUPABASE_URL}/rest/v1/rpc/resolve_password_reset_recovery_email`,
+  );
+  assert.equal(resolve.method, 'POST');
+  assert.equal(resolve.headers.get('Authorization'), `Bearer ${SERVICE_KEY}`);
+  assert.deepEqual(await resolve.json(), { p_email: emailInput });
+  assert.equal(new URL(auth.url).pathname, '/auth/v1/admin/generate_link');
+  assert.deepEqual(await auth.json(), { type: 'recovery', email: AUTH_EMAIL });
+  assert.deepEqual((await mail.json()).to, [{ email: RECOVERY_EMAIL }]);
+  await assertGenericSuccess(response);
+});
+
+Deno.test('does not send for a missing or shared recovery match or fall back after a sign-in lookup failure', async () => {
+  const target = { auth_email: AUTH_EMAIL, recovery_email: RECOVERY_EMAIL };
+  const scenarios = [
+    [Response.json(true), Response.json([]), Response.json([])],
+    [Response.json(true), Response.json([]), Response.json([target, target])],
+    [Response.json(true), new Response(null, { status: 500 })],
+  ];
+  for (const replies of scenarios) {
+    const { response } = await exercise(post(RECOVERY_EMAIL), replies);
+    await assertGenericSuccess(response);
+  }
+});
+
+Deno.test('prefers the sign-in account for an email even when that account has no recovery address', async () => {
+  const { response, calls: [, , recovery] } = await exercise(post(AUTH_EMAIL), [
+    Response.json(true),
+    Response.json(LOOKUP),
+    Response.json([]),
+  ]);
+  assert.equal(new URL(recovery.url).pathname, '/rest/v1/account_recovery');
+  await assertGenericSuccess(response);
+});
+
 Deno.test('gives the same generic response for no match, no recovery address, or an Auth error', async () => {
   const request = () => post('TEST/000000');
   const scenarios = [

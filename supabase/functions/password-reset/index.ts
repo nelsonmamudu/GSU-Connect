@@ -1,7 +1,6 @@
 // GSU Connect — Password Reset Edge Function (Hardened)
-// Resolves a Matric Number / Staff ID / Phone Number / GSU email to an account,
-// looks up the recovery email on file, generates a Supabase recovery link, and
-// emails it via Brevo.
+// Resolves a sign-in identifier or a uniquely assigned recovery email to an
+// account, generates a Supabase recovery link, and emails it via Brevo.
 //
 // Security properties:
 //   - Strict POST-only & input validation (before any DB lookup)
@@ -28,6 +27,8 @@ const WINDOW_MS = WINDOW_SECONDS * 1000;
 const IP_MAX_REQUESTS = 10;
 const IDENTIFIER_MAX_REQUESTS = 3;
 const RESPONSE_FLOOR_MS = 350;
+
+type ResetTarget = { auth_email: string; recovery_email: string };
 
 // In-memory fallback sliding-window limiter (used if DB rate-limit RPC is unavailable)
 const memoryBuckets = new Map<string, number[]>();
@@ -304,21 +305,31 @@ Deno.serve(async (req: Request): Promise<Response> => {
         },
       );
       const lookup = lookups?.[0];
+      let target: ResetTarget | undefined;
 
-      if (!lookup?.auth_email || !lookup?.owner_id) {
-        await waitResponseFloor(startedAt);
-        return genericSuccess();
+      // 2. Prefer the existing sign-in match. Only fall back after a successful
+      // lookup with zero matches, not when it failed or found an ineligible account.
+      if (lookup?.auth_email && lookup.owner_id) {
+        const recovery = await supabaseJson<{ email: string }[]>(
+          supabaseUrl,
+          serviceKey,
+          '/rest/v1/account_recovery',
+          { query: { select: 'email', user_id: `eq.${lookup.owner_id}` } },
+        );
+        if (recovery?.length === 1 && recovery[0]?.email) {
+          target = { auth_email: lookup.auth_email, recovery_email: recovery[0].email };
+        }
+      } else if (Array.isArray(lookups) && lookups.length === 0 && identifier.includes('@')) {
+        const matches = await supabaseJson<ResetTarget[]>(
+          supabaseUrl,
+          serviceKey,
+          '/rest/v1/rpc/resolve_password_reset_recovery_email',
+          { body: { p_email: identifier } },
+        );
+        if (matches?.length === 1) target = matches[0];
       }
 
-      // 2. Get the recovery email stored for this account.
-      const recovery = await supabaseJson<{ email: string }[]>(
-        supabaseUrl,
-        serviceKey,
-        '/rest/v1/account_recovery',
-        { query: { select: 'email', user_id: `eq.${lookup.owner_id}` } },
-      );
-      const toEmail = recovery?.length === 1 ? recovery[0]?.email : undefined;
-      if (!toEmail) {
+      if (!target?.auth_email || !target.recovery_email) {
         await waitResponseFloor(startedAt);
         return genericSuccess();
       }
@@ -330,7 +341,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         '/auth/v1/admin/generate_link',
         {
           query: { redirect_to: safeAppUrl },
-          body: { type: 'recovery', email: lookup.auth_email },
+          body: { type: 'recovery', email: target.auth_email },
         },
       );
       // Auth's raw response contains hashed_token at the top level.
@@ -358,7 +369,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
         },
         body: JSON.stringify({
           sender: { email: senderEmail, name: 'GSU Connect' },
-          to: [{ email: toEmail }],
+          to: [{ email: target.recovery_email }],
           subject: 'Reset your GSU Connect password',
           htmlContent: `
             <div style="font-family: Arial, sans-serif; max-width: 560px; margin: 0 auto;">
@@ -378,6 +389,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
       if (!brevoRes.ok) {
         // Log only HTTP status code — never response body, headers, keys, or recipient email.
         console.error('password-reset: email provider returned status', brevoRes.status);
+      } else {
+        console.info('password-reset: email accepted by provider', brevoRes.status);
       }
 
       await waitResponseFloor(startedAt);
