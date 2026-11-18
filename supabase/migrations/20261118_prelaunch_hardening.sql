@@ -390,3 +390,25 @@ create policy "Admins delete departments"
   for delete
   to authenticated
   using (public.is_admin());
+
+-- -----------------------------------------------------------------------------
+-- 6. Storage bucket hardening (prevent HTML/SVG/script uploads to public bucket)
+-- -----------------------------------------------------------------------------
+update storage.buckets
+   set allowed_mime_types = array[
+     'application/pdf',
+     'image/jpeg',
+     'image/png',
+     'image/webp',
+     'text/plain',
+     'application/msword',
+     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+     'application/vnd.ms-powerpoint',
+     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+     'application/vnd.ms-excel',
+     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+     'application/zip',
+     'application/x-zip-compressed',
+     'application/octet-stream'
+   ]
+ where id = 'resources';
