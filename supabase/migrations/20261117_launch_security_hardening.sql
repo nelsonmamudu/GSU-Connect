@@ -6,15 +6,29 @@
 -- 2) messages UPDATE is restricted to the sender editing the text of
 --    their own message. Reactions, stars, delete-for-everyone,
 --    view-once open and poll votes all go through security-definer
---    RPCs that perform their own authorization checks.
--- 3) Events department scope. School-wide events (department NULL or
---    'All GSU') stay open to anyone the events insert policy lets
---    through (is_privileged: admin/class_rep/dept_helper/lecturer).
---    A specific department must match the poster's own department;
---    admins are unrestricted.
+--    RPCs that perform their own authorization checks. All message-
+--    mutating RPCs take a row lock (select ... for update) so
+--    simultaneous actions queue instead of overwriting each other.
+-- 3) Events department scope. School-wide events are stored as
+--    department NULL; the client's 'All GSU' sentinel is converted to
+--    NULL by the guard trigger, so there is exactly one stored value.
+--    School-wide is open to privileged roles (the events INSERT policy
+--    only lets is_privileged through); a specific department must match
+--    the poster's own department; admins are unrestricted; students
+--    cannot post.
+-- 4) Function grants: anonymous callers get only the pre-login surface
+--    (resolve_login, identifier_available, list_departments,
+--    session_end_year). anonymize_expired_accounts and
+--    delete_id_card_on_approval are service-role only.
 --
 -- Decisions locked in by the owner:
---  - Confessions moderation stays admin-only (guard trigger unchanged).
+--  - Confessions moderation stays admin-only.
+--  - Delete-for-everyone is sender-or-admin only; reps/helpers/lecturers
+--    cannot delete other people's messages (abuse is handled via the
+--    report button + admin removal). Widen later if admins can't keep up.
+--  - Staff are privileged like lecturers (announcements, events, radar,
+--    announcement chats) so they can support students; approvals are
+--    unaffected (can_review does not use is_privileged).
 --  - Orphaned storage cleanup (marketplace photos) is post-launch work.
 
 -- ============ 1) Confession upvotes table ============
@@ -39,9 +53,11 @@ on conflict do nothing;
 -- Aggregates-only view so voters' identities stay private.
 create or replace view public.confession_upvote_counts
 with (security_invoker = false) as
-select confession_id, count(*)::bigint as upvote_count
-from public.confession_upvotes
-group by confession_id;
+select u.confession_id, count(*)::bigint as upvote_count
+from public.confession_upvotes u
+join public.confessions c
+  on c.id = u.confession_id and c.status = 'approved'
+group by u.confession_id;
 
 revoke all on public.confession_upvotes from anon, authenticated;
 grant select on public.confession_upvotes to authenticated;
@@ -69,10 +85,11 @@ begin
   if not public.is_approved() then
     raise exception 'Account not approved';
   end if;
-  if not exists (
-    select 1 from public.confessions c
-    where c.id = p_confession_id and c.status = 'approved'
-  ) then
+  -- Lock the confession row so concurrent toggles serialize.
+  perform 1 from public.confessions c
+   where c.id = p_confession_id and c.status = 'approved'
+     for update;
+  if not found then
     raise exception 'Confession not found';
   end if;
 
@@ -125,6 +142,23 @@ create policy "confessions submit" on public.confessions for insert
 
 create policy "confessions update" on public.confessions for update
   using (is_admin()) with check (is_admin());
+
+-- ============ 1b) staff are privileged like lecturers ============
+-- Widens announcements, events, radar, announcement-chat posting and
+-- non-custom group creation to approved staff. Approvals are NOT
+-- affected (can_review does not consult is_privileged).
+create or replace function public.is_privileged()
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (select 1 from public.profiles where id = auth.uid() and status = 'approved'
+                 and role in ('admin','class_rep','dept_helper','lecturer','staff'));
+$$;
+revoke all on function public.is_privileged() from public, anon;
+grant execute on function public.is_privileged() to authenticated;
 
 -- ============ 2) messages hardening ============
 drop policy if exists "messages update" on public.messages;
@@ -183,7 +217,7 @@ begin
   if p_emoji is null or char_length(p_emoji) < 1 or char_length(p_emoji) > 16 then
     raise exception 'Invalid reaction';
   end if;
-  select * into m from public.messages where id = p_message_id;
+  select * into m from public.messages where id = p_message_id for update;
   if not found then
     raise exception 'Message not found';
   end if;
@@ -220,7 +254,7 @@ begin
   if v_uid is null then
     raise exception 'Not signed in';
   end if;
-  select * into m from public.messages where id = p_message_id;
+  select * into m from public.messages where id = p_message_id for update;
   if not found then
     raise exception 'Message not found';
   end if;
@@ -252,7 +286,6 @@ as $$
 declare
   v_uid uuid := auth.uid();
   m public.messages%rowtype;
-  c public.chats%rowtype;
   v_meta jsonb;
   v_name text;
   v_now text;
@@ -263,23 +296,16 @@ begin
   if not public.is_approved() then
     raise exception 'Account not approved';
   end if;
-  select * into m from public.messages where id = p_message_id;
+  select * into m from public.messages where id = p_message_id for update;
   if not found then
     raise exception 'Message not found';
   end if;
-  select * into c from public.chats where id = m.chat_id;
 
-  if v_uid <> m.sender_id then
-    -- Moderators may only delete in group chats, mirroring the client gate.
-    if not coalesce(c.is_group, false) then
-      raise exception 'Only the sender can delete messages in a direct conversation';
-    end if;
-    if not (public.is_admin() or public.is_privileged()) then
-      raise exception 'You cannot delete this message';
-    end if;
-    if not public.can_access_chat(m.chat_id) then
-      raise exception 'You do not have access to this chat';
-    end if;
+  -- Launch decision (2026-11-17): sender or admin only. Abuse is handled
+  -- by the report button plus admin removal; widen later if admins
+  -- cannot keep up.
+  if v_uid <> m.sender_id and not public.is_admin() then
+    raise exception 'You cannot delete this message';
   end if;
 
   begin
@@ -330,7 +356,7 @@ begin
   if v_uid is null then
     raise exception 'Not signed in';
   end if;
-  select * into m from public.messages where id = p_message_id;
+  select * into m from public.messages where id = p_message_id for update;
   if not found then
     raise exception 'Message not found';
   end if;
@@ -390,7 +416,7 @@ begin
   if v_uid is null then
     raise exception 'Not signed in';
   end if;
-  select * into m from public.messages where id = p_message_id;
+  select * into m from public.messages where id = p_message_id for update;
   if not found then
     raise exception 'Message not found';
   end if;
@@ -433,13 +459,17 @@ language plpgsql
 set search_path = ''
 as $$
 begin
+  -- Normalize the client's 'All GSU' sentinel to NULL so school-wide
+  -- events have exactly one stored value (NULL).
+  if new.department is not null and lower(btrim(new.department)) = 'all gsu' then
+    new.department := null;
+  end if;
   if current_user in ('authenticated', 'anon') and not public.is_admin() then
-    -- School-wide events (no department, or the 'All GSU' sentinel the
-    -- client uses for university-wide) are allowed for anyone the
-    -- events INSERT policy lets through; only is_privileged roles can
-    -- post events at all, so this stays open to reps/helpers/lecturers
+    -- School-wide events (department NULL) are open to anyone the events
+    -- INSERT policy lets through; only is_privileged roles can post
+    -- events at all, so this stays open to reps/helpers/lecturers/staff
     -- and closed to students.
-    if new.department is null or lower(btrim(new.department)) = 'all gsu' then
+    if new.department is null then
       return new;
     end if;
     if new.department is distinct from (
@@ -455,6 +485,20 @@ $$;
 drop trigger if exists events_department_guard on public.events;
 create trigger events_department_guard before insert or update on public.events
   for each row execute function public.guard_event_department();
+
+-- ============ 4) function grants ============
+-- Anonymous callers may only reach the pre-login surface (signup and
+-- login flow). Everything else must be called by an approved session
+-- or by the service role.
+revoke all on all functions in schema public from public, anon;
+grant execute on function public.resolve_login(text) to anon;
+grant execute on function public.identifier_available(text, text) to anon;
+grant execute on function public.list_departments() to anon;
+grant execute on function public.session_end_year() to anon;
+
+-- Service-role only; never callable by ordinary sessions.
+revoke all on function public.anonymize_expired_accounts() from authenticated;
+revoke all on function public.delete_id_card_on_approval() from authenticated;
 
 -- Keep confession_upvote_counts live for other connected devices
 -- (the client also refreshes on its own sync broadcast). No-op when

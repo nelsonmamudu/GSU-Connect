@@ -3230,15 +3230,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     (!msg.messageType || msg.messageType === 'text') &&
                     msgMs > 0 &&
                     Date.now() - msgMs <= MESSAGE_EDIT_WINDOW_MS;
+                  // Launch decision (2026-11-17): delete-for-everyone is
+                  // sender-or-admin only; the RPC enforces the same.
                   const canDeleteMsg =
                     !isDeleted &&
                     !isMsgPending &&
                     !isDmBlocked &&
-                    (isMine ||
-                      (activeChat.type !== 'dm' &&
-                        ['admin', 'classRep', 'deptHelper', 'lecturer'].includes(
-                          currentUser.role
-                        )));
+                    (isMine || currentUser.role === 'admin');
                   const canPinMsg =
                     !isDeleted &&
                     !isMsgPending &&
