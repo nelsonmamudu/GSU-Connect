@@ -1,3 +1,7 @@
+import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
+import {studentProof,staffProof,proofTypes} from '../utils/proof';
+import {takeEntryIssue} from '../services/entryFeedback';
+import { mapProfileRowToAppUser } from '../services/supabaseService';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ChevronDown,
@@ -30,6 +34,7 @@ interface StatusGateScreenProps {
   user: AppUser;
   authUser: SupabaseAuthUser | null;
   departments: DepartmentItem[];
+  onChecked:(profile:AppUser)=>void;
 }
 
 function toTitleCase(name: string): string {
@@ -54,14 +59,89 @@ function extractFileNameFromPath(path?: string | null): string {
 export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   user,
   authUser,
-  departments,
+  departments, onChecked,
 }) => {
   const [uploadingIdCard, setUploadingIdCard] = useState(false);
-  const [hasIdCard, setHasIdCard] = useState(Boolean(user.idCardPath));
+  const [staffPath,setStaffPath]=useState<StaffPath>(()=>{const hint=authUser?.user_metadata?.staff_proof_route;return location.hash.startsWith('#staff-confirm=')?'email':Object.hasOwn(staffPaths,hint)?hint:'email';});
+  useEffect(()=>{const route=()=>{if(location.hash.startsWith('#staff-confirm='))setStaffPath('email')};window.addEventListener('hashchange',route);return()=>window.removeEventListener('hashchange',route);},[]);
+  const [method,setMethod]=useState(''),[vouchState,setVouchState]=useState('');
+  const [hasIdCard, setHasIdCard] = useState<boolean | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
   const idCardInputRef = useRef<HTMLInputElement | null>(null);
 
+  const [checkMessage, setCheckMessage] = useState('');
+  const [checking, setChecking] = useState(false);
+  const checkSeq = useRef(0);
+  const check = React.useCallback(
+    async (manual = false) => {
+      const seq = ++checkSeq.current;
+      if (manual) {
+        setChecking(true);
+        setCheckMessage('Checking…');
+      }
+      try {
+        const { data, error } = await supabase.rpc('check_own_entry');
+        if (error || !data || data.id !== user.uid) throw Error('Unavailable');
+        if (seq !== checkSeq.current) return;
+        const profile = mapProfileRowToAppUser(data);
+        onChecked(profile);
+        const ready=Boolean(data.proof_method || profile.idCardPath);setMethod(data.proof_method || '');setVouchState(data.vouch_state||'');setHasIdCard(ready);
+        setCheckMessage(
+          manual
+            ? profile.status === 'pending'
+              ? ready
+                ? 'Still pending — proof received.'
+                : 'Not submitted — complete your proof to finish verification.'
+              : `Account ${profile.status}.`
+            : '',
+        );
+      } catch {
+        if (seq === checkSeq.current) {
+          setHasIdCard(null);
+          setCheckMessage('Could not check current status. Try again when connected.');
+        }
+      } finally {
+        if (seq === checkSeq.current) setChecking(false);
+      }
+    },
+    [user.uid, onChecked],
+  );
+  useEffect(() => {
+    const onIssue = () => {
+      const text = takeEntryIssue(user.uid);
+      if (text) setFeedback({ type: 'error', text });
+    };
+    onIssue();
+    const refresh = () => {
+      if (!document.hidden) void check();
+    };
+    window.addEventListener('entry-uploaded', refresh);
+    window.addEventListener('entry-feedback', onIssue);
+    window.addEventListener('online', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    const channel = supabase
+      .channel(`entry-status:${user.uid}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'entry_changes', filter: `user_id=eq.${user.uid}` },
+        refresh,
+      )
+      .subscribe((state) => {
+        if (state === 'SUBSCRIBED') refresh();
+      });
+    refresh();
+    const timer = setInterval(refresh, 60000);
+    return () => {
+      checkSeq.current++;
+      clearInterval(timer);
+      void supabase.removeChannel(channel);
+      window.removeEventListener('entry-uploaded', refresh);
+      window.removeEventListener('online', refresh);
+      window.removeEventListener('entry-feedback', onIssue);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [user.uid, check]);
   // Displayed department & level (updated optimistically on save since profiles isn't realtime)
   const [displayDepartment, setDisplayDepartment] = useState(user.department);
   const [displayLevel, setDisplayLevel] = useState<AcademicLevel>(user.level);
@@ -84,10 +164,6 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
 
   useEffect(() => {
-    setHasIdCard(Boolean(user.idCardPath));
-  }, [user.idCardPath]);
-
-  useEffect(() => {
     setDisplayDepartment(user.department);
     setDisplayLevel(user.level);
   }, [user.department, user.level]);
@@ -101,7 +177,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     setLoadingRecovery(true);
     supabase
       .from('account_recovery')
-      .select('*')
+      .select('email').eq('user_id',authUser.id)
       .limit(1)
       .maybeSingle()
       .then(
@@ -130,14 +206,14 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const isSuspended = user.status === 'suspended';
   const isRejected = user.status === 'rejected';
   const isPending = user.status === 'pending';
-  const isPendingStudent = isPending && user.accountType === 'student' && !user.is_alumni;
+  const isPendingStudent = isPending && user.accountType === 'student';
   const isLecturerRequest =
     user.accountType === 'staff' || user.requestedRole === 'lecturer';
 
   const selectedDuration =
     departments.find((d) => d.name.toLowerCase() === editDepartment.trim().toLowerCase())
       ?.durationYears ?? 4;
-  const availableLevels = levelsForDuration(selectedDuration);
+  const availableLevels:AcademicLevel[] = [...levelsForDuration(selectedDuration),'Class of 2026'];
 
   useEffect(() => {
     if (editingDetails && editLevel && !availableLevels.includes(editLevel)) {
@@ -157,11 +233,11 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     e.preventDefault();
     if (savingDetails) return;
     const cleanDept = editDepartment.trim();
-    if (!cleanDept || cleanDept.length < 2) {
+    if (cleanDept.length < 2 || cleanDept.length > 80 || /[\x00-\x1f\x7f]/.test(cleanDept)) {
       setDetailsError('Please select your department.');
       return;
     }
-    if (!editLevel) {
+    if (!editLevel || !availableLevels.includes(editLevel)) {
       setDetailsError('Please select your level.');
       return;
     }
@@ -235,7 +311,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     if (file.size > MAX_ID_CARD_BYTES) {
       setFeedback({
         type: 'error',
-        text: 'ID card file exceeds the 3 MB limit. Please pick a smaller image.',
+        text: 'Verification file exceeds the 3 MB limit. Please pick a smaller image.',
       });
       return;
     }
@@ -243,7 +319,9 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     setUploadingIdCard(true);
     setFeedback(null);
     try {
-      await uploadIdCardFile(user.uid, file);
+      await uploadIdCardFile(user.uid,file,isLecturerRequest?staffPath:undefined);
+      if(isRejected){const {error}=await supabase.rpc('resubmit_signup');if(error)throw error;}
+      void check();
       setHasIdCard(true);
       setUploadedFileName(file.name);
       setFeedback({
@@ -274,7 +352,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     ? 'Account Suspended'
     : isRejected
       ? 'Registration Not Approved'
-      : isLecturerRequest
+      : hasIdCard===null ? 'Verification Status' : !hasIdCard ? 'Finish Verification' : isLecturerRequest
         ? 'Pending Admin Verification'
         : 'Waiting for Approval';
 
@@ -283,8 +361,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const description = isSuspended
     ? 'Your GSU Connect account has been suspended by an administrator due to a moderation review. You cannot read or send messages while suspended.'
     : isRejected
-      ? 'Your registration could not be verified by your department approver or administrator. Please contact your Class Rep or Administrator if this was a mistake.'
-      : 'Your registration has been received.';
+      ? (isLecturerRequest ? 'An admin could not verify your staff registration. Check the reason or contact support.' : 'Your registration could not be verified. Check the reason or contact your class rep or admin.')
+      : hasIdCard===null ? 'Check whether your proof has reached the review queue.' : hasIdCard ? 'Your proof has been submitted.' : 'Your account exists. Complete verification below to enter the review queue.';
 
   const statusBadgeClass =
     user.status === 'approved'
@@ -309,11 +387,13 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 px-4 py-3 text-left space-y-1">
             <p className="text-xs font-bold text-slate-900 dark:text-slate-100">What happens next</p>
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              Your account will be reviewed by your department helper, class rep, or an admin — as soon as possible. To speed things up, ask your class rep or department helper to approve you. You&apos;ll get full access as soon as it&apos;s approved; this page updates automatically, so no need to refresh.
+              {hasIdCard ? (isLecturerRequest ? 'An admin will review your staff submission.' : 'An authorized reviewer will check your submission.') : 'You can return later. Your account cannot enter the workspace before approval.'}
             </p>
           </div>
         )}
 
+        <button type="button" disabled={checking} onClick={()=>void check(true)} className="min-h-[44px] font-semibold text-emerald-700">Check status</button>
+        <p role="status">{checkMessage}</p>
         {(isRejected || isSuspended) && (
           <div className="space-y-2.5 text-left">
             {user.rejectionReason && (
@@ -334,13 +414,16 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           </div>
         )}
 
-        {!isSuspended && authUser && (
+        {!isSuspended && authUser && isLecturerRequest && <><StaffPathPicker value={staffPath} onChange={setStaffPath}/>
+          {method && <p>Evidence received: {method}. Final admin review is required.</p>}
+          <StaffProofAction path={staffPath} state={vouchState} onUpdate={()=>void check()}/></>}
+        {!isSuspended && authUser && (!isLecturerRequest || staffPath==='id' || staffPath==='document') && (
           <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2 text-left">
             <div className="flex items-start justify-between gap-3">
               <div className="flex items-start gap-2.5 min-w-0">
                 <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
                 <div className="min-w-0 space-y-1">
-                  {hasIdCard ? (
+                  {user.idCardPath ? (
                     <>
                       <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug break-all">
                         {attachedFileName || 'Attached verification file'}
@@ -353,11 +436,10 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     <>
                       <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
                         {user.accountType === 'staff'
-                          ? 'Staff ID Card'
-                          : 'Upload Student ID Card or Course Registration Form'}
+                          ? staffProof : studentProof}
                       </p>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        Helps approvers verify you faster (max 3 MB)
+                        Required for review · JPEG, PNG, WebP or PDF · max 3 MB
                       </p>
                     </>
                   )}
@@ -366,7 +448,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               <input
                 ref={idCardInputRef}
                 type="file"
-                accept="image/*,application/pdf"
+                accept={(isLecturerRequest && staffPath==='id'?proofTypes.filter(t=>t.startsWith('image/')):proofTypes).join(',')}
                 onChange={handleUploadIdCard}
                 className="hidden"
               />
@@ -378,19 +460,19 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>
-                  {uploadingIdCard ? 'Uploading...' : hasIdCard ? 'Replace' : 'Upload'}
+                  {uploadingIdCard ? 'Uploading...' : isRejected ? 'Upload & resubmit' : hasIdCard ? 'Replace' : 'Upload'}
                 </span>
               </button>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-              Only your reviewer can view this file. It is deleted after your account is approved.
+              Private verification file. Replaced copies are also scheduled for deletion after approval.
             </p>
           </div>
         )}
 
         {feedback && (
           <div
-            role="status"
+            role={feedback.type === 'error' ? 'alert' : 'status'}
             className={`rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed text-left ${
               feedback.type === 'error'
                 ? 'bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 text-red-800 dark:text-red-300'
@@ -487,7 +569,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     <option value="">Select level</option>
                     {availableLevels.map((lvl) => (
                       <option key={lvl} value={lvl}>
-                        {lvl} Level
+                        {lvl==='Class of 2026'?'Graduate — Class of 2026':`${lvl} Level`}
                       </option>
                     ))}
                   </select>
@@ -532,24 +614,24 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           )}
 
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between gap-3">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1">
               <span className="text-slate-500 dark:text-slate-400">Recovery Email</span>
+              {!editingRecovery && (
+                <span className="text-right text-sm font-medium text-slate-900 dark:text-slate-100 break-all">
+                  {loadingRecovery ? 'Loading...' : recoveryEmail || 'Not set'}
+                </span>
+              )}
               {!editingRecovery && authUser && !loadingRecovery && (
                 <button
                   type="button"
                   onClick={handleOpenEditRecovery}
-                  className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                  className="col-start-2 justify-self-end text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <Edit3 className="w-3 h-3" />
                   <span>Edit details</span>
                 </button>
               )}
             </div>
-            {!editingRecovery && (
-              <p className="text-sm font-medium text-slate-900 dark:text-slate-100 break-all">
-                {loadingRecovery ? 'Loading...' : recoveryEmail || 'Not set'}
-              </p>
-            )}
             {editingRecovery && (
               <form onSubmit={handleSaveRecovery} className="space-y-2 pt-0.5">
                 <div className="flex items-center gap-2">
@@ -596,7 +678,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${statusBadgeClass}`}
             >
-              {user.status}
+              {isPending && hasIdCard===null?'Unconfirmed':isPending && !hasIdCard?'Incomplete':user.status}
             </span>
           </div>
         </div>
