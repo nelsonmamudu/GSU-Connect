@@ -300,38 +300,24 @@ async function removeStorageObjectBestEffort(
   }
 }
 
-const signedUrlCache = new Map<string, { url: string; expiresAt: number }>();
-
-async function createCachedSignedUrl(
-  bucket: 'chat-files' | 'id-cards',
-  storagePath: string,
-  expiresInSec = 3600
+async function signPrivateObject(
+  bucket: 'chat-files' | 'id-cards', storagePath: string
 ): Promise<string> {
   const clean = storagePath.trim();
   if (!clean) return '';
-  if (isDirectUrlOrDataUri(clean)) return clean;
-
-  const cacheKey = `${bucket}:${clean}`;
-  const cached = signedUrlCache.get(cacheKey);
-  if (cached && cached.expiresAt > Date.now() + 30_000) {
-    return cached.url;
-  }
-
+  if (isDirectUrlOrDataUri(clean)) throw new Error('Private object path required.');
+  const expiresInSec = 120;
   const { data, error } = await supabase.storage
     .from(bucket)
     .createSignedUrl(clean, expiresInSec);
   if (error || !data?.signedUrl) {
     throw new Error(error?.message || 'Unable to generate secure file link.');
   }
-  signedUrlCache.set(cacheKey, {
-    url: data.signedUrl,
-    expiresAt: Date.now() + expiresInSec * 1000,
-  });
   return data.signedUrl;
 }
 
 export async function getSignedChatFileUrl(pathOrUrl: string): Promise<string> {
-  return createCachedSignedUrl('chat-files', pathOrUrl, 3600);
+  return signPrivateObject('chat-files', pathOrUrl);
 }
 
 export async function downloadChatDocument(pathOrUrl: string, fileName: string): Promise<void> {
@@ -343,7 +329,7 @@ export async function downloadChatDocument(pathOrUrl: string, fileName: string):
 }
 
 export async function getSignedIdCardUrl(idCardPath: string): Promise<string> {
-  return createCachedSignedUrl('id-cards', idCardPath, 3600);
+  return signPrivateObject('id-cards', idCardPath);
 }
 
 export { uploadIdCardFile };
@@ -466,6 +452,9 @@ function onSyncSignal(
 // ============================================================
 
 interface ProfileRow {
+  invited?: boolean;
+  proof_method?: string;
+  proof_detail?: string;
   id: string;
   full_name?: string | null;
   status?: string | null;
@@ -718,6 +707,9 @@ export function mapProfileRowToAppUser(
     department: row.department || 'General',
     level: ((row.level as AcademicLevel) || (isStaff ? 'Staff' : '100')),
     role: dbRoleToAppRole(row.role),
+    proofMethod: row.proof_method,
+    proofDetail: row.proof_detail,
+    invited: row.invited === true,
     requestedRole: (isStaff ? 'lecturer' : 'student') as RequestedRole,
     email,
     status: ((row.status as UserStatus) || 'pending'),
@@ -1373,19 +1365,13 @@ export async function getPendingUserIdCardSignedUrl(
 ): Promise<{ url: string; isPdf: boolean } | null> {
   const cleanId = (userId || '').trim();
   if (!cleanId) return null;
-  const { data, error } = await supabase.storage
-    .from('id-cards')
-    .list(cleanId, { limit: 5, sortBy: { column: 'created_at', order: 'desc' } });
-  if (error) {
-    throw new Error(error.message);
-  }
-  const fileObj = (data || []).find((item) => Boolean(item?.name));
-  if (!fileObj?.name) return null;
-  const storagePath = `${cleanId}/${fileObj.name}`;
-  const url = await createCachedSignedUrl('id-cards', storagePath, 3600);
+  const {data:storagePath,error}=await supabase.rpc('review_proof_path',{target:cleanId});
+  if(error)throw new Error(error.message);
+  if(typeof storagePath!=='string')return null;
+  const url = await signPrivateObject('id-cards', storagePath);
   return {
     url,
-    isPdf: fileObj.name.toLowerCase().endsWith('.pdf'),
+    isPdf: storagePath.toLowerCase().endsWith('.pdf'),
   };
 }
 
@@ -4341,6 +4327,12 @@ export function subscribeToWorkspaceData(
   let lastChatFetchAt = 0;
   let chatDebounceTimer: number | null = null;
 
+  const reviewQueue = () => supabase.from('entry_review_queue')
+    .select(`${PUBLIC_PROFILE_COLUMNS},invited,proof_method,proof_detail`)
+    .order('invited', { ascending: false })
+    .order('created_at', { ascending: false })
+    .order('id', { ascending: true });
+
   const refreshProfiles = async () => {
     try {
       const approvedPromise = supabase
@@ -4351,20 +4343,7 @@ export function subscribeToWorkspaceData(
         .limit(USERS_PAGE_SIZE);
 
       const pendingPromise = isReviewer
-        ? (role === 'admin'
-            ? supabase
-                .from('public_profiles')
-                .select(PUBLIC_PROFILE_COLUMNS)
-                .eq('status', 'pending')
-                .order('created_at', { ascending: false })
-                .limit(PENDING_PAGE_SIZE)
-            : supabase
-                .from('public_profiles')
-                .select(PUBLIC_PROFILE_COLUMNS)
-                .eq('status', 'pending')
-                .eq('department', userDept)
-                .order('created_at', { ascending: false })
-                .limit(PENDING_PAGE_SIZE))
+        ? reviewQueue().limit(PENDING_PAGE_SIZE)
         : Promise.resolve({ data: [] as ProfileRow[], error: null });
 
       const allUsersPromise =
@@ -4428,6 +4407,7 @@ export function subscribeToWorkspaceData(
     }
   };
 
+  let elevatedView = false;
   const cachedChatsStorageKey = `gsu_cached_chats_${uid}`;
 
   const hydrateCachedChats = () => {
@@ -4450,6 +4430,7 @@ export function subscribeToWorkspaceData(
   };
 
   const persistCachedChats = (visibleChats: ChatThread[]) => {
+    if (elevatedView) return; // Never persist exceptional access in the offline chat cache.
     writeLocalStorage(
       cachedChatsStorageKey,
       visibleChats.map((c) => ({
@@ -4476,7 +4457,7 @@ export function subscribeToWorkspaceData(
       nextChatMap.set(mapped.id, mapped);
 
       let include = false;
-      if (row.group_type === 'general' || mapped.type === 'general') {
+      if (elevatedView || row.group_type === 'general' || mapped.type === 'general') {
         include = true;
       } else if (row.group_type === 'announcement') {
         include = true;
@@ -4631,10 +4612,12 @@ export function subscribeToWorkspaceData(
   const refreshChatsImmediate = async () => {
     lastChatFetchAt = Date.now();
     try {
-      const [chatsRes, membersRes] = await Promise.all([
+      const [chatsRes, membersRes, access] = await Promise.all([
         supabase.from('chats').select('*').limit(150),
         supabase.from('chat_members').select('*').eq('user_id', uid).limit(150),
+        role === 'admin' ? supabase.rpc('elevated_workspace_access') : Promise.resolve({data:false}),
       ]);
+      elevatedView = access.data === true;
       if (!active) return;
 
       if (chatsRes.error) {
@@ -5010,21 +4993,7 @@ export function subscribeToWorkspaceData(
 
     if (key === 'hasMorePendingUsers' && isReviewer) {
       const from = currentPendingUsers.length;
-      const q =
-        role === 'admin'
-          ? supabase
-              .from('public_profiles')
-              .select(PUBLIC_PROFILE_COLUMNS)
-              .eq('status', 'pending')
-              .order('created_at', { ascending: false })
-              .range(from, from + PENDING_PAGE_SIZE - 1)
-          : supabase
-              .from('public_profiles')
-              .select(PUBLIC_PROFILE_COLUMNS)
-              .eq('status', 'pending')
-              .eq('department', userDept)
-              .order('created_at', { ascending: false })
-              .range(from, from + PENDING_PAGE_SIZE - 1);
+      const q = reviewQueue().range(from, from + PENDING_PAGE_SIZE - 1);
       const { data, error } = await q;
       if (error) throw new Error(error.message);
       if (!active || !Array.isArray(data)) return;

@@ -1,3 +1,5 @@
+import {StaffPathPicker,type StaffPath} from './StaffVerification';
+import {studentProof,staffProof,graduateClass,proofTypes} from '../utils/proof';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
@@ -70,7 +72,8 @@ interface AuthScreenProps {
 }
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [mode, setMode] = useState<AuthMode>(new URLSearchParams(location.search).has('invite')?'signup':'login');
+  const [staffPath,setStaffPath]=useState<StaffPath>('email');
   const [accountType, setAccountType] = useState<AccountType>('student');
   const [fullName, setFullName] = useState('');
   const [idNumber, setIdNumber] = useState('');
@@ -83,13 +86,37 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [sessionEndYear, setSessionEndYear] = useState<number | null>(null);
-  const [sessionLabel, setSessionLabel] = useState('2026/2027');
+  const [signupNotice, setSignupNotice] = useState('');
+  const [inviteToken] = useState(() => new URLSearchParams(location.search).get('invite') || '');
+  const [inviteDept, setInviteDept] = useState('');
+  const [ocrHint, setOcrHint] = useState('');
+  const scan = useRef<AbortController | null>(null);
+  useEffect(() => {
+    scan.current?.abort();
+    setOcrHint('');
+    setIdCardFile(null);
+    return () => scan.current?.abort();
+  }, [accountType, mode]);
+  useEffect(() => {
+    let active = true;
+    if (/^[a-f0-9-]{36}$/i.test(inviteToken)) {
+      void supabase.rpc('entry_invite_department', { token: inviteToken }).then(({ data }) => {
+        if (active && typeof data === 'string') {
+          setInviteDept(data);
+          setDepartment((prev) => prev || data);
+        }
+      });
+    }
+    return () => {
+      active = false;
+    };
+  }, [inviteToken]);
+  const [sessionLabel, setSessionLabel] = useState('');
   const [forgotIdentifier, setForgotIdentifier] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
   const idCardInputRef = useRef<HTMLInputElement | null>(null);
 
-  const graduationClassYear = sessionEndYear !== null ? sessionEndYear - 1 : null;
+  const graduationClassYear = graduateClass;
 
   // Load the current academic session end year (e.g. 2027 -> "2026/2027", Graduate Class of 2026).
   useEffect(() => {
@@ -103,7 +130,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         if (!rpcError) {
           const endYear = Number(data);
           if (Number.isFinite(endYear) && endYear > 2000) {
-            setSessionEndYear(endYear);
+
             setSessionLabel(`${endYear - 1}/${endYear}`);
             return;
           }
@@ -148,7 +175,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [department, accountType]);
 
-  const handleSelectIdCard = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
@@ -156,8 +183,44 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
       setError('File exceeds the 3 MB limit. Please choose a smaller photo or PDF.');
       return;
     }
+    if (accountType==='staff' && staffPath==='id' && !file.type.startsWith('image/')) {setError('Choose a staff ID photo, not a PDF.');return;}
+    if (!proofTypes.includes(file.type) || !file.size) {
+      setError('Choose a JPEG, PNG, WebP or PDF.');
+      return;
+    }
     setError(null);
     setIdCardFile(file);
+    scan.current?.abort();
+    const controller = new AbortController();
+    scan.current = controller;
+    setOcrHint('Reading proof on this device. You can type the fields yourself.');
+    const timeout = window.setTimeout(() => {
+      if (!controller.signal.aborted) {
+        controller.abort();
+        setOcrHint('Reading took too long. Enter the details manually.');
+      }
+    }, 45000);
+    try {
+      const fields = await (
+        await import('../utils/proofOcr')
+      ).readProof(
+        file,
+        departments.map((d) => d.name),
+        controller.signal,
+      );
+      if (controller.signal.aborted) return;
+      if (fields.name) setFullName((v) => v || fields.name!);
+      if (accountType === 'student' && fields.matric) setIdNumber((v) => v || fields.matric!);
+      if (fields.department) setDepartment((v) => v || fields.department!);
+      setOcrHint('Check your details and enter any missing fields.');
+    } catch {
+      if (!controller.signal.aborted)
+        setOcrHint(
+          'Could not read this file. Enter your details manually; the file is still attached.',
+        );
+    } finally {
+      window.clearTimeout(timeout);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -172,6 +235,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         await requestPasswordReset(forgotIdentifier);
         setForgotSent(true);
       } else {
+        if(accountType==='staff' && ['id','document'].includes(staffPath) && !idCardFile)throw new Error('Attach your selected proof of staff status, or choose email or vouching.');
         if (!department.trim()) {
           throw new Error(
             accountType === 'staff'
@@ -190,30 +254,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           throw new Error('Please select your level');
         }
         const isGraduateSelected = accountType === 'student' && level === 'graduate';
-        let resolvedGradClassYear = graduationClassYear;
-        if (isGraduateSelected && resolvedGradClassYear === null) {
-          try {
-            const { data, error: rpcError } = await supabase.rpc('session_end_year');
-            const endYear = !rpcError ? Number(data) : NaN;
-            if (Number.isFinite(endYear) && endYear > 2000) {
-              setSessionEndYear(endYear);
-              setSessionLabel(`${endYear - 1}/${endYear}`);
-              resolvedGradClassYear = endYear - 1;
-            }
-          } catch {
-            // Handled below
-          }
-          if (resolvedGradClassYear === null) {
-            throw new Error("Couldn't confirm the current session year. Please try again.");
-          }
-        }
-        const finalNumericLevel =
-          availableLevels[availableLevels.length - 1] ?? ('400' as AcademicLevel);
         const submittedLevel: AcademicLevel =
           accountType === 'staff'
             ? 'Staff'
             : isGraduateSelected
-              ? finalNumericLevel
+              ? 'Class of 2026'
               : (level as AcademicLevel);
 
         await signUpUser({
@@ -226,13 +271,20 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           recoveryEmail: email,
           phone,
           idCardFile,
-          ...(isGraduateSelected && resolvedGradClassYear !== null
+          staffPath: accountType==='staff'?staffPath:undefined,
+          inviteToken: accountType==='student' && department===inviteDept ? inviteToken : undefined,
+          ...(isGraduateSelected
             ? {
                 isGraduate: true,
-                graduationClassYear: resolvedGradClassYear,
+                graduationClassYear,
               }
             : {}),
         });
+        // Signup and a usable session are separate outcomes (e.g. auth configuration changes).
+        if (!(await supabase.auth.getSession()).data.session) {
+          setMode('login');setPassword('');
+          setSignupNotice('Sign in to finish verification. Creating an account alone does not submit it for review.');
+        }
       }
     } catch (err) {
       setError(formatAuthError(err));
@@ -365,6 +417,55 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       </div>
                     </div>
 
+                    {accountType==='student' && inviteToken && <p role="status">{inviteDept ? `Class rep invitation: ${inviteDept}. Review is still required.` : 'Unconfirmed invitation. You can register normally.'}</p>}
+                    {accountType==='staff' && <StaffPathPicker value={staffPath} onChange={v=>{setStaffPath(v);setIdCardFile(null);scan.current?.abort();setOcrHint('');}}/>}
+                    {(accountType==='student' || staffPath==='id' || staffPath==='document') && (
+                    <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2">
+                      <div className="flex items-start gap-2">
+                        <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+                        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+                          {accountType === 'staff'
+                            ? staffProof : studentProof}{' '}
+                          <span className="font-normal text-slate-500 dark:text-slate-400">{accountType==='staff'?'(Required)':'(Required for review; upload now or later)'}</span>
+                        </span>
+                      </div>
+                      <input
+                        ref={idCardInputRef}
+                        type="file"
+                        accept={(accountType==='staff' && staffPath==='id'?proofTypes.filter(t=>t.startsWith('image/')):proofTypes).join(',')}
+                        onChange={handleSelectIdCard}
+                        className="hidden"
+                      />
+                      <div>
+                        {idCardFile ? (
+                          <button
+                            type="button"
+                            onClick={() => {scan.current?.abort();setOcrHint('');setIdCardFile(null);}}
+                            className="text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                            <span>Remove</span>
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => idCardInputRef.current?.click()}
+                            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+                          >
+                            Choose File
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {idCardFile
+                          ? `Selected: ${idCardFile.name} (${formatFileSize(idCardFile.size)})`
+                          : 'JPEG, PNG, WebP or PDF, up to 3 MB. Redact unrelated personal information.'}
+                      </p>
+                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {ocrHint || 'Only you and authorized reviewers can access your proof.'}
+                      </p>
+                    </div>
+                    )}
                     <div>
                       <label htmlFor="fullName" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                         Full Name
@@ -384,6 +485,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   </>
                 )}
 
+                {mode==='login' && signupNotice && <p role="status">{signupNotice}</p>}
                 <div>
                   <label htmlFor="idNumber" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {mode === 'login'
@@ -402,7 +504,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                     onChange={(e) => setIdNumber(e.target.value)}
                     placeholder={
                       mode === 'login'
-                        ? 'Matric, Staff ID, phone or email'
+                        ? 'Your identifier'
                         : accountType === 'staff'
                           ? 'e.g. GSU/STF/1042'
                           : 'e.g. UG21/CS/1001'
@@ -455,20 +557,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                                 </option>
                               ))}
                               <option value="graduate">
-                                {graduationClassYear !== null
-                                  ? `Graduate — Class of ${graduationClassYear}`
-                                  : 'Graduate (previous session)'}
+                                Graduate — Class of {graduationClassYear}
                               </option>
                             </select>
                             <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                           </div>
                           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                            Choose your current level for the {sessionLabel} session. If you
-                            completed your programme in the previous session, choose{' '}
-                            {graduationClassYear !== null
-                              ? `Graduate — Class of ${graduationClassYear}`
-                              : 'Graduate (previous session)'}
-                            .
+                            Select your actual level{sessionLabel ? ` for ${sessionLabel}` : ''}, not the level on an older document.
                           </p>
                         </div>
                       )}
@@ -520,55 +615,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       </p>
                     </div>
 
-                    {/* Student ID Card or Course Registration Form upload */}
-                    <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2">
-                      <div className="flex items-start gap-2">
-                        <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
-                          {accountType === 'staff'
-                            ? 'Staff ID Card Photo'
-                            : 'Student ID Card or Course Registration Form'}{' '}
-                          <span className="font-normal text-slate-500 dark:text-slate-400">(Optional)</span>
-                        </span>
-                      </div>
-                      <input
-                        ref={idCardInputRef}
-                        type="file"
-                        accept="image/*,application/pdf"
-                        onChange={handleSelectIdCard}
-                        className="hidden"
-                      />
-                      <div>
-                        {idCardFile ? (
-                          <button
-                            type="button"
-                            onClick={() => setIdCardFile(null)}
-                            className="text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                            <span>Remove</span>
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => idCardInputRef.current?.click()}
-                            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
-                          >
-                            Choose File
-                          </button>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        {idCardFile
-                          ? `Selected: ${idCardFile.name} (${formatFileSize(idCardFile.size)})`
-                          : accountType === 'staff'
-                            ? 'Attach your staff ID card (max 3 MB) to speed up verification by an admin.'
-                            : 'Attach your student ID card or course registration form (max 3 MB) to speed up verification. 100 level students without an ID card yet can upload their course registration form.'}
-                      </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        Only your reviewer can view this file. It is deleted after your account is approved.
-                      </p>
-                    </div>
                   </>
                 )}
 
@@ -689,7 +735,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       maxLength={120}
                       value={forgotIdentifier}
                       onChange={(e) => setForgotIdentifier(e.target.value)}
-                      placeholder="Matric, Staff ID, phone or email"
+                      placeholder="Your identifier"
                       className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm font-mono focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
                     />
                   </div>

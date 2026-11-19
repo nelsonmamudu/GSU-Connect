@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Award,
@@ -170,7 +171,24 @@ export const AdminView: React.FC<AdminViewProps> = ({
   );
   const [toastNowMs, setToastNowMs] = useState<number>(() => Date.now());
 
+  const [canDecide,setCanDecide]=useState(false);
+  const [caseId,setCaseId]=useState(''),[caseStatus,setCaseStatus]=useState('pending'),[caseReason,setCaseReason]=useState('');
+  useEffect(()=>{let active=true;setCanDecide(false);if(isAdmin)void supabase.rpc('elevated_workspace_access').then(({data})=>{if(active)setCanDecide(data===true)});return()=>{active=false}},[isAdmin,currentUser.uid]);
+  async function decideCase(){setBusyId(caseId);try{const {error}=await supabase.rpc('administrative_decision',{target:caseId,decision:caseStatus,reason:caseReason});if(error)throw error;setCaseId('');setCaseReason('');setUserBanner('Decision recorded.');}catch(e){setAdminError(e && typeof e==='object' && 'message' in e ? String(e.message):'Could not record decision.');}finally{setBusyId(null);}}
   const [adminError, setAdminError] = useState<string | null>(null);
+  const [cohortNotice, setCohortNotice] = useState('');
+  const cohortPicker = (user: AppUser) => (
+    <label className="text-xs">Confirm current level with the department{' '}
+      <select defaultValue="" aria-label={`Confirm cohort for ${user.fullName}`} onChange={async e => {
+        const level = e.currentTarget.value;
+        e.currentTarget.value = '';
+        if (!level) return;
+        const { error } = await supabase.rpc('confirm_review_level', {target:user.uid, confirmed_level:level});
+        if (error) setAdminError(error.message);
+        else setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);
+      }}><option value="">Choose level</option>{(user.level==='Class of 2026'?['Class of 2026']:['100','200','300','400','500','600']).map(level => <option key={level}>{level}</option>)}</select>
+    </label>
+  );
   const bannerTimerRef = useRef<number | null>(null);
   const queuedDecisionsRef = useRef<Map<string, QueuedSignupDecision>>(new Map());
   const isMountedRef = useRef(true);
@@ -253,6 +271,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
     bannerTimerRef.current = window.setTimeout(() => setter(null), ms);
   };
 
+  const [inviteLink, setInviteLink] = useState('');
+  async function issueInvite() {
+    const { data, error } = await supabase.rpc('issue_entry_invite');
+    if (error) {
+      setAdminError(error.message);
+      return;
+    }
+    const link = new URL('/', location.origin);
+    link.searchParams.set('invite', data);
+    setInviteLink(link.href);
+  }
   const scopedPending = useMemo(() => {
     const hiddenIds = new Set<string>();
     queuedDecisions.forEach((q) => hiddenIds.add(q.user.uid));
@@ -264,7 +293,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     // Class reps & dept helpers can only view and approve students in their own department
     return visiblePending.filter(
       (u) =>
-        u.department === currentUser.department &&
+        u.department.trim().toLowerCase() === currentUser.department.trim().toLowerCase() &&
         u.accountType === 'student' &&
         (!u.requestedRole || u.requestedRole === 'student')
     );
@@ -489,7 +518,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           url: null,
           isPdf: false,
           loading: false,
-          error: 'No ID card file was uploaded for this account.',
+          error: 'No verification proof is available for this submission.',
         });
         return;
       }
@@ -506,7 +535,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         url: null,
         isPdf: false,
         loading: false,
-        error: err instanceof Error ? err.message : 'Unable to load ID card.',
+        error: err instanceof Error ? err.message : 'Unable to load verification proof.',
       });
     }
   };
@@ -986,6 +1015,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
           </div>
         </div>
 
+        {currentUser.role==='classRep' && <div><button type="button" onClick={issueInvite}>Generate a 7-day department invite (replaces previous link)</button>
+          {inviteLink && <input aria-label="Share this registration link" readOnly value={inviteLink} onFocus={e=>e.target.select()} />}</div>}
+        {canDecide && inviteLink && <input readOnly aria-label="New registration link" value={inviteLink} onFocus={e=>e.target.select()}/>}
+        {isAdmin && <p className="text-xs">For admin reviews, verify your authenticator in Profile first.</p>}
+        {cohortNotice && <p role="status">{cohortNotice}</p>}
         {!isAdmin && (
           <p className="text-xs text-slate-500 dark:text-slate-400">
             Showing pending student sign-ups for {currentUser.department} (Lecturer requests require an Admin)
@@ -1042,7 +1076,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                                 : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
                             }`}
                           >
-                            Requested: {isLecturerReq ? 'Lecturer' : 'Student'}
+                            {user.invited && 'Rep invite · '}Requested: {isLecturerReq ? 'Lecturer' : 'Student'}
                           </span>
                         </div>
 
@@ -1072,6 +1106,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </div>
                     </div>
 
+                    {!isLecturerReq && (isAdmin || currentUser.role === 'deptHelper') && cohortPicker(user)}
                     {isAdmin && (
                       <div className="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/70 rounded-2xl px-3.5 py-2 border border-slate-100 dark:border-slate-700/80">
                         <label
@@ -1101,14 +1136,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </div>
                     )}
 
-                    <button
+                    {user.proofMethod && <p className="text-sm">Evidence: {user.proofMethod}{user.proofDetail && ` · ${user.proofDetail}`}</p>}
+                    {(!user.proofMethod || ['Uploaded document','Staff ID photo'].includes(user.proofMethod)) && (                    <button
                       type="button"
                       onClick={() => handleOpenIdCardPreview(user)}
                       className="w-full min-h-[38px] px-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/50 border border-emerald-200/70 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      <span>View Uploaded ID Card</span>
-                    </button>
+                      <span>View verification proof</span>
+                    </button>)}
 
                     <div className="flex gap-2">
                       <button
@@ -1394,6 +1430,9 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 shrink-0">
+                      {canDecide && !isSelf && (caseId!==user.uid ? <button type="button" onClick={()=>{setCaseId(user.uid);setCaseReason('');setCaseStatus('pending');}}>Review decision</button> : <div className="space-y-2"><label>Decision for {user.fullName}<select value={caseStatus} onChange={e=>setCaseStatus(e.target.value)}>{['pending','approved','rejected','suspended'].map(v=><option key={v}>{v}</option>)}</select></label><input placeholder="Decision reason" aria-label="Decision reason" maxLength={500} value={caseReason} onChange={e=>setCaseReason(e.target.value)}/><button type="button" disabled={!caseReason.trim() || busyId===caseId} onClick={decideCase}>Record decision</button><button type="button" onClick={()=>setCaseId('')}>Cancel</button></div>)}
+                      {canDecide && user.role==='classRep' && <button type="button" onClick={async()=>{const {data,error}=await supabase.rpc('manage_rep_invite',{rep_id:user.uid});if(error)setAdminError(error.message);else{const link=new URL('/',location.origin);link.searchParams.set('invite',data);setInviteLink(link.href);}}}>Replace department invite</button>}
+                      {isAdmin && user.role==='classRep' && cohortPicker(user)}
                       <select
                         aria-label={`Change department for ${user.fullName}`}
                         value={user.department}
@@ -1767,7 +1806,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 University Email Domain
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
-                Optional GSU email domain suggested during sign-up (e.g., for campus email login). Every student and staff registration stays pending until reviewed and approved by an admin, class rep, or department helper.
+                Optional GSU email domain suggested during sign-up (e.g., for campus email login). Student submissions go to authorized reviewers. Only admins decide lecturer and staff applications. This suggestion does not change the verified staff email domain.
               </p>
             </div>
           </div>
@@ -1954,7 +1993,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
               Are you sure you want to reject{' '}
               <span className="font-semibold text-slate-900 dark:text-slate-100">{rejectTarget.fullName}</span>{' '}
-              ({rejectTarget.idNumber})? Add an optional reason they will see on their Awaiting Approval page:
+              ({rejectTarget.idNumber})? Give a reason they will see on their Awaiting Approval page:
             </p>
 
             <textarea
@@ -1962,7 +2001,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               maxLength={300}
               value={rejectionReasonInput}
               onChange={(e) => setRejectionReasonInput(e.target.value)}
-              placeholder="Optional reason (e.g. Matric number could not be matched with department records.)"
+              placeholder="Required reason (e.g. Matric number could not be matched with department records.)"
               className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
             />
 
@@ -1977,7 +2016,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               </button>
               <button
                 type="button"
-                disabled={busyId === rejectTarget.uid}
+                disabled={busyId === rejectTarget.uid || !rejectionReasonInput.trim()}
                 onClick={() => handleDecision(rejectTarget, 'rejected', rejectionReasonInput)}
                 className="flex-1 min-h-[44px] rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
               >
@@ -2003,7 +2042,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <IdCard className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                 <div className="min-w-0">
                   <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
-                    {idCardModal.user.fullName} — ID Card
+                    {idCardModal.user.fullName} — Verification proof
                   </h3>
                   <p className="text-xs font-mono text-slate-500 dark:text-slate-400 truncate">
                     {idCardModal.user.idNumber}
@@ -2013,7 +2052,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               <button
                 type="button"
                 onClick={() => setIdCardModal(null)}
-                aria-label="Close ID card preview"
+                aria-label="Close verification preview"
                 className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 <X className="w-5 h-5" />
@@ -2023,7 +2062,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 p-3 flex items-center justify-center min-h-[240px]">
               {idCardModal.loading ? (
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Loading secure ID card link...
+                  Loading private verification file...
                 </p>
               ) : idCardModal.error ? (
                 <p className="text-xs text-red-600 dark:text-red-400 text-center">
@@ -2033,13 +2072,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 idCardModal.isPdf ? (
                   <iframe
                     src={idCardModal.url}
-                    title="Uploaded ID Card PDF"
+                    title="Verification document PDF"
                     className="w-full h-[360px] rounded-xl border border-slate-200 dark:border-slate-700"
                   />
                 ) : (
                   <img
                     src={idCardModal.url}
-                    alt={`${idCardModal.user.fullName} ID Card`}
+                    alt={`Verification proof for ${idCardModal.user.fullName}`}
                     className="max-h-[420px] w-auto rounded-xl object-contain"
                   />
                 )

@@ -14,8 +14,6 @@ const PLAYBACK_RATES = [1, 1.5, 2] as const;
 
 function isDirectMediaUrl(value: string): boolean {
   return (
-    value.startsWith('http://') ||
-    value.startsWith('https://') ||
     value.startsWith('data:') ||
     value.startsWith('blob:')
   );
@@ -93,13 +91,16 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
       ? Math.min(100, Math.max(0, (currentTime / effectiveDuration) * 100))
       : 0;
 
-  const togglePlay = () => {
+  const togglePlay = async () => {
     const el = audioRef.current;
     if (!el) return;
     setPlaybackError(false);
     if (isPlaying) {
       el.pause();
       return;
+    }
+    if (!isDirectMediaUrl(src) && (el.error || !el.readyState)) {
+      try { el.src = await getSignedChatFileUrl(src); } catch {setPlaybackError(true);return;}
     }
     el.playbackRate = playbackRate;
     window.dispatchEvent(new CustomEvent(VOICE_PLAY_EVENT, { detail: { id: playerId } }));
