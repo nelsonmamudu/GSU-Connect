@@ -8,6 +8,8 @@ import {
   ChevronRight,
   Flame,
   GraduationCap,
+  House,
+  Compass,
   Mail,
   Megaphone,
   Menu,
@@ -81,6 +83,15 @@ const LazyStatusGateScreen = React.lazy(() =>
 const LazyChatsView = React.lazy(() =>
   import('./components/ChatsView').then((m) => ({ default: m.ChatsView }))
 );
+const LazyTodayView = React.lazy(() =>
+  import('./components/WorkspaceHomeViews').then((m) => ({ default: m.TodayView }))
+);
+const LazyStudyHubView = React.lazy(() =>
+  import('./components/WorkspaceHomeViews').then((m) => ({ default: m.StudyHubView }))
+);
+const LazyCampusHubView = React.lazy(() =>
+  import('./components/WorkspaceHomeViews').then((m) => ({ default: m.CampusHubView }))
+);
 const LazyAnnouncementsView = React.lazy(() =>
   import('./components/AnnouncementsView').then((m) => ({ default: m.AnnouncementsView }))
 );
@@ -131,7 +142,10 @@ const DEFAULT_PAGINATION_STATE: WorkspacePaginationState = {
 };
 
 type AppTab =
+  | 'today'
   | 'chats'
+  | 'study'
+  | 'campus'
   | 'statuses'
   | 'repository'
   | 'marketplace'
@@ -193,7 +207,7 @@ function MainApp() {
   const [verifyingAlumni, setVerifyingAlumni] = useState(false);
   const [verifyAlumniError, setVerifyAlumniError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] = useState<AppTab>('chats');
+  const [activeTab, setActiveTab] = useState<AppTab>('today');
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const activeChatIdRef = useRef<string | null>(null);
 
@@ -991,16 +1005,19 @@ function MainApp() {
     badge?: number;
     dot?: boolean;
   }[] = [
+    { id: 'today', label: 'Today', icon: House },
     { id: 'chats', label: 'Chats', icon: MessageSquare, badge: totalUnreadCount },
-    { id: 'statuses', label: 'Statuses', icon: Sparkles, badge: unviewedStatusCount },
+    { id: 'study', label: 'Study', icon: BookOpen },
+    { id: 'campus', label: 'Campus', icon: Compass },
+    { id: 'profile', label: 'Profile', icon: UserIcon },
+    { id: 'statuses', label: 'Student updates', icon: Sparkles, badge: unviewedStatusCount },
     { id: 'announcements', label: 'Announcements', icon: Megaphone, dot: hasUnreadAnnouncements },
     { id: 'rides', label: 'Rides & Errands', icon: Car },
-    { id: 'confessions', label: 'Confessions', icon: Flame, badge: pendingConfessionsCount },
+    { id: 'confessions', label: 'Community', icon: Flame, badge: pendingConfessionsCount },
     { id: 'repository', label: 'Repository', icon: BookOpen },
     { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag },
     { id: 'calendar', label: 'Calendar', icon: CalendarDays },
     { id: 'people', label: 'People', icon: Users },
-    { id: 'profile', label: 'Profile', icon: UserIcon },
   ];
 
   if (hasAdminTab) {
@@ -1012,17 +1029,11 @@ function MainApp() {
     });
   }
 
-  const mobileCoreTabs: AppTab[] = [
-    'chats',
-    'repository',
-    'marketplace',
-    'calendar',
-    'people',
-    'profile',
-  ];
+  const primaryTabs: AppTab[] = ['today', 'chats', 'study', 'campus', 'profile'];
+  const mobileCoreTabs = primaryTabs;
   const mobileDrawerSecondaryTabs: AppTab[] = hasAdminTab
-    ? ['statuses', 'announcements', 'rides', 'confessions', 'admin']
-    : ['statuses', 'announcements', 'rides', 'confessions'];
+    ? ['calendar', 'repository', 'announcements', 'statuses', 'people', 'marketplace', 'rides', 'confessions', 'admin']
+    : ['calendar', 'repository', 'announcements', 'statuses', 'people', 'marketplace', 'rides', 'confessions'];
   const drawerHasAttention =
     unviewedStatusCount > 0 ||
     hasUnreadAnnouncements ||
@@ -1031,30 +1042,24 @@ function MainApp() {
   const drawerAttentionCount =
     unviewedStatusCount + pendingConfessionsCount + adminBadgeCount;
 
-  const pageTitle =
-    activeTab === 'chats'
-      ? 'Chats'
-      : activeTab === 'statuses'
-        ? 'Campus Statuses'
-        : activeTab === 'rides'
-          ? 'Rides & Errands'
-          : activeTab === 'confessions'
-            ? 'GSU Confessions'
-            : activeTab === 'repository'
-              ? 'Repository'
-              : activeTab === 'marketplace'
-                ? 'Marketplace'
-                : activeTab === 'calendar'
-                  ? 'Calendar & Timetable'
-                  : activeTab === 'announcements'
-                    ? 'Announcements'
-                    : activeTab === 'people'
-                      ? 'People'
-                      : activeTab === 'profile'
-                        ? 'Profile'
-                        : currentUser.role === 'admin'
-                          ? 'Admin & Moderation'
-                          : 'Department Approvals';
+  const pageTitles: Record<Exclude<AppTab, 'admin'>, string> = {
+    today: 'Today',
+    chats: 'Chats',
+    study: 'Study',
+    campus: 'Campus',
+    statuses: 'Student updates',
+    repository: 'Repository',
+    marketplace: 'Marketplace',
+    rides: 'Rides & Errands',
+    confessions: 'Community',
+    calendar: 'Calendar & Timetable',
+    announcements: 'Announcements',
+    people: 'People',
+    profile: 'Profile',
+  };
+  const pageTitle = activeTab === 'admin'
+    ? currentUser.role === 'admin' ? 'Admin & Moderation' : 'Department Approvals'
+    : pageTitles[activeTab];
 
   const hideMobileBottomBar = activeTab === 'chats' && activeChatId !== null;
 
@@ -1078,8 +1083,10 @@ function MainApp() {
             </span>
           </div>
 
-          <nav className="space-y-1">
-            {navItems.map((item) => {
+          <nav aria-label="Primary navigation" className="space-y-1">
+            <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Workspace</p>
+          {primaryTabs.map((tabId) => {
+            const item = navItems.find((navItem) => navItem.id === tabId)!;
               const Icon = item.icon;
               const isActive = activeTab === item.id;
               return (
@@ -1116,6 +1123,23 @@ function MainApp() {
                 </button>
               );
             })}
+            {hasAdminTab && (() => {
+              const item = navItems.find((navItem) => navItem.id === 'admin')!;
+              const Icon = item.icon;
+              const isActive = activeTab === 'admin';
+              return (
+                <button
+                  type="button"
+                  onClick={() => handleSelectTab('admin')}
+                  className={`mt-4 w-full min-h-[44px] px-3.5 rounded-2xl flex items-center justify-between text-sm font-semibold transition-colors cursor-pointer ${
+                    isActive ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80'
+                  }`}
+                >
+                  <span className="flex items-center gap-3"><Icon className="w-5 h-5 text-slate-400" /><span>{item.label}</span></span>
+                  {item.badge ? <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-emerald-700 text-white text-[11px] font-mono font-bold flex items-center justify-center">{item.badge > 99 ? '99+' : item.badge}</span> : null}
+                </button>
+              );
+            })()}
           </nav>
         </div>
 
@@ -1325,6 +1349,54 @@ function MainApp() {
             hideMobileBottomBar ? 'pb-3 lg:pb-6' : 'pb-24 md:pb-6'
           }`}
         >
+          {activeTab === 'today' && (
+            <React.Suspense fallback={<div className="p-8 text-sm text-slate-500">Loading your campus overview...</div>}>
+              <LazyTodayView
+                currentUser={currentUser}
+                calendarEvents={calendarEvents}
+                announcements={announcements}
+                chats={chats}
+                unreadCounts={unreadCounts}
+                resources={resources}
+                statuses={statuses}
+                marketplaceListings={marketplaceListings}
+                rideErrands={rideErrands}
+                onNavigate={handleSelectTab}
+              />
+            </React.Suspense>
+          )}
+          {activeTab === 'study' && (
+            <React.Suspense fallback={<div className="p-8 text-sm text-slate-500">Loading study tools...</div>}>
+              <LazyStudyHubView
+                currentUser={currentUser}
+                calendarEvents={calendarEvents}
+                announcements={announcements}
+                chats={chats}
+                unreadCounts={unreadCounts}
+                resources={resources}
+                statuses={statuses}
+                marketplaceListings={marketplaceListings}
+                rideErrands={rideErrands}
+                onNavigate={handleSelectTab}
+              />
+            </React.Suspense>
+          )}
+          {activeTab === 'campus' && (
+            <React.Suspense fallback={<div className="p-8 text-sm text-slate-500">Loading campus hub...</div>}>
+              <LazyCampusHubView
+                currentUser={currentUser}
+                calendarEvents={calendarEvents}
+                announcements={announcements}
+                chats={chats}
+                unreadCounts={unreadCounts}
+                resources={resources}
+                statuses={statuses}
+                marketplaceListings={marketplaceListings}
+                rideErrands={rideErrands}
+                onNavigate={handleSelectTab}
+              />
+            </React.Suspense>
+          )}
           {activeTab === 'chats' && (
             <React.Suspense
               fallback={
@@ -1599,7 +1671,7 @@ function MainApp() {
       {!hideMobileBottomBar && (
         <nav
           aria-label="Primary navigation"
-          className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 pb-safe grid grid-cols-6 h-16 px-0.5"
+          className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 pb-safe grid grid-cols-5 h-16 px-1"
         >
           {mobileCoreTabs.map((tabId) => {
             const item = navItems.find((n) => n.id === tabId)!;
@@ -1706,7 +1778,7 @@ function MainApp() {
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-2">
                   <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Updates & Controls
+                    More campus tools
                   </p>
                   {drawerAttentionCount > 0 && (
                     <span className="text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400">
