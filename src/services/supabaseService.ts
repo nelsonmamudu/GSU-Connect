@@ -4327,8 +4327,7 @@ export function subscribeToWorkspaceData(
 
   const reviewQueue = () => supabase.from('entry_review_queue')
     .select(`${PUBLIC_PROFILE_COLUMNS},invited,proof_method,proof_detail`)
-    .order('invited', { ascending: false })
-    .order('created_at', { ascending: false })
+    .order('created_at', { ascending: true })
     .order('id', { ascending: true });
 
   const refreshProfiles = async () => {

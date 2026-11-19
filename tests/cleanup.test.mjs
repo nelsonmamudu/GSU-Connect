@@ -44,6 +44,11 @@ test('worker is authenticated and retries failed Storage API deletion before ack
   try {
     assert.equal(await run('wrong'), 401);
     assert.equal(requests, 0);
+    process.env.ENABLE_PROOF_CLEANUP = 'true';
+    process.env.VERCEL_ENV = 'production';
+    assert.equal(await run('fixture-secret'), 503);
+    assert.equal(requests, 0);
+    process.env.VERCEL_ENV = 'development';
     assert.equal(await run('fixture-secret'), 503);
     assert.equal(ack, false);
     fail = false;

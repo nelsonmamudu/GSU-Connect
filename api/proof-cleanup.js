@@ -8,6 +8,9 @@ export default async function handler(req, res) {
   const expected = Buffer.from(`Bearer ${secret}`);
   if (!secret || supplied.length !== expected.length || !timingSafeEqual(supplied, expected))
     return res.status(401).end();
+  // Freeze: never initialize a Storage client in a production deployment.
+  if (process.env.VERCEL_ENV === 'production' || process.env.ENABLE_PROOF_CLEANUP !== 'true')
+    return res.status(503).json({ error: 'Proof cleanup is paused.' });
   try {
     const db = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
       auth: { persistSession: false, autoRefreshToken: false },

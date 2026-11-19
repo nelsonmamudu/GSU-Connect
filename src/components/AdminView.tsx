@@ -177,18 +177,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
   async function decideCase(){setBusyId(caseId);try{const {error}=await supabase.rpc('administrative_decision',{target:caseId,decision:caseStatus,reason:caseReason});if(error)throw error;setCaseId('');setCaseReason('');setUserBanner('Decision recorded.');}catch(e){setAdminError(e && typeof e==='object' && 'message' in e ? String(e.message):'Could not record decision.');}finally{setBusyId(null);}}
   const [adminError, setAdminError] = useState<string | null>(null);
   const [cohortNotice, setCohortNotice] = useState('');
-  const cohortPicker = (user: AppUser) => (
-    <label className="text-xs">Confirm current level with the department{' '}
-      <select defaultValue="" aria-label={`Confirm cohort for ${user.fullName}`} onChange={async e => {
-        const level = e.currentTarget.value;
-        e.currentTarget.value = '';
-        if (!level) return;
-        const { error } = await supabase.rpc('confirm_review_level', {target:user.uid, confirmed_level:level});
-        if (error) setAdminError(error.message);
-        else setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);
-      }}><option value="">Choose level</option>{(user.level==='Class of 2026'?['Class of 2026']:['100','200','300','400','500','600']).map(level => <option key={level}>{level}</option>)}</select>
-    </label>
-  );
+  const [draftLevels,setDraftLevels]=useState<Record<string,string>>({});
+  const cohortPicker = (user:AppUser) => { const choices=user.level==='Class of 2026'?['Class of 2026']:['100','200','300','400','500','600']; const level=draftLevels[user.uid]??(choices.includes(user.level)?user.level:'');return <div className="flex flex-wrap items-center gap-2 text-xs"><label>Reviewer-confirmed level <select value={level} onChange={e=>setDraftLevels({...draftLevels,[user.uid]:e.target.value})}><option value="">Choose level</option>{choices.map(v=><option key={v}>{v}</option>)}</select></label><button type="button" disabled={!level} onClick={async()=>{const {error}=await supabase.rpc('confirm_review_level',{target:user.uid,confirmed_level:level});if(error)setAdminError(error.message);else setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);}}>Confirm level</button></div>; };
   const bannerTimerRef = useRef<number | null>(null);
   const queuedDecisionsRef = useRef<Map<string, QueuedSignupDecision>>(new Map());
   const isMountedRef = useRef(true);
@@ -1162,7 +1152,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       <button
                         type="button"
                         disabled={busyId === user.uid}
-                        onClick={() => handleDecision(user, 'approved')}
+                        onClick={() => { if (window.confirm(`Approve ${user.fullName} after reviewing their evidence?`)) void handleDecision(user, 'approved'); }}
                         className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Check className="w-4 h-4" />
@@ -1996,6 +1986,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               ({rejectTarget.idNumber})? Give a reason they will see on their Awaiting Approval page:
             </p>
 
+            <label className="text-xs">Quick reason <select defaultValue="" onChange={e=>setRejectionReasonInput(e.target.value)}><option value="">Write a reason or choose one</option>{['Document unreadable','Name or ID does not match','Wrong level selected'].map(v=><option key={v}>{v}</option>)}</select></label>
             <textarea
               rows={3}
               maxLength={300}
@@ -2005,6 +1996,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
             />
 
+            <p className="text-xs break-words">Applicant will see: {rejectionReasonInput.trim() || 'Add a reason above.'}</p>
             <div className="flex gap-2">
               <button
                 type="button"
