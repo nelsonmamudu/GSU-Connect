@@ -14,6 +14,10 @@ export default defineConfig(() => {
     build: {
       rolldownOptions: {
         output: {
+          assetFileNames(asset) {
+            // Tesseract appends /eng.traineddata.gz to langPath.
+            return asset.names.includes('eng.traineddata.gz') ? 'assets/ocr/[name][extname]' : 'assets/[name]-[hash][extname]';
+          },
           manualChunks(id) {
             if (id.includes('node_modules/@supabase/')) {
               return 'vendor-supabase';

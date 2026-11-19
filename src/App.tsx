@@ -1,3 +1,4 @@
+import {StaffVouchInbox} from './components/StaffVerification';
 import React, { Component, ErrorInfo, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
@@ -990,6 +991,7 @@ function MainApp() {
         }
       >
         <LazyStatusGateScreen
+          onChecked={setCurrentUser}
           user={currentUser}
           authUser={authUser}
           departments={effectiveDepartments}
@@ -1349,6 +1351,7 @@ function MainApp() {
             hideMobileBottomBar ? 'pb-3 lg:pb-6' : 'pb-24 md:pb-6'
           }`}
         >
+          {currentUser.accountType==='staff' && <StaffVouchInbox key={currentUser.uid}/>}
           {activeTab === 'today' && (
             <React.Suspense fallback={<div className="p-8 text-sm text-slate-500">Loading your campus overview...</div>}>
               <LazyTodayView
