@@ -11,9 +11,14 @@ export function AdminTotp() {
         setQr(''); setFactor(''); setCode(''); location.reload(); return;
       }
       const list=await supabase.auth.mfa.listFactors(); if(list.error) throw list.error;
-      const existing=list.data.totp[0];
+      const totp = list.data.all.filter(f => f.factor_type === 'totp');
+      const existing = totp.find(f => f.status === 'verified');
       if(existing) {setFactor(existing.id);return;}
-      const res=await supabase.auth.mfa.enroll({factorType:'totp',issuer:'GSU Connect'}); if(res.error) throw res.error;
+      for (const stale of totp.filter(f => f.status === 'unverified')) {
+        const { error } = await supabase.auth.mfa.unenroll({ factorId: stale.id });
+        if (error) throw error;
+      }
+      const res=await supabase.auth.mfa.enroll({factorType:'totp',issuer:'GSU Connect',friendlyName:`GSU Connect (${crypto.randomUUID()})`}); if(res.error) throw res.error;
       setFactor(res.data.id); setQr(res.data.totp.qr_code);
     } catch(e){setMessage(e instanceof Error?e.message:'Verification failed. Try again.');} finally {setBusy(false);}
   }
