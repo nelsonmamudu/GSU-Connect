@@ -1,3 +1,4 @@
+import { AdminTotp } from "./AdminTotp";
 import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
@@ -1016,6 +1017,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </button>
       </div>
 
+      {currentUser.role === "admin" && <AdminTotp />}
       {/* Sign Out */}
       <button
         type="button"
