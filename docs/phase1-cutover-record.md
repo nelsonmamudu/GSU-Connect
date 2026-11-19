@@ -26,3 +26,9 @@ Stopped before export: no authenticated backup/rehearsal runner available here. 
 ## Revised release decision
 
 The release owner deferred the isolated database and Storage backup/rehearsal runner to [backlog issue #6](https://github.com/nelsonmamudu/GSU-Connect/issues/6). This is a deferral, not a successful restore or rehearsal. No snapshot has been certified.
+
+## Production result (supersedes initial hold)
+
+All four checksum-verified migration bodies from `4827330` were applied in order in one transaction under the recorded migration `phase1_entry_cleanup_owner_cutover`. Owner binding, review queue and email RPC verified. Do not replay the individual files with an unattended `db push`; reconcile history before future CLI migrations. Vercel promoted `dpl_4VfwQQV524t5esjwHwKocB5u7UWK`; production root returned 200 and the cleanup endpoint without a bearer returned 401. Staff-email v1 active, APP_URL set; inbox delivery not tested.
+
+Vault URL and random token provisioned. Hosted pg_net grants PUBLIC read access to its request queue; an attempted privilege restriction did not take effect and was rolled back. Follow-up migration `pause_cleanup_dispatch_on_readable_net_queue` (repository equivalent 20261123) disabled the notification trigger and rotated the token. Proof jobs remain durable. Use the daily worker only after securely setting Vercel production CRON_SECRET to the rotated Vault value and verifying SUPABASE_SERVICE_ROLE_KEY. Redeploy the released client after updating variables. Do not re-enable immediate dispatch until the extension owner restricts request headers and effective privileges are retested. No real proof deletion or inbox delivery was used as a smoke test.
