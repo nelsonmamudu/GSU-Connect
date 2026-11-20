@@ -23,11 +23,20 @@ create table public.departments(name text, duration_years integer);
 insert into public.departments values ('CS',4);
 create table phase1_private.cohorts(user_id uuid primary key, department text, level text);
 create function public.dept_duration(d text) returns integer language sql as $$select 4$$;
-create function public.is_admin() returns boolean language sql stable as $$select true$$;
-create function public.can_review(target uuid) returns boolean language sql stable as $$select true$$;
+create function public.is_admin() returns boolean language sql stable as $$select coalesce(current_setting('fixture.is_admin',true),'true')::boolean$$;
+create function public.elevated_workspace_access() returns boolean language sql stable as $$select true$$;
 create function public.is_approved() returns boolean language sql stable as $$select true$$;
-create function public.active_app_session() returns boolean language sql stable as $$select true$$;
+create function phase1_private.evidence(p public.profiles) returns text language sql stable as $$select null$$;
 create function phase1_private.staff(p public.profiles) returns boolean language sql stable as $$select false$$;
+create function public.can_review(target uuid) returns boolean language sql stable security definer set search_path='' as $$
+select public.is_approved() and exists(select from public.profiles p join public.profiles me on me.id=auth.uid()
+ where p.id=target and p.id<>me.id and p.status='pending'
+ and (public.elevated_workspace_access() or phase1_private.evidence(p) is not null)
+ and (public.is_admin() or (not phase1_private.staff(p) and p.role='student' and p.matric_no is not null
+   and nullif(lower(trim(me.department)),'')=lower(trim(p.department))
+   and (me.role='dept_helper' or (me.role='class_rep' and me.level=p.level and me.level in ('100','200','300','400','500','600','Class of 2026'))))))
+$$;
+create function public.active_app_session() returns boolean language sql stable as $$select true$$;
 create function public.session_end_year() returns integer language sql stable as $$select 2027$$;
 
 create function public.handle_new_user() returns trigger language plpgsql as $$
@@ -131,6 +140,27 @@ await asAuth(applicant);
 await assert.rejects(sql(`select public.update_own_pending_details('CS','Class of 2025')`), /Invalid level/);
 await sql(`reset role`);
 
+// ---- Review scope follows the configured cohort ----
+await sql(`insert into public.profiles(id,role,status,department,level,matric_no)
+values ('${id(2)}','class_rep','approved','CS','Class of 2026','UG21/9'),
+       ('${id(3)}','class_rep','approved','CS','200','UG21/8')`);
+const canReviewAs = async (who, target) => {
+  await asAuth(who);
+  const v = (await db.query(`select public.can_review('${target}') as v`)).rows[0].v;
+  await sql(`reset role`);
+  return v;
+};
+await sql(`set fixture.is_admin='false'`);
+assert.equal(await canReviewAs(id(2), applicant), true, 'class rep of the configured cohort may review');
+assert.equal(await canReviewAs(id(3), applicant), false, 'a numeric-level rep cannot review a graduate applicant');
+// Move the cohort: the previous rep loses scope, the new rep gains it.
+await sql(`update public.app_settings set value='2027' where key='graduation_class_year'`);
+assert.equal(await canReviewAs(id(2), applicant), false, 'stale cohort rep loses review scope');
+await sql(`update public.profiles set level='Class of 2027' where id in ('${id(2)}','${applicant}')`);
+assert.equal(await canReviewAs(id(2), applicant), true, 'the new cohort rep gains review scope');
+await sql(`set fixture.is_admin='true'`);
+await sql(`update public.app_settings set value='2026' where key='graduation_class_year'`);
+
 // ---- Without session_end_year the label is derived, never an error ----
 await sql(`drop function public.session_end_year()`);
 const derived = (await db.query(`select public.entry_config() as c`)).rows[0].c;
@@ -151,11 +181,18 @@ await sql(patchedSignup);
 await sql(readFileSync(new URL('../rollback/20261128_graduation_class_config.sql', import.meta.url), 'utf8'));
 const restored = (await db.query(`select pg_get_functiondef('public.handle_new_user()'::regprocedure) as d`)).rows[0].d;
 assert.ok(restored.includes(`v_grad_year <> 2026 or v_role <> 'student'`), 'literal restored');
+const restoredScope = (
+  await db.query(`select pg_get_functiondef('public.can_review(uuid)'::regprocedure) as d`)
+).rows[0].d;
+assert.ok(
+  restoredScope.includes(`me.level in ('100','200','300','400','500','600','Class of 2026')`),
+  'review-scope literal restored',
+);
 assert.equal((await db.query(`select to_regprocedure('public.graduation_class_year()') is null as gone`)).rows[0].gone, true);
 assert.equal((await db.query(`select to_regprocedure('public.entry_config()') is null as gone`)).rows[0].gone, true);
 // The settings table survives a rollback so an operator's configured cohort is not lost.
 assert.equal((await db.query(`select value from public.app_settings where key='graduation_class_year'`)).rows[0].value, '2026');
 
 console.log(
-  'Graduation class config passed: seeded default, entry_config, signup/cohort triggers follow the setting, level confirmation, pending edit, no-session-helper fallback, drift guard and rollback.',
+  'Graduation class config passed: seeded default, entry_config, signup/cohort triggers, review scope, level confirmation, pending edit, no-session-helper fallback, drift guard and rollback.',
 );

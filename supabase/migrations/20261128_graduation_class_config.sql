@@ -1,12 +1,16 @@
 -- Apply AFTER 20261120_entry_flow.sql (and after the owner/staff migration).
 --
--- The graduate cohort was hard-coded as "Class of 2026" in four function bodies
+-- The graduate cohort was hard-coded as "Class of 2026" in five function bodies
 -- and in the client. This moves the year into one service-role setting and
 -- rewrites only the inspected literals, leaving every other statement, grant
 -- and function OID untouched. Baseline drift fails the migration closed.
 begin;
 
--- ============ 1) Service-role-only settings ============
+-- ============ 1) Settings ============
+-- app_settings already existed on this deployment with a deliberate public read
+-- policy (`allowed_email_domain`, `current_session_end_year`), so this migration
+-- adds no new grants and only seeds a non-sensitive key. Writes stay admin-only
+-- through the existing is_admin() policies.
 create table if not exists public.app_settings(
   key text primary key,
   value text not null,
@@ -14,7 +18,7 @@ create table if not exists public.app_settings(
 );
 alter table public.app_settings enable row level security;
 comment on table public.app_settings is
-  'Service-role only deployment settings. No anon/authenticated grants; clients read derived RPCs instead.';
+  'Deployment settings. Existing rows are intentionally readable by anon/authenticated; writes are admin-only. The graduation cohort is read by clients through entry_config(), never by reading this table.';
 
 -- Seed the value this deployment already behaves as. Changing the cohort is a
 -- deliberate later step: update this row, never the function bodies.
@@ -99,7 +103,16 @@ begin
   execute replace(def, $lit$(confirmed_level='Class of 2026') <> (t.level='Class of 2026')$lit$,
                       $lit$(confirmed_level=public.graduate_level_label()) <> (t.level=public.graduate_level_label())$lit$);
 
-  -- 3d. Pending-details edit: the cohort label is data, not a literal.
+  -- 3d. Review scope: a class rep may only review the cohort they belong to.
+  -- Leaving this literal behind would lock review rights to the old class year.
+  def := pg_get_functiondef('public.can_review(uuid)'::regprocedure);
+  if array_length(string_to_array(def, $lit$me.level in ('100','200','300','400','500','600','Class of 2026')$lit$), 1) <> 2 then
+    raise exception 'Unexpected can_review; review baseline before applying graduation config';
+  end if;
+  execute replace(def, $lit$me.level in ('100','200','300','400','500','600','Class of 2026')$lit$,
+                      $lit$me.level in ('100','200','300','400','500','600') or me.level=public.graduate_level_label()$lit$);
+
+  -- 3e. Pending-details edit: the cohort label is data, not a literal.
   def := pg_get_functiondef('public.update_own_pending_details(text,text)'::regprocedure);
   if array_length(string_to_array(def, $lit$if p_level is distinct from 'Class of 2026' then$lit$), 1) <> 2 then
     raise exception 'Unexpected update_own_pending_details; review baseline before applying graduation config';
