@@ -163,7 +163,7 @@ export function recoveryEmailHandler(deps: Dependencies) {
         }
         return reply(
           200,
-          'Recovery email confirmed. Password reset links will now go there.'
+          'This inbox is now your verified recovery address.'
         );
       }
 

@@ -18,6 +18,7 @@ const brevo = async (
     method: 'POST',
     headers: { 'api-key': key, 'Content-Type': 'application/json' },
     body: JSON.stringify({ sender: { email: sender }, to: [{ email: to }], subject, textContent }),
+    signal: AbortSignal.timeout(8000),
   });
   return response.ok;
 };
