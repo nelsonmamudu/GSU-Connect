@@ -1,0 +1,270 @@
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: #f6f7f2;
+  color: #163c35;
+  font: 16px/1.45 system-ui, sans-serif;
+}
+nav {
+  background: #103e36;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px max(16px, calc((100vw - 600px) / 2));
+  gap: 12px;
+}
+nav strong {
+  white-space: nowrap;
+}
+nav strong span {
+  color: #93cfac;
+}
+.pill,
+.badge,
+em {
+  border-radius: 20px;
+  padding: 3px 8px;
+  font: 600 12px/1.3 system-ui;
+  background: #d9edcc;
+  color: #234d38;
+}
+.pill {
+  background: #ffffff17;
+  color: #e3f7cd;
+  border: 1px solid #ffffff38;
+}
+main {
+  max-width: 632px;
+  padding: 18px 16px 60px;
+  margin: auto;
+}
+aside {
+  padding: 10px 14px;
+  background: #edf1ea;
+  border: 1px dashed #b7c7bb;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+aside label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+aside select {
+  width: auto;
+}
+aside small {
+  display: block;
+  margin-top: 5px;
+}
+small {
+  font-size: 12px;
+  color: #52665c;
+}
+.eyebrow {
+  display: block;
+  letter-spacing: 0.13em;
+  color: #42705a;
+  font-weight: 750;
+  margin-top: 22px;
+}
+h1 {
+  font-size: clamp(30px, 8vw, 44px);
+  line-height: 1.05;
+  margin: 8px 0;
+}
+h2 {
+  font-size: 18px;
+  margin: 0;
+}
+p {
+  margin: 10px 0;
+  color: #42584f;
+}
+p:empty {
+  display: none;
+}
+header,
+.actions,
+.zoom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+main > header {
+  margin: 24px 0 10px;
+}
+section,
+.card {
+  border: 1px solid #d2ddd2;
+  border-radius: 14px;
+  background: #fff;
+  padding: 16px;
+  margin: 12px 0;
+}
+button,
+select,
+input,
+textarea {
+  font: inherit;
+  border: 1px solid #bdcdbf;
+  border-radius: 9px;
+  background: #fff;
+  color: inherit;
+  min-height: 44px;
+  padding: 7px 12px;
+}
+button {
+  cursor: pointer;
+  font-weight: 600;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #688e53;
+  outline-offset: 2px;
+}
+.primary {
+  background: #15563f;
+  color: white;
+  border-color: #15563f;
+}
+.filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: 8px;
+  margin-top: 18px;
+}
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 650;
+}
+select,
+input,
+textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 4px 0;
+  font-size: 14px;
+}
+textarea {
+  min-height: 80px;
+}
+.card {
+  display: grid;
+  gap: 4px;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  padding-right: 38px;
+}
+.card strong {
+  font-size: 20px;
+}
+.card > span {
+  color: #53665c;
+  font-size: 14px;
+  font-weight: 400;
+}
+.card > b {
+  position: absolute;
+  right: 14px;
+  top: 40%;
+  color: #648570;
+}
+.card small {
+  font-weight: 500;
+}
+.actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin: 14px 0;
+}
+details {
+  margin-top: 24px;
+}
+summary {
+  cursor: pointer;
+}
+.paper {
+  margin: 12px 0;
+  background: #fffef6;
+  border: 1px solid #d8d6bc;
+  border-top: 5px solid #647456;
+  padding: 1em;
+  overflow-wrap: anywhere;
+  color: #333e30;
+  font-family: Georgia, serif;
+}
+.paper small,
+.paper footer {
+  font-size: 0.7em;
+}
+.paper h2 {
+  font-size: 1.35em;
+  margin: 0.3em 0;
+}
+.paper dt {
+  font-size: 0.8em;
+  color: #555;
+}
+.paper dd {
+  margin: 0 0 0.7em;
+}
+.paper footer {
+  border-top: 1px solid #ddd;
+  padding-top: 0.8em;
+}
+dialog {
+  width: min(420px, calc(100% - 24px));
+  max-height: 92dvh;
+  border: 1px solid #bac9be;
+  border-radius: 16px;
+  padding: 16px;
+  color: inherit;
+}
+dialog::backdrop {
+  background: #132d25aa;
+}
+dialog header {
+  margin-bottom: 12px;
+}
+dialog.wide {
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  background: #f3f4ee;
+}
+.canvas {
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  touch-action: pan-x pan-y pinch-zoom;
+}
+.canvas .paper {
+  margin: 0;
+}
+.zoom {
+  justify-content: center;
+}
+[role="alert"] {
+  color: #982f20;
+}

@@ -143,8 +143,6 @@ const LazyStatusView = React.lazy(() =>
 
 function isDirectImageSrc(src: string): boolean {
   return (
-    src.startsWith('http://') ||
-    src.startsWith('https://') ||
     src.startsWith('data:') ||
     src.startsWith('blob:')
   );

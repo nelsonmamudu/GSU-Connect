@@ -1,3 +1,4 @@
+import { AdminTotp } from './AdminTotp';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertTriangle,
@@ -193,6 +194,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [deletePasswordInput, setDeletePasswordInput] = useState('');
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const [logoutError,setLogoutError] = useState('');
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteManualRequired, setDeleteManualRequired] = useState(false);
 
@@ -950,7 +952,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <span className="font-semibold text-slate-800 dark:text-slate-100">
               Restricted &amp; private info:
             </span>{' '}
-            Only you and authorized approvers (Admins, Class Reps, and Department Helpers) can see your Matric/Staff ID. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Verification ID cards are deleted after approval.
+            Only you and authorized reviewers can see your registration ID. Class reps and department helpers review student submissions only; staff submissions go to admins. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Verification ID cards are deleted within 24 hours after approval.
           </p>
         </div>
       </div>
@@ -1016,17 +1018,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </button>
       </div>
 
+      {currentUser.role === 'admin' && <AdminTotp />}
       {/* Sign Out */}
+      <button type="button" className="min-h-[44px]" onClick={() => signOutUser('local').catch(e=>setLogoutError(e.message))}>Sign out on this device</button>
+      {logoutError && <p role="alert">{logoutError}</p>}
       <button
         type="button"
         onClick={async () => {
           await updateUserLastSeen(currentUser.uid).catch(() => undefined);
-          await signOutUser();
+          await signOutUser('global').catch(e=>setLogoutError(e.message));
         }}
         className="w-full min-h-[48px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 dark:hover:border-red-900/70 hover:text-red-700 dark:hover:text-red-300 text-slate-700 dark:text-slate-200 font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
       >
         <LogOut className="w-4 h-4" />
-        <span>Sign Out</span>
+        <span>Sign out of all devices</span>
       </button>
 
       {/* Delete My Account & Data (NDPA) */}
@@ -1376,11 +1381,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </p>
                 <p>
                   <strong className="text-slate-800 dark:text-slate-100">Cloud Storage &amp; Visibility:</strong>{' '}
-                  Account data, messages, and shared files are stored and processed securely using Supabase cloud database and storage infrastructure. Phone numbers and recovery emails are kept private, and Matric/Staff IDs are visible only to you and authorized approvers (Admins, Class Reps, and Department Helpers). GPA calculator entries and notification preferences are stored locally on your device.
+                  Account data, messages, and shared files are stored in Supabase. Chats are access-controlled, not end-to-end encrypted; authorized administrative moderation is possible. Phone numbers and recovery emails are kept private, and student IDs are visible only to the applicant and authorized reviewers. Staff applications and their proof are restricted to the applicant and admins. A colleague asked to vouch sees the applicant’s name and department, not the application or its files. GPA calculator entries and notification preferences are stored locally on your device.
                 </p>
                 <p>
                   <strong className="text-slate-800 dark:text-slate-100">Data Retention:</strong>{' '}
-                  Verification ID documents are deleted after your account is approved. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
+                  Verification ID documents are deleted within 24 hours after your account is approved. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
                 </p>
                 <p>
                   <strong className="text-slate-800 dark:text-slate-100">Your NDPA Rights:</strong>{' '}

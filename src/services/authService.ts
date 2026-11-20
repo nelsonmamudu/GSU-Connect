@@ -1,3 +1,5 @@
+import { proofTypes } from '../utils/proof';
+import {reportEntryIssue} from './entryFeedback';
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import {
@@ -21,6 +23,8 @@ export interface SignUpInput {
   recoveryEmail: string;
   phone?: string;
   idCardFile?: File | null;
+  staffPath?: 'email'|'id'|'document'|'vouch';
+  inviteToken?: string;
   isGraduate?: boolean;
   graduationClassYear?: number;
 }
@@ -130,33 +134,19 @@ function toTitleCaseName(raw: string): string {
     .join(' ');
 }
 
-function sanitizeStorageFileName(rawName: string): string {
-  const cleaned = rawName
-    .trim()
-    .replace(/[^a-zA-Z0-9._-]/g, '_')
-    .replace(/_+/g, '_');
-  return cleaned.slice(-80) || 'file';
-}
-
-/**
- * Uploads the user's own Student/Staff ID card (or course registration form)
- * to the private `id-cards` bucket (`<userId>/<filename>`) and stores the
- * path in `profiles.id_card_path`.
- */
-export async function uploadIdCardFile(uid: string, file: File): Promise<string> {
-  if (!uid) throw new Error('You must be signed in to upload an ID card.');
+// Always use an opaque path with a MIME-derived extension, not a personal filename.
+export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'id'|'document'|'vouch'): Promise<string> {
+  if (!uid) throw new Error('Sign in to upload verification proof.');
   if (!file || file.size < 1) {
-    throw new Error('Please choose a valid ID card image.');
+    throw new Error('Choose a nonempty proof image or PDF.');
   }
   if (file.size > MAX_ID_CARD_BYTES) {
-    throw new Error('ID card image exceeds the 3 MB limit. Please choose a smaller file.');
+    throw new Error('Verification file exceeds the 3 MB limit. Please choose a smaller file.');
   }
-  const allowedMime = file.type && (file.type.startsWith('image/') || file.type === 'application/pdf');
-  if (file.type && !allowedMime) {
-    throw new Error('ID card must be an image (JPEG, PNG, WebP) or PDF.');
-  }
+  if (!proofTypes.includes(file.type)) throw new Error('Choose a JPEG, PNG, WebP or PDF.');
 
-  const safeName = sanitizeStorageFileName(file.name || 'id_card.jpg');
+  if(kind==='id' && !file.type.startsWith('image/'))throw new Error('Choose a staff ID photo.');
+  const safeName = `${kind==='id'?'staff-id':kind==='document'?'employment':'verification'}.${file.type==='application/pdf' ? 'pdf' : file.type.split('/')[1]}`;
   const storagePath = `${uid}/${crypto.randomUUID()}_${safeName}`;
 
   const { error: uploadError } = await supabase.storage
@@ -175,12 +165,13 @@ export async function uploadIdCardFile(uid: string, file: File): Promise<string>
       id_card_path: storagePath,
       updated_at: new Date().toISOString(),
     })
-    .eq('id', uid);
+    .eq('id', uid).in('status',['pending','rejected']).select('id').single();
 
   if (updateError) {
     throw new Error(updateError.message);
   }
 
+  window.dispatchEvent(new CustomEvent('entry-uploaded',{detail:uid}));
   return storagePath;
 }
 
@@ -307,8 +298,13 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
       throw new Error('Please enter a valid phone number (e.g. 0803 123 4567).');
     }
   }
+  if(input.accountType==='staff') {
+    if(!input.staffPath || !['id','document','vouch','email'].includes(input.staffPath))throw new Error('Choose a staff verification method.');
+    if((input.staffPath==='id'||input.staffPath==='document') && !input.idCardFile)throw new Error('Attach proof of staff status or choose email or vouching.');
+    if(input.staffPath==='id' && !input.idCardFile?.type.startsWith('image/'))throw new Error('Choose a staff ID photo.');
+  }
   if (input.idCardFile && input.idCardFile.size > MAX_ID_CARD_BYTES) {
-    throw new Error('ID card photo exceeds the 3 MB limit. Please pick a smaller image.');
+    throw new Error('Verification file exceeds the 3 MB limit. Please pick a smaller image.');
   }
 
   const isGraduate = input.accountType === 'student' && Boolean(input.isGraduate);
@@ -347,6 +343,8 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
     department,
     level,
     requested_role: requestedRole,
+    staff_proof_route: input.staffPath,
+    ...(input.inviteToken && input.accountType === 'student' ? {entry_invite: input.inviteToken} : {}),
     recovery_email: cleanRecoveryEmail,
     phone: cleanPhone || null,
   };
@@ -377,12 +375,13 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
   let uploadedIdCardPath: string | undefined;
 
   if (input.idCardFile && signUpData.session) {
-    uploadedIdCardPath = await uploadIdCardFile(uid, input.idCardFile).catch((err) => {
-      console.warn('ID card upload warning after signup:', err);
+    uploadedIdCardPath = await uploadIdCardFile(uid, input.idCardFile, input.staffPath).catch((err) => {
+      reportEntryIssue(uid, `Account created. Proof not submitted: ${err instanceof Error ? err.message : 'Upload failed'}. Upload again below.`);
       return undefined;
     });
   }
 
+  if(input.idCardFile && !signUpData.session)reportEntryIssue(uid,'Sign in and upload your proof to finish verification.');
   const nowIso = new Date().toISOString();
   return {
     uid,
@@ -507,9 +506,9 @@ export async function updateRecoveryEmail(
   }
 }
 
-export async function signOutUser(): Promise<void> {
+export async function signOutUser(scope: 'local' | 'global' = 'global'): Promise<void> {
   clearCachedWorkspaceStorage();
-  const { error } = await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope });
   if (error) {
     throw new Error(error.message);
   }

@@ -81,7 +81,7 @@ export interface MyAccountStatus {
   expires_at: string | null;
 }
 export type AccountType = 'student' | 'staff';
-export type AcademicLevel = '100' | '200' | '300' | '400' | '500' | '600' | 'Staff';
+export type AcademicLevel = '100' | '200' | '300' | '400' | '500' | '600' | 'Staff' | 'Class of 2026';
 export type ChatType = 'general' | 'department' | 'custom' | 'dm';
 export type CustomGroupScope = 'all' | 'department' | 'deptLevel' | 'invited';
 export type ReportReason =
@@ -141,6 +141,9 @@ export function canViewMemberIdNumber(
 export type AppTheme = 'light' | 'dark';
 
 export interface AppUser {
+  invited?: boolean;
+  proofMethod?: string;
+  proofDetail?: string;
   uid: string;
   fullName: string;
   idNumber: string;
