@@ -3987,7 +3987,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           className={`relative w-full overflow-hidden rounded-xl border px-3 py-2 text-left transition-colors cursor-pointer disabled:cursor-default ${
                                             isMine
                                               ? isSelected
-                                                ? 'border-white/80 bg-white/20 text-white'
+                                                ? 'border-on-brand bg-on-brand text-brand'
                                                 : 'border-white/25 bg-brand-strong/40 hover:bg-brand-strong/60 text-on-brand'
                                               : isSelected
                                                 ? 'border-brand bg-brand-subtle/70 dark:bg-brand-subtle/40 text-ink'
