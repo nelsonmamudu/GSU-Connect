@@ -63,7 +63,7 @@ export function Field({
           </span>
         )}
         {optional && (
-          <span className="font-normal text-slate-500 dark:text-slate-400">
+          <span className="font-normal text-ink-muted">
             {' '}
             (Optional)
           </span>

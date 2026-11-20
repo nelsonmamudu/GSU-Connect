@@ -486,7 +486,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
   return (
     <div className="h-full overflow-y-auto px-3 py-3 space-y-5">
       {/* My Status Card */}
-      <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 rounded-2xl p-3.5 space-y-3">
+      <div className="bg-sunken dark:bg-sunken/60 border border-line/80 rounded-2xl p-3.5 space-y-3">
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -514,12 +514,12 @@ export const StatusView: React.FC<StatusViewProps> = ({
               }`}
               fallbackClassName={
                 myStatuses.length > 0
-                  ? 'bg-emerald-700 text-white'
-                  : 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
+                  ? 'bg-brand text-white'
+                  : 'bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft'
               }
             />
             {myStatuses.length === 0 && (
-              <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-emerald-700 text-white flex items-center justify-center ring-2 ring-white dark:ring-slate-900">
+              <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-brand text-on-brand flex items-center justify-center ring-2 ring-white dark:ring-surface">
                 <Plus className="w-3 h-3" />
               </span>
             )}
@@ -537,17 +537,17 @@ export const StatusView: React.FC<StatusViewProps> = ({
             className="flex-1 min-w-0 cursor-pointer"
           >
             <div className="flex items-center justify-between gap-2">
-              <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+              <p className="text-sm font-bold text-ink truncate">
                 My Status
               </p>
               {myStatuses.length > 0 && (
-                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand">
                   <Eye className="w-3.5 h-3.5" />
                   {totalMyViews} {totalMyViews === 1 ? 'view' : 'views'}
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+            <p className="text-xs text-ink-muted truncate mt-0.5">
               {myStatuses.length > 0
                 ? `${myStatuses.length} active update${myStatuses.length > 1 ? 's' : ''} · Last ${formatShortTime(myStatuses[myStatuses.length - 1].createdAt)}`
                 : 'Share a 24-hour text or photo campus update'}
@@ -563,7 +563,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               setComposeType('text');
               setComposerOpen(true);
             }}
-            className="flex-1 min-h-[40px] px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="flex-1 min-h-[40px] px-3 rounded-xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
             <Type className="w-3.5 h-3.5" />
             <span>Text Update</span>
@@ -574,9 +574,9 @@ export const StatusView: React.FC<StatusViewProps> = ({
               setComposeError(null);
               photoInputRef.current?.click();
             }}
-            className="flex-1 min-h-[40px] px-3 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+            className="flex-1 min-h-[40px] px-3 rounded-xl bg-surface hover:bg-sunken border border-line text-ink dark:text-ink-soft text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
-            <Camera className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400" />
+            <Camera className="w-3.5 h-3.5 text-brand" />
             <span>Photo Update</span>
           </button>
         </div>
@@ -592,18 +592,18 @@ export const StatusView: React.FC<StatusViewProps> = ({
       {/* Recent Updates (Unviewed) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
             Recent updates
           </span>
-          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+          <span className="text-[11px] font-mono text-ink-muted">
             {recentGroups.length}
           </span>
         </div>
 
         {recentGroups.length === 0 ? (
-          <div className="px-3 py-5 text-center rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 space-y-1.5">
+          <div className="px-3 py-5 text-center rounded-2xl border border-dashed border-line space-y-1.5">
             <Sparkles className="w-5 h-5 text-slate-300 dark:text-slate-600 mx-auto" />
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-ink-muted">
               No unviewed 24-hour updates from GSU members right now.
             </p>
           </div>
@@ -616,7 +616,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   key={group.authorId}
                   type="button"
                   onClick={() => openViewerForAuthor(group.authorId)}
-                  className="w-full px-2.5 py-2.5 rounded-2xl flex items-center gap-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors cursor-pointer"
+                  className="w-full px-2.5 py-2.5 rounded-2xl flex items-center gap-3 text-left hover:bg-sunken dark:hover:bg-sunken/70 transition-colors cursor-pointer"
                 >
                   <UserAvatar
                     name={group.authorName}
@@ -625,18 +625,18 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     size="lg"
                     roundedClass="rounded-full"
                     className="ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
-                    fallbackClassName="bg-emerald-700 text-white"
+                    fallbackClassName="bg-brand text-white"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                      <span className="text-sm font-semibold text-ink truncate">
                         {group.authorName}
                       </span>
-                      <span className="text-[11px] text-emerald-700 dark:text-emerald-400 font-medium shrink-0">
+                      <span className="text-[11px] text-brand font-medium shrink-0">
                         {formatShortTime(latest.createdAt)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                    <p className="text-xs text-ink-muted truncate mt-0.5">
                       {group.authorDepartment} · {group.items.length} update
                       {group.items.length > 1 ? 's' : ''}
                     </p>
@@ -652,10 +652,10 @@ export const StatusView: React.FC<StatusViewProps> = ({
       {viewedGroups.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
               Viewed updates
             </span>
-            <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-mono text-ink-muted">
               {viewedGroups.length}
             </span>
           </div>
@@ -667,7 +667,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   key={group.authorId}
                   type="button"
                   onClick={() => openViewerForAuthor(group.authorId)}
-                  className="w-full px-2.5 py-2.5 rounded-2xl flex items-center gap-3 text-left hover:bg-slate-50 dark:hover:bg-slate-800/70 transition-colors cursor-pointer"
+                  className="w-full px-2.5 py-2.5 rounded-2xl flex items-center gap-3 text-left hover:bg-sunken dark:hover:bg-sunken/70 transition-colors cursor-pointer"
                 >
                   <UserAvatar
                     name={group.authorName}
@@ -676,18 +676,18 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     size="lg"
                     roundedClass="rounded-full"
                     className="ring-2 ring-slate-300 dark:ring-slate-600 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
-                    fallbackClassName="bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200"
+                    fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">
+                      <span className="text-sm font-medium text-ink-soft truncate">
                         {group.authorName}
                       </span>
-                      <span className="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">
+                      <span className="text-[11px] text-ink-muted shrink-0">
                         {formatShortTime(latest.createdAt)}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                    <p className="text-xs text-ink-muted truncate mt-0.5">
                       {group.authorDepartment} · {group.items.length} update
                       {group.items.length > 1 ? 's' : ''}
                     </p>
@@ -705,7 +705,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
             type="button"
             disabled={loadingMore}
             onClick={onLoadMore}
-            className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+            className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
           >
             {loadingMore ? 'Loading more...' : 'Load older status updates'}
           </button>
@@ -720,12 +720,12 @@ export const StatusView: React.FC<StatusViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-2xl space-y-4"
+            className="w-full max-w-md bg-surface border border-line rounded-3xl p-5 shadow-2xl space-y-4"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <Clock className="w-4 h-4 text-brand" />
+                <h3 className="text-base font-bold text-ink">
                   Post 24-Hour Update
                 </h3>
               </div>
@@ -734,13 +734,13 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 disabled={submitting}
                 onClick={() => setComposerOpen(false)}
                 aria-label="Close status composer"
-                className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl w-full">
+            <div className="inline-flex items-center gap-1 p-1 bg-sunken rounded-2xl w-full">
               <button
                 type="button"
                 onClick={() => {
@@ -749,8 +749,8 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 }}
                 className={`flex-1 min-h-[38px] rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   composeType === 'text'
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-400'
+                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    : 'text-ink-body dark:text-ink-muted'
                 }`}
               >
                 Text Card
@@ -763,8 +763,8 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 }}
                 className={`flex-1 min-h-[38px] rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   composeType === 'image'
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-400'
+                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    : 'text-ink-body dark:text-ink-muted'
                 }`}
               >
                 Photo Update
@@ -795,7 +795,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     />
                   </div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <span className="text-xs font-medium text-ink-muted">
                       Background
                     </span>
                     <div className="flex items-center gap-2">
@@ -838,9 +838,9 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="w-full min-h-[160px] rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-emerald-500 flex flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400 cursor-pointer"
+                      className="w-full min-h-[160px] rounded-2xl border-2 border-dashed border-line hover:border-brand flex flex-col items-center justify-center gap-2 text-ink-muted cursor-pointer"
                     >
-                      <Camera className="w-7 h-7 text-emerald-600 dark:text-emerald-400" />
+                      <Camera className="w-7 h-7 text-brand" />
                       <span className="text-xs font-semibold">Tap to select a campus photo</span>
                     </button>
                   )}
@@ -850,7 +850,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     onChange={(e) => setPhotoCaption(e.target.value)}
                     maxLength={250}
                     placeholder="Add an optional caption..."
-                    className="w-full min-h-[44px] px-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    className="w-full min-h-[44px] px-3.5 rounded-2xl bg-sunken border border-line text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-focus"
                   />
                 </>
               )}
@@ -858,7 +858,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               <button
                 type="submit"
                 disabled={submitting || (composeType === 'text' ? !statusText.trim() : !photoBlob)}
-                className="w-full min-h-[44px] rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-sm font-semibold transition-colors cursor-pointer"
+                className="w-full min-h-[44px] rounded-2xl bg-brand hover:bg-brand-strong disabled:opacity-50 text-on-brand text-sm font-semibold transition-colors cursor-pointer"
               >
                 {submitting ? 'Sharing Update...' : 'Share for 24 Hours'}
               </button>
@@ -882,7 +882,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     className="flex-1 h-1 rounded-full bg-white/25 overflow-hidden"
                   >
                     <div
-                      className="h-full bg-white rounded-full transition-[width] duration-75"
+                      className="h-full bg-surface rounded-full transition-[width] duration-75"
                       style={{ width: `${widthPct}%` }}
                     />
                   </div>
@@ -899,7 +899,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   size="sm"
                   roundedClass="rounded-full"
                   className="w-9 h-9"
-                  fallbackClassName="bg-emerald-700 text-white"
+                  fallbackClassName="bg-brand text-white"
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -1057,7 +1057,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 type="button"
                 disabled={replyingDmBusy}
                 onClick={handleReplyAuthorInDm}
-                className="min-h-[42px] px-5 rounded-full bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
+                className="min-h-[42px] px-5 rounded-full bg-brand hover:bg-brand text-on-brand text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>{replyingDmBusy ? 'Opening DM...' : `Reply to ${activeGroup.authorName}`}</span>
@@ -1073,11 +1073,11 @@ export const StatusView: React.FC<StatusViewProps> = ({
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-t-3xl p-5 max-h-[60vh] flex flex-col gap-3 shadow-2xl"
+                className="w-full max-w-md bg-surface text-ink rounded-t-3xl p-5 max-h-[60vh] flex flex-col gap-3 shadow-2xl"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Eye className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                    <Eye className="w-4 h-4 text-brand" />
                     <h4 className="text-sm font-bold">
                       Viewed by ({activeSlideViewers.length})
                     </h4>
@@ -1085,14 +1085,14 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setViewersDrawerOpen(false)}
-                    className="min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    className="min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
                 </div>
 
                 {activeSlideViewers.length === 0 ? (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 py-4 text-center">
+                  <p className="text-xs text-ink-muted py-4 text-center">
                     No views yet. Approved GSU members who view this status will appear here.
                   </p>
                 ) : (
@@ -1100,7 +1100,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     {activeSlideViewers.map((viewer) => (
                       <div
                         key={viewer.uid}
-                        className="flex items-center gap-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/70"
+                        className="flex items-center gap-3 p-2 rounded-xl bg-sunken dark:bg-sunken/70"
                       >
                         <UserAvatar
                           name={viewer.fullName}
@@ -1108,11 +1108,11 @@ export const StatusView: React.FC<StatusViewProps> = ({
                           avatarId={viewer.avatarId}
                           size="sm"
                           roundedClass="rounded-full"
-                          fallbackClassName="bg-emerald-700 text-white"
+                          fallbackClassName="bg-brand text-white"
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold truncate">{viewer.fullName}</p>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                          <p className="text-[11px] text-ink-muted truncate">
                             {viewer.department}
                             {viewer.level || viewer.is_alumni
                               ? ` · ${formatCompactLevelLabel(viewer.level, viewer.is_alumni)}`

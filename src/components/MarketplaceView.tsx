@@ -346,12 +346,12 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       {/* Header & Controls */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="space-y-0.5">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="text-base sm:text-lg font-bold text-ink">
             Campus Marketplace & Noticeboard
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-ink-muted">
             Buy, sell, or swap textbooks, calculators, solar kits, electronics, and Off-Campus (Tumfure) lodge vacancies.
           </p>
         </div>
@@ -359,7 +359,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         <button
           type="button"
           onClick={openPostModal}
-          className="min-h-[44px] px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer"
+          className="min-h-[44px] px-4 rounded-2xl bg-brand hover:bg-brand-strong text-on-brand text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Post Listing</span>
@@ -367,16 +367,16 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
       </div>
 
       {/* Scope Toggle, Search & Category Bar */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="inline-flex p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 self-start">
+          <div className="inline-flex p-1 rounded-2xl bg-sunken self-start">
             <button
               type="button"
               onClick={() => setScopeTab('all')}
               className={`min-h-[38px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'all'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft hover:text-ink dark:hover:text-ink'
               }`}
             >
               All Listings ({listings.length})
@@ -386,20 +386,20 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               onClick={() => setScopeTab('mine')}
               className={`min-h-[38px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'mine'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft hover:text-ink dark:hover:text-ink'
               }`}
             >
               My Listings ({myListingCount})
             </button>
           </div>
 
-          <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 cursor-pointer select-none">
+          <label className="inline-flex items-center gap-2 text-xs font-medium text-ink-body dark:text-ink-soft cursor-pointer select-none">
             <input
               type="checkbox"
               checked={hideSold}
               onChange={(e) => setHideSold(e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-700 cursor-pointer"
+              className="w-4 h-4 rounded accent-brand cursor-pointer"
             />
             <span>Hide sold items</span>
           </label>
@@ -407,21 +407,21 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div className="relative sm:col-span-6">
-            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search items, Tumfure lodges, solar kits, textbooks, or seller..."
               aria-label="Search marketplace listings"
-              className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+              className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand focus:ring-2 focus:ring-focus/15"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear listing search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -436,7 +436,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               id="marketCatFilter"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full min-h-[44px] px-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[44px] px-3.5 rounded-2xl border border-line bg-surface dark:bg-sunken text-xs sm:text-sm font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="All">All Categories</option>
               {MARKETPLACE_CATEGORIES.map((cat) => (
@@ -457,7 +457,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               onChange={(e) =>
                 setSortBy(e.target.value as 'newest' | 'priceAsc' | 'priceDesc')
               }
-              className="w-full min-h-[44px] px-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[44px] px-3.5 rounded-2xl border border-line bg-surface dark:bg-sunken text-xs sm:text-sm font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="newest">Sort: Newest</option>
               <option value="priceAsc">Price: Low to High</option>
@@ -475,15 +475,15 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 onClick={() => setTypeFilter(t)}
                 className={`min-h-[32px] px-3 rounded-xl text-[11px] font-semibold border transition-colors cursor-pointer ${
                   typeFilter === t
-                    ? 'bg-emerald-700 border-emerald-700 text-white'
-                    : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
+                    ? 'bg-brand border-brand text-white'
+                    : 'bg-white dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                 }`}
               >
                 {t === 'All' ? 'All Types' : t}
               </button>
             ))}
           </div>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400 tabular-nums">
+          <span className="text-[11px] text-ink-muted tabular-nums">
             Showing {filteredListings.length} of {listings.length}
           </span>
         </div>
@@ -504,14 +504,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
       {/* Listings Grid */}
       {filteredListings.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2.5">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2.5">
+          <div className="w-12 h-12 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center mx-auto">
             <ShoppingBag className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-sm font-bold text-ink">
             {scopeTab === 'mine' ? 'You have no listings yet' : 'No listings match your filter'}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-ink-muted max-w-sm mx-auto">
             {scopeTab === 'mine'
               ? 'Post textbooks, solar kits, electronics, or room vacancies to connect directly with buyers on campus.'
               : 'Try clearing your search or switching categories to see more campus listings.'}
@@ -519,7 +519,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
           <button
             type="button"
             onClick={openPostModal}
-            className="mt-1 inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-xl bg-emerald-700 text-white text-xs font-semibold cursor-pointer"
+            className="mt-1 inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-xl bg-brand text-on-brand text-xs font-semibold cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Post a Listing</span>
@@ -536,7 +536,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             return (
               <article
                 key={item.id}
-                className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col justify-between gap-3.5 ${
+                className={`bg-white dark:bg-surface rounded-2xl border border-line/80 dark:border-line p-4 flex flex-col justify-between gap-3.5 ${
                   isSold ? 'opacity-80' : ''
                 }`}
               >
@@ -546,7 +546,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       type="button"
                       onClick={() => setSelectedListing(item)}
                       aria-label={`Inspect photo and details for ${item.title}`}
-                      className="group relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700/60 block cursor-pointer"
+                      className="group relative aspect-[16/10] w-full rounded-xl overflow-hidden bg-sunken border border-line/60 block cursor-pointer"
                     >
                       <img
                         src={item.imageData}
@@ -573,7 +573,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
                   <div className="space-y-1.5">
                     <div className="flex items-baseline justify-between gap-2">
-                      <span className="text-lg font-extrabold font-mono tabular-nums text-emerald-700 dark:text-emerald-400">
+                      <span className="text-lg font-extrabold font-mono tabular-nums text-brand">
                         {item.listingType === 'Swap' && item.priceNaira === 0
                           ? 'Open to Swap'
                           : item.priceNaira === 0
@@ -583,8 +583,8 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       <span
                         className={`text-[11px] font-semibold uppercase tracking-wide ${
                           isSold
-                            ? 'text-slate-500 dark:text-slate-400'
-                            : 'text-emerald-700 dark:text-emerald-400'
+                            ? 'text-ink-muted dark:text-ink-muted'
+                            : 'text-brand dark:text-brand'
                         }`}
                       >
                         {isSold ? 'Sold' : item.listingType}
@@ -596,19 +596,19 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       onClick={() => setSelectedListing(item)}
                       className="text-left block w-full cursor-pointer group"
                     >
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 group-hover:text-emerald-700 dark:group-hover:text-emerald-400 transition-colors leading-snug">
+                      <h3 className="text-sm sm:text-base font-bold text-ink group-hover:text-brand transition-colors leading-snug">
                         {item.title}
                       </h3>
                     </button>
 
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-normal">
+                    <p className="text-xs text-ink-muted leading-normal">
                       <span>{item.category}</span>
                       <span aria-hidden="true"> · </span>
                       <span>{item.condition}</span>
                       {item.location && (
                         <>
                           <span aria-hidden="true"> · </span>
-                          <span className="inline-flex items-center gap-0.5 text-slate-600 dark:text-slate-300">
+                          <span className="inline-flex items-center gap-0.5 text-ink-body dark:text-ink-soft">
                             <MapPin className="w-3 h-3 inline shrink-0" />
                             <span>{item.location}</span>
                           </span>
@@ -621,14 +621,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       onClick={() => setSelectedListing(item)}
                       className="text-left block w-full cursor-pointer"
                     >
-                      <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-3">
+                      <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed line-clamp-3">
                         {item.description}
                       </p>
                     </button>
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+                <div className="space-y-3 pt-1 border-t border-line">
                   <div className="flex items-center justify-between gap-2 pt-2">
                     <div className="flex items-center gap-2 min-w-0">
                       <UserAvatar
@@ -637,16 +637,16 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                         avatarId={userMap.get(item.sellerId)?.avatarId}
                         size="sm"
                         roundedClass="rounded-xl"
-                        fallbackClassName="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                        fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                          <span className="text-xs font-semibold text-ink truncate">
                             {isOwner ? 'You' : item.sellerName}
                           </span>
                           <RoleBadge role={item.sellerRole} />
                         </div>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                        <p className="text-[11px] text-ink-muted truncate">
                           {item.sellerDepartment} · {formatShortTime(item.createdAt)}
                         </p>
                       </div>
@@ -659,7 +659,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                         type="button"
                         onClick={() => handleChatSeller(item)}
                         disabled={openingDmId === item.id}
-                        className="flex-1 min-h-[42px] px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                        className="flex-1 min-h-[42px] px-3.5 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <MessageSquare className="w-3.5 h-3.5" />
                         <span>
@@ -674,9 +674,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                           type="button"
                           onClick={() => handleToggleStatus(item)}
                           disabled={isBusy}
-                          className="flex-1 min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                          className="flex-1 min-h-[42px] px-3 rounded-xl border border-line text-xs font-semibold text-ink-soft hover:bg-sunken inline-flex items-center justify-center gap-1.5 cursor-pointer"
                         >
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                          <CheckCircle2 className="w-3.5 h-3.5 text-brand" />
                           <span>{isSold ? 'Mark Available' : 'Mark Sold'}</span>
                         </button>
                         <button
@@ -685,7 +685,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                           disabled={isBusy}
                           aria-label={`Edit ${item.title}`}
                           title="Edit listing"
-                          className="min-w-[42px] min-h-[42px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:border-emerald-200 dark:hover:border-emerald-900 inline-flex items-center justify-center cursor-pointer"
+                          className="min-w-[42px] min-h-[42px] rounded-xl border border-line text-ink-muted hover:text-brand hover:border-success-line inline-flex items-center justify-center cursor-pointer"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
@@ -702,7 +702,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setConfirmDeleteId(null)}
-                              className="min-h-[42px] px-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer"
+                              className="min-h-[42px] px-2 rounded-xl border border-line text-xs font-semibold text-ink-body dark:text-ink-soft cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -714,7 +714,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                             disabled={isBusy}
                             aria-label={`Delete ${item.title}`}
                             title="Delete listing"
-                            className="min-w-[42px] min-h-[42px] rounded-xl border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 inline-flex items-center justify-center cursor-pointer"
+                            className="min-w-[42px] min-h-[42px] rounded-xl border border-line text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 inline-flex items-center justify-center cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -735,7 +735,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             type="button"
             disabled={loadingMore}
             onClick={onLoadMore}
-            className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+            className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
           >
             {loadingMore ? 'Loading more...' : 'Load more listings'}
           </button>
@@ -744,10 +744,10 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
       {/* Post / Edit Listing Modal */}
       {postOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 {editingListing ? 'Edit Marketplace Listing' : 'Post Marketplace Listing'}
               </h3>
               <button
@@ -757,7 +757,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   setEditingListing(null);
                 }}
                 aria-label="Close post listing dialog"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -774,7 +774,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 <div>
                   <label
                     htmlFor="mktCategory"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Category
                   </label>
@@ -783,7 +783,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     disabled={!!editingListing}
                     value={category}
                     onChange={(e) => handleCategoryChange(e.target.value as MarketplaceCategory)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 disabled:opacity-60 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink disabled:opacity-60 focus:outline-none focus:border-brand"
                   >
                     {MARKETPLACE_CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>
@@ -796,7 +796,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 <div>
                   <label
                     htmlFor="mktType"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Listing Type
                   </label>
@@ -805,7 +805,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     disabled={!!editingListing}
                     value={listingType}
                     onChange={(e) => setListingType(e.target.value as MarketplaceListingType)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 disabled:opacity-60 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink disabled:opacity-60 focus:outline-none focus:border-brand"
                   >
                     {MARKETPLACE_LISTING_TYPES.map((t) => (
                       <option key={t} value={t}>
@@ -819,7 +819,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               <div>
                 <label
                   htmlFor="mktTitle"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Title
                 </label>
@@ -831,7 +831,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Casio fx-991ES Plus Calculator / Off-Campus (Tumfure) Self-Con Room"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -839,7 +839,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 <div>
                   <label
                     htmlFor="mktPrice"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Price in Naira (₦) {listingType === 'Swap' ? '(optional)' : ''}
                   </label>
@@ -852,14 +852,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     value={priceText}
                     onChange={(e) => setPriceText(e.target.value)}
                     placeholder="e.g., 15000"
-                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="mktCondition"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Condition
                   </label>
@@ -867,7 +867,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     id="mktCondition"
                     value={condition}
                     onChange={(e) => setCondition(e.target.value as MarketplaceCondition)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {MARKETPLACE_CONDITIONS.map((cond) => (
                       <option key={cond} value={cond}>
@@ -881,7 +881,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               <div>
                 <label
                   htmlFor="mktLocation"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Location (Campus / Off-campus)
                 </label>
@@ -892,14 +892,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="e.g., Off-Campus (Tumfure), Main Campus, Faculty of Science"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
               <div>
                 <label
                   htmlFor="mktDescription"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Description
                 </label>
@@ -911,13 +911,13 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Describe specs, edition, rent terms, or swap preferences..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
               {!editingListing && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-ink-soft mb-1.5">
                     Photo (optional)
                   </label>
                   <input
@@ -928,7 +928,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     className="hidden"
                   />
                   {imagePreviewUrl ? (
-                    <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-700">
+                    <div className="relative rounded-2xl overflow-hidden border border-line">
                       <img
                         src={imagePreviewUrl}
                         alt="Listing preview"
@@ -953,9 +953,9 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      className="w-full min-h-[48px] px-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-emerald-600 text-xs font-medium text-slate-600 dark:text-slate-300 inline-flex items-center justify-center gap-2 cursor-pointer"
+                      className="w-full min-h-[48px] px-4 rounded-xl border border-dashed border-line bg-sunken/70 dark:bg-sunken/60 hover:border-brand text-xs font-medium text-ink-body dark:text-ink-soft inline-flex items-center justify-center gap-2 cursor-pointer"
                     >
-                      <ImagePlus className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                      <ImagePlus className="w-4 h-4 text-brand" />
                       <span>Add item or lodge photo</span>
                     </button>
                   )}
@@ -969,14 +969,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     setPostOpen(false);
                     setEditingListing(null);
                   }}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {submitting
                     ? editingListing
@@ -999,11 +999,11 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
           aria-modal="true"
           aria-label={selectedListing.title}
           onClick={() => setSelectedListing(null)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl"
           >
             {selectedListing.imageData && !brokenImages.has(selectedListing.id) && (
               <div className="relative bg-slate-950 max-h-[52dvh] flex items-center justify-center">
@@ -1030,7 +1030,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     type="button"
                     onClick={() => setSelectedListing(null)}
                     aria-label="Close listing details"
-                    className="min-w-[40px] min-h-[40px] rounded-xl text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-center cursor-pointer"
+                    className="min-w-[40px] min-h-[40px] rounded-xl text-ink-muted hover:bg-sunken flex items-center justify-center cursor-pointer"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -1039,31 +1039,31 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
               <div className="space-y-1.5">
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="text-xl font-extrabold font-mono tabular-nums text-emerald-700 dark:text-emerald-400">
+                  <span className="text-xl font-extrabold font-mono tabular-nums text-brand">
                     {selectedListing.listingType === 'Swap' && selectedListing.priceNaira === 0
                       ? 'Open to Swap'
                       : selectedListing.priceNaira === 0
                         ? 'Negotiable'
                         : formatNaira(selectedListing.priceNaira)}
                   </span>
-                  <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
                     {selectedListing.status === 'sold' ? 'Sold' : selectedListing.listingType}
                   </span>
                 </div>
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base sm:text-lg font-bold text-ink">
                   {selectedListing.title}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-ink-muted">
                   {selectedListing.category} · {selectedListing.condition}
                   {selectedListing.location ? ` · ${selectedListing.location}` : ''}
                 </p>
               </div>
 
-              <p className="text-sm text-slate-700 dark:text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <p className="text-sm text-ink-soft whitespace-pre-wrap leading-relaxed">
                 {selectedListing.description}
               </p>
 
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+              <div className="pt-3 border-t border-line flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <UserAvatar
                     name={selectedListing.sellerName}
@@ -1074,14 +1074,14 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                   />
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                      <span className="text-xs font-semibold text-ink truncate">
                         {selectedListing.sellerId === currentUser.uid
                           ? 'You'
                           : selectedListing.sellerName}
                       </span>
                       <RoleBadge role={selectedListing.sellerRole} />
                     </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                    <p className="text-[11px] text-ink-muted truncate">
                       {selectedListing.sellerDepartment} ·{' '}
                       {formatShortTime(selectedListing.createdAt)}
                     </p>
@@ -1093,7 +1093,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                     type="button"
                     disabled={openingDmId === selectedListing.id}
                     onClick={() => handleChatSeller(selectedListing)}
-                    className="min-h-[42px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+                    className="min-h-[42px] px-4 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
                     <span>

@@ -2,32 +2,125 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Two ramps, both warm.
+ *
+ * Neutrals are a warm grey with a faint olive bias so they sit next to the
+ * emerald instead of fighting it. The numbering keeps Tailwind's convention
+ * (50 = lightest, 950 = darkest) and the app already picks the right step per
+ * theme, so the same ramp serves both modes: light surfaces are the low steps
+ * and dark surfaces the high ones.
+ *
+ * Brand is a deeper, more saturated emerald than the previous palette. The
+ * steps were chosen so the pairs the app actually uses clear 4.5:1 for text and
+ * 3:1 for large text and icons.
+ */
 @theme {
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Keyboard focus indicator. 2px, 2px offset, and a colour that clears 3:1 on
-     both canvases. Re-derived when the palette changes. */
-  --color-focus: #047857;
+  /* Warm neutrals */
+  --color-slate-50: #f8f7f4;
+  --color-slate-100: #f2f0ea;
+  --color-slate-200: #e6e3da;
+  --color-slate-300: #d8d4c9;
+  --color-slate-400: #b3afa4;
+  --color-slate-500: #6f6a62;
+  --color-slate-600: #57534b;
+  --color-slate-700: #44403a;
+  --color-slate-800: #2a2721;
+  --color-slate-900: #1d1b17;
+  --color-slate-950: #141310;
+
+  /* Richer emerald */
+  --color-emerald-50: #edf7f2;
+  --color-emerald-100: #d6ede1;
+  --color-emerald-200: #b0dcc6;
+  --color-emerald-300: #7fc4a4;
+  --color-emerald-400: #4fa582;
+  --color-emerald-500: #2e8a6b;
+  --color-emerald-600: #1f7457;
+  --color-emerald-700: #146048;
+  --color-emerald-800: #0b4f3c;
+  --color-emerald-900: #08402f;
+  --color-emerald-950: #04241a;
+
+  /*
+   * Role tokens. Components should read these, not a ramp step: dark mode is a
+   * swap of the block below, never a second set of `dark:` classes.
+   */
+  --color-canvas: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-sunken: #f2f0ea;
+  --color-line: #e6e3da;
+  --color-line-strong: #d8d4c9;
+  --color-ink: #1d1b17;
+  --color-ink-soft: #44403a;
+  --color-ink-body: #57534b;
+  --color-ink-muted: #6f6a62;
+  --color-brand: #0b4f3c;
+  --color-brand-strong: #08402f;
+  --color-brand-subtle: #eaf6f0;
+  --color-on-brand: #ffffff;
+  --color-focus: #0b4f3c;
+
+  --color-success: #0b4f3c;
+  --color-success-bg: #eaf6f0;
+  --color-success-line: #c4e2d2;
+  --color-warn: #8a4b0b;
+  --color-warn-bg: #fcf3e2;
+  --color-warn-line: #efddb8;
+  --color-danger: #b42318;
+  --color-danger-bg: #fdecea;
+  --color-danger-line: #f3c6c2;
+  --color-info: #1d4ed8;
+  --color-info-bg: #eef3fe;
+  --color-info-line: #cfdcfb;
 }
 
 @layer base {
+  html.dark {
+    --color-canvas: #141310;
+    --color-surface: #1d1b17;
+    --color-sunken: #2a2721;
+    --color-line: #35312a;
+    --color-line-strong: #4a463f;
+    --color-ink: #f5f4f1;
+    --color-ink-soft: #d8d4c9;
+    --color-ink-body: #e6e3da;
+    --color-ink-muted: #b3afa4;
+    --color-brand: #4fa582;
+    --color-brand-strong: #7fc4a4;
+    --color-brand-subtle: #12291f;
+    --color-on-brand: #0e1a14;
+    --color-focus: #4fa582;
+
+    --color-success: #6fd3ac;
+    --color-success-bg: #12291f;
+    --color-success-line: #2a4a3b;
+    --color-warn: #f0b45a;
+    --color-warn-bg: #2a1e0c;
+    --color-warn-line: #4a3517;
+    --color-danger: #f97066;
+    --color-danger-bg: #2c1412;
+    --color-danger-line: #4e2521;
+    --color-info: #8fb0f5;
+    --color-info-bg: #131e33;
+    --color-info-line: #2a3a5c;
+  }
+
   html, body {
     font-family: var(--font-sans);
-    background-color: #F6F8F7;
-    color: #0F172A;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     -webkit-tap-highlight-color: transparent;
   }
 
   html.dark, html.dark body {
-    background-color: #020617;
-    color: #F1F5F9;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     color-scheme: dark;
-  }
-
-  html.dark {
-    --color-focus: #6EE7B7;
   }
 
   h1, h2, h3, h4, .font-display {

@@ -511,7 +511,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   return (
     <div className="max-w-2xl mx-auto space-y-4">
       {/* Identity Card */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 space-y-5">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-6 space-y-5">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-4 min-w-0 flex-1">
             <button
@@ -521,7 +521,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 setAvatarModalOpen(true);
               }}
               aria-label="Change profile picture or avatar"
-              className="relative shrink-0 group cursor-pointer rounded-3xl focus:outline-none focus:ring-2 focus:ring-emerald-600/40"
+              className="relative shrink-0 group cursor-pointer rounded-3xl focus:outline-none focus:ring-2 focus:ring-focus/40"
             >
               <UserAvatar
                 name={currentUser.fullName}
@@ -529,24 +529,24 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 avatarId={currentUser.avatarId}
                 size="xl"
                 roundedClass="rounded-3xl"
-                fallbackClassName="bg-emerald-700 text-white"
+                fallbackClassName="bg-brand text-white"
               />
-              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-slate-900 dark:bg-emerald-600 text-white border-2 border-white dark:border-slate-900 flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-slate-900 dark:bg-brand text-on-brand border-2 border-white dark:border-line flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
                 <Camera className="w-3.5 h-3.5" />
               </span>
             </button>
             <div className="min-w-0 flex-1">
               <div className="flex items-start gap-2 flex-wrap">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-snug line-clamp-2 break-words">
+                <h2 className="text-lg font-bold text-ink leading-snug line-clamp-2 break-words">
                   {currentUser.fullName}
                 </h2>
                 <RoleBadge role={currentUser.role} showStudent />
               </div>
-              <p className="text-sm font-mono text-slate-500 dark:text-slate-400 mt-0.5 break-all">
+              <p className="text-sm font-mono text-ink-muted mt-0.5 break-all">
                 {currentUser.idNumber}
               </p>
               {!canEditOwnName && (
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+                <p className="text-[11px] text-ink-muted mt-1">
                   Contact an admin to change your name.
                 </p>
               )}
@@ -556,7 +556,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   setAvatarError(null);
                   setAvatarModalOpen(true);
                 }}
-                className="mt-1.5 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
+                className="mt-1.5 text-xs font-semibold text-brand hover:underline cursor-pointer"
               >
                 Change photo or avatar
               </button>
@@ -571,7 +571,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 setNameError(null);
                 setEditingName(true);
               }}
-              className="min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+              className="min-h-[40px] px-3 rounded-xl border border-line hover:bg-sunken text-xs font-semibold text-ink-soft inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
             >
               <Edit3 className="w-3.5 h-3.5" />
               <span>Edit Name</span>
@@ -592,13 +592,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   setNameInput(e.target.value);
                   setNameError(null);
                 }}
-                className="flex-1 min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                className="flex-1 min-h-[44px] px-3.5 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
               />
               <div className="flex gap-2">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="min-h-[44px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer"
+                  className="min-h-[44px] px-4 rounded-xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold cursor-pointer"
                 >
                   {saving ? 'Saving...' : 'Save'}
                 </button>
@@ -608,7 +608,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     setEditingName(false);
                     setNameError(null);
                   }}
-                  className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="min-h-[44px] px-4 rounded-xl border border-line text-xs font-semibold text-ink-body dark:text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -623,50 +623,50 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         {savedBannerText && (
           <div
             role="status"
-            className="rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-3 py-2 text-xs text-emerald-900 dark:text-emerald-200 inline-flex items-center gap-1.5"
+            className="rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-3 py-2 text-xs text-brand inline-flex items-center gap-1.5"
           >
-            <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+            <Check className="w-4 h-4 text-brand" />
             <span>{savedBannerText}</span>
           </div>
         )}
 
         {/* Department & Level Grid (Role omitted as shown by header badge) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-slate-100 dark:border-slate-800">
-          <div className="bg-slate-50 dark:bg-slate-800/70 rounded-2xl p-3.5">
-            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Department</p>
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-0.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-line">
+          <div className="bg-sunken dark:bg-sunken/70 rounded-2xl p-3.5">
+            <p className="text-[11px] font-medium text-ink-muted">Department</p>
+            <p className="text-sm font-semibold text-ink mt-0.5">
               {currentUser.department}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-[11px] text-ink-muted mt-1">
               Contact an admin to change your department.
             </p>
           </div>
-          <div className="bg-slate-50 dark:bg-slate-800/70 rounded-2xl p-3.5">
-            <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">Level</p>
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 mt-0.5 tabular-nums">
+          <div className="bg-sunken dark:bg-sunken/70 rounded-2xl p-3.5">
+            <p className="text-[11px] font-medium text-ink-muted">Level</p>
+            <p className="text-sm font-semibold text-ink mt-0.5 tabular-nums">
               {formatLevelLabel(currentUser.level, currentUser.is_alumni)}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-[11px] text-ink-muted mt-1">
               To change your level, contact an admin. Level changes require document verification.
             </p>
           </div>
         </div>
 
         {(currentUser.studyCourses?.length || currentUser.studySpot) && (
-          <div className="rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/35 border border-emerald-200/70 dark:border-emerald-900/60 p-3.5 space-y-1.5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+          <div className="rounded-2xl bg-brand-subtle/70 dark:bg-brand-subtle/35 border border-success-line/70 dark:border-success-line/60 p-3.5 space-y-1.5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-brand flex items-center gap-1.5">
               <BookOpen className="w-3.5 h-3.5" />
               <span>Study Partner Profile</span>
             </p>
             {currentUser.studyCourses && currentUser.studyCourses.length > 0 && (
-              <p className="text-xs text-slate-700 dark:text-slate-200">
+              <p className="text-xs text-ink-soft">
                 <span className="font-semibold">Courses:</span>{' '}
                 {currentUser.studyCourses.join(', ')}
               </p>
             )}
             {currentUser.studySpot && (
-              <p className="text-xs text-slate-600 dark:text-slate-300 flex items-center gap-1">
-                <MapPin className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <p className="text-xs text-ink-body dark:text-ink-soft flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
                 <span>Preferred spot: {currentUser.studySpot}</span>
               </p>
             )}
@@ -675,16 +675,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </div>
 
       {/* Appearance / Theme Toggle */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 flex items-center justify-between gap-4">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-amber-300 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-sunken text-ink-soft dark:text-amber-300 flex items-center justify-center shrink-0">
             {isDark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <p className="text-sm font-bold text-ink">
               Appearance
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-ink-muted">
               {isDark ? 'Dark mode enabled' : 'Light mode enabled'}
             </p>
           </div>
@@ -696,19 +696,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           aria-checked={isDark}
           aria-label="Toggle dark mode"
           onClick={onToggleTheme}
-          className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-600/30 ${
+          className={`relative inline-flex h-8 w-14 shrink-0 items-center rounded-full border transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-focus/30 ${
             isDark
-              ? 'bg-emerald-700 border-emerald-600'
-              : 'bg-slate-200 border-slate-300'
+              ? 'bg-brand border-brand'
+              : 'bg-sunken border-line'
           }`}
         >
           <span
-            className={`inline-flex h-6 w-6 transform items-center justify-center rounded-full bg-white text-slate-700 shadow-xs transition-transform ${
+            className={`inline-flex h-6 w-6 transform items-center justify-center rounded-full bg-white text-ink-soft shadow-xs transition-transform ${
               isDark ? 'translate-x-7' : 'translate-x-1'
             }`}
           >
             {isDark ? (
-              <Moon className="w-3.5 h-3.5 text-emerald-700" />
+              <Moon className="w-3.5 h-3.5 text-brand" />
             ) : (
               <Sun className="w-3.5 h-3.5 text-amber-500" />
             )}
@@ -720,58 +720,58 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       <button
         type="button"
         onClick={() => setStarredOpen(true)}
-        className="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 hover:border-amber-300 dark:hover:border-amber-700/80 p-5 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
+        className="w-full bg-surface rounded-3xl border border-line/80 dark:border-line hover:border-amber-300 dark:hover:border-amber-700/80 p-5 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3.5 min-w-0">
           <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
             <Star className="w-5 h-5 fill-current" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <p className="text-sm font-bold text-ink">
               Starred Messages
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+            <p className="text-xs text-ink-muted tabular-nums">
               {starredMessages.length === 0
                 ? 'Bookmark important notes & timetables'
                 : `${starredMessages.length} saved ${starredMessages.length === 1 ? 'message' : 'messages'}`}
             </p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0" />
+        <ChevronRight className="w-5 h-5 text-ink-muted shrink-0" />
       </button>
 
       {/* Dedicated GPA Calculator Launcher */}
       <button
         type="button"
         onClick={() => setShowGpaCalculator(true)}
-        className="w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700/80 p-5 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
+        className="w-full bg-surface rounded-3xl border border-line/80 dark:border-line hover:border-success-line dark:hover:border-brand/80 p-5 flex items-center justify-between gap-4 text-left transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3.5 min-w-0">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center shrink-0">
             <Calculator className="w-5 h-5" />
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-bold text-slate-900 dark:text-slate-100">
+            <p className="text-sm font-bold text-ink">
               GPA Calculator
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-ink-muted">
               GSU 5.0 GPA &amp; CGPA tracker · Saved on this device
             </p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0" />
+        <ChevronRight className="w-5 h-5 text-ink-muted shrink-0" />
       </button>
 
       {/* Notification Settings */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-4">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-4">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <Bell className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+            <Bell className="w-4 h-4 text-brand shrink-0" />
             <div>
-              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-sm font-bold text-ink">
                 Notification Settings
               </h3>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="text-[11px] text-ink-muted">
                 Preferences saved on this device
               </p>
             </div>
@@ -805,10 +805,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="flex items-center justify-between gap-3 py-1"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="text-xs font-semibold text-ink">
                     {item.title}
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-ink-muted">
                     {item.desc}
                   </p>
                 </div>
@@ -825,8 +825,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   }
                   className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors cursor-pointer ${
                     enabled
-                      ? 'bg-emerald-700 border-emerald-600'
-                      : 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600'
+                      ? 'bg-brand border-brand'
+                      : 'bg-sunken dark:bg-sunken border-line dark:border-line'
                   }`}
                 >
                   <span
@@ -842,16 +842,16 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </div>
 
       {/* Security & Recovery */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-4">
-        <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
-          <KeyRound className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-4">
+        <div className="flex items-center gap-2 text-ink">
+          <KeyRound className="w-4 h-4 text-brand" />
           <h3 className="text-sm font-bold">Account Security</h3>
         </div>
 
         {/* Recovery Email */}
-        <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 p-4 space-y-2">
+        <div className="rounded-2xl bg-sunken dark:bg-sunken/70 p-4 space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            <span className="text-[11px] font-semibold text-ink-muted">
               Recovery Email
             </span>
             {!editingRecovery && (
@@ -863,7 +863,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   setRecoveryError(null);
                   setEditingRecovery(true);
                 }}
-                className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
+                className="text-xs font-semibold text-brand hover:underline cursor-pointer"
               >
                 {recoveryEmail ? 'Edit' : 'Add'}
               </button>
@@ -873,30 +873,30 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           {!editingRecovery ? (
             <>
             {loadingRecovery ? (
-              <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+              <p className="text-xs font-medium text-ink-body dark:text-ink-soft">
                 Loading...
               </p>
             ) : recoveryStatus?.verified ? (
-              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex flex-wrap items-center gap-2">
+              <p className="text-xs font-semibold text-ink flex flex-wrap items-center gap-2">
                 <span className="break-all">{recoveryStatus.maskedEmail}</span>
-                <span className="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-semibold">
+                <span className="inline-flex items-center rounded-full bg-brand-subtle dark:bg-brand-subtle/40 text-brand px-2 py-0.5 text-[10px] font-semibold">
                   Verified
                 </span>
               </p>
             ) : recoveryEmail ? (
               <>
-                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex flex-wrap items-center gap-2">
+                <p className="text-xs font-semibold text-ink flex flex-wrap items-center gap-2">
                   <span className="break-all">{maskEmail(recoveryEmail)}</span>
                   <span className="inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-0.5 text-[10px] font-semibold">
                     Not verified
                   </span>
                 </p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
+                <p className="text-[11px] text-ink-muted pt-0.5">
                   Confirm the link we sent to this address — it stays unverified until you do.
                 </p>
               </>
             ) : (
-              <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+              <p className="text-xs font-medium text-ink-body dark:text-ink-soft">
                 No verified recovery email yet — add one and confirm the link we send.
               </p>
             )}
@@ -918,7 +918,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     setRecoveryError(null);
                   }}
                   placeholder="yourname@example.com"
-                  className="flex-1 min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="flex-1 min-h-[40px] px-3 rounded-xl border border-line bg-surface text-xs text-ink focus:outline-none focus:border-brand"
                 />
               <input
                 type="password"
@@ -931,14 +931,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 }}
                 placeholder="Enter your current password to confirm"
                 aria-label="Current password"
-                className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[40px] px-3 rounded-xl border border-line bg-surface text-xs text-ink placeholder:text-ink-muted focus:outline-none focus:border-brand"
               />
                 {recoveryCheck.widget}
                 <div className="flex gap-2">
                   <button
                     type="submit"
                     disabled={savingRecovery}
-                    className="min-h-[40px] px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer"
+                    className="min-h-[40px] px-3.5 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold cursor-pointer"
                   >
                     {savingRecovery ? 'Saving...' : 'Save'}
                   </button>
@@ -950,7 +950,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       setRecoveryPassword('');
                       setRecoveryError(null);
                     }}
-                    className="min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer"
+                    className="min-h-[40px] px-3 rounded-xl border border-line text-xs font-semibold text-ink-body dark:text-ink-soft cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -987,35 +987,35 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             setPasswordError(null);
             setPasswordModalOpen(true);
           }}
-          className="w-full min-h-[46px] px-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between gap-3 text-left cursor-pointer transition-colors"
+          className="w-full min-h-[46px] px-4 rounded-2xl border border-line hover:bg-sunken flex items-center justify-between gap-3 text-left cursor-pointer transition-colors"
         >
           <div className="min-w-0">
-            <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
+            <p className="text-xs font-bold text-ink">
               Change Password
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-ink-muted">
               Update your GSU Connect sign-in password
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
         </button>
       </div>
 
       {/* Who Can See My Info */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-3">
-        <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
-          <Eye className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-3">
+        <div className="flex items-center gap-2 text-ink">
+          <Eye className="w-4 h-4 text-brand" />
           <h3 className="text-sm font-bold">Who Can See My Info</h3>
         </div>
-        <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+        <div className="space-y-2 text-xs text-ink-body dark:text-ink-soft leading-relaxed">
           <p>
-            <span className="font-semibold text-slate-800 dark:text-slate-100">
+            <span className="font-semibold text-ink">
               Visible to approved GSU members:
             </span>{' '}
             Your full name, department, level, profile photo/avatar, role badge, and study partner courses appear in campus directories and chats.
           </p>
           <p>
-            <span className="font-semibold text-slate-800 dark:text-slate-100">
+            <span className="font-semibold text-ink">
               Restricted &amp; private info:
             </span>{' '}
             Only you and authorized reviewers can see your registration ID. Class reps and department helpers review student submissions only; staff submissions go to admins. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Uploaded verification documents are deleted within 24 hours after approval.
@@ -1024,15 +1024,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </div>
 
       {/* Account Access */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 space-y-3">
-        <div className="flex items-center gap-2 text-slate-900 dark:text-slate-100">
-          <Shield className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-6 space-y-3">
+        <div className="flex items-center gap-2 text-ink">
+          <Shield className="w-4 h-4 text-brand" />
           <h3 className="text-sm font-bold">Account Access</h3>
         </div>
-        <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+        <ul className="space-y-2 text-sm text-ink-body dark:text-ink-soft">
           {permissionsList.map((line) => (
             <li key={line} className="flex items-start gap-2.5">
-              <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+              <Check className="w-4 h-4 text-brand shrink-0 mt-0.5" />
               <span>{line}</span>
             </li>
           ))}
@@ -1040,9 +1040,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       </div>
 
       {/* Support & Legal */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-2">
-        <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-3 flex items-center gap-2">
-          <HelpCircle className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-2">
+        <h3 className="text-sm font-bold text-ink mb-3 flex items-center gap-2">
+          <HelpCircle className="w-4 h-4 text-brand" />
           <span>Support &amp; Legal</span>
         </h3>
 
@@ -1050,37 +1050,37 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(
             `GSU Connect Support — ${currentUser.idNumber}`
           )}`}
-          className="w-full min-h-[44px] px-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors"
+          className="w-full min-h-[44px] px-3.5 rounded-2xl hover:bg-sunken flex items-center justify-between gap-3 text-xs font-semibold text-ink-soft transition-colors"
         >
           <span className="flex items-center gap-2.5">
-            <Mail className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <Mail className="w-4 h-4 text-ink-muted" />
             <span>Help &amp; Support ({SUPPORT_EMAIL})</span>
           </span>
-          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
         </a>
 
         <button
           type="button"
           onClick={() => setLegalModal('terms')}
-          className="w-full min-h-[44px] px-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+          className="w-full min-h-[44px] px-3.5 rounded-2xl hover:bg-sunken flex items-center justify-between gap-3 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
         >
           <span className="flex items-center gap-2.5">
-            <FileText className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <FileText className="w-4 h-4 text-ink-muted" />
             <span>Terms of Use</span>
           </span>
-          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
         </button>
 
         <button
           type="button"
           onClick={() => setLegalModal('privacy')}
-          className="w-full min-h-[44px] px-3.5 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center justify-between gap-3 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+          className="w-full min-h-[44px] px-3.5 rounded-2xl hover:bg-sunken flex items-center justify-between gap-3 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
         >
           <span className="flex items-center gap-2.5">
-            <Shield className="w-4 h-4 text-slate-500 dark:text-slate-400" />
+            <Shield className="w-4 h-4 text-ink-muted" />
             <span>Privacy Policy</span>
           </span>
-          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
         </button>
       </div>
 
@@ -1094,7 +1094,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           await updateUserLastSeen(currentUser.uid).catch(() => undefined);
           await signOutUser('global').catch(e=>setLogoutError('Could not sign out. Please try again.'));
         }}
-        className="w-full min-h-[48px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 dark:hover:border-red-900/70 hover:text-red-700 dark:hover:text-red-300 text-slate-700 dark:text-slate-200 font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+        className="w-full min-h-[48px] rounded-2xl bg-surface border border-line hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 dark:hover:border-red-900/70 hover:text-red-700 dark:hover:text-red-300 text-ink-soft font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
       >
         <LogOut className="w-4 h-4" />
         <span>Sign out of all devices</span>
@@ -1147,18 +1147,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           aria-modal="true"
           aria-label="Edit profile picture and avatar"
           onClick={() => !avatarSaving && setAvatarModalOpen(false)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl"
+            className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   Profile Photo &amp; Avatar
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-ink-muted">
                   Upload a photo or pick a campus avatar badge
                 </p>
               </div>
@@ -1167,7 +1167,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 disabled={avatarSaving}
                 onClick={() => setAvatarModalOpen(false)}
                 aria-label="Close avatar picker"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1180,14 +1180,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 avatarId={currentUser.avatarId}
                 size="2xl"
                 roundedClass="rounded-3xl"
-                fallbackClassName="bg-emerald-700 text-white"
+                fallbackClassName="bg-brand text-white"
               />
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <button
                   type="button"
                   disabled={avatarSaving}
                   onClick={() => fileInputRef.current?.click()}
-                  className="min-h-[42px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
+                  className="min-h-[42px] px-4 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
                 >
                   <Upload className="w-4 h-4" />
                   <span>{avatarSaving ? 'Saving...' : 'Upload Photo'}</span>
@@ -1198,7 +1198,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     type="button"
                     disabled={avatarSaving}
                     onClick={handleResetAvatar}
-                    className="min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="min-h-[42px] px-3.5 rounded-xl border border-line hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Use Initials</span>
@@ -1221,7 +1221,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             )}
 
             <div className="space-y-2.5">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">
                 Campus Preset Avatars
               </p>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
@@ -1237,8 +1237,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       title={preset.label}
                       className={`relative rounded-2xl p-2 flex flex-col items-center gap-1.5 border transition-all cursor-pointer disabled:opacity-60 ${
                         selected
-                          ? 'border-emerald-600 bg-emerald-50/70 dark:bg-emerald-950/50 ring-2 ring-emerald-500/30'
-                          : 'border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40'
+                          ? 'border-brand bg-brand-subtle/70 dark:bg-brand-subtle/50 ring-2 ring-emerald-500/30'
+                          : 'border-line/80 dark:border-line hover:border-line dark:hover:border-line bg-sunken/60 dark:bg-sunken/40'
                       }`}
                     >
                       <div
@@ -1246,11 +1246,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       >
                         {renderPresetAvatarIcon(preset.iconKey, 'w-5 h-5')}
                       </div>
-                      <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300 text-center leading-tight line-clamp-2 break-words w-full">
+                      <span className="text-[10px] font-semibold text-ink-soft text-center leading-tight line-clamp-2 break-words w-full">
                         {preset.label}
                       </span>
                       {selected && (
-                        <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center">
+                        <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-brand text-on-brand flex items-center justify-center">
                           <Check className="w-2.5 h-2.5" />
                         </span>
                       )}
@@ -1270,14 +1270,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           aria-modal="true"
           aria-label="Change Password"
           onClick={() => !savingPassword && setPasswordModalOpen(false)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-md bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 Change Password
               </h3>
               <button
@@ -1285,7 +1285,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 disabled={savingPassword}
                 onClick={() => setPasswordModalOpen(false)}
                 aria-label="Close change password dialog"
-                className="min-w-[38px] min-h-[38px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[38px] min-h-[38px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1293,7 +1293,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
             <form onSubmit={handleChangePassword} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                <label className="block text-xs font-semibold text-ink-soft mb-1">
                   Current Password
                 </label>
                 <input
@@ -1305,12 +1305,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     setCurrentPasswordInput(e.target.value);
                     setPasswordError(null);
                   }}
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                <label className="block text-xs font-semibold text-ink-soft mb-1">
                   New Password (minimum 8 characters)
                 </label>
                 <input
@@ -1323,12 +1323,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     setNewPasswordInput(e.target.value);
                     setPasswordError(null);
                   }}
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                <label className="block text-xs font-semibold text-ink-soft mb-1">
                   Confirm New Password
                 </label>
                 <input
@@ -1341,7 +1341,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     setConfirmPasswordInput(e.target.value);
                     setPasswordError(null);
                   }}
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -1357,14 +1357,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   type="button"
                   disabled={savingPassword}
                   onClick={() => setPasswordModalOpen(false)}
-                  className="min-h-[40px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer"
+                  className="min-h-[40px] px-4 rounded-xl border border-line text-xs font-semibold text-ink-body dark:text-ink-soft cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={savingPassword}
-                  className="min-h-[40px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer"
+                  className="min-h-[40px] px-4 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold cursor-pointer"
                 >
                   {savingPassword ? 'Updating...' : 'Update Password'}
                 </button>
@@ -1381,18 +1381,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           aria-modal="true"
           aria-label={legalModal === 'terms' ? 'Terms of Use' : 'Privacy Policy'}
           onClick={() => setLegalModal(null)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[85vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[85vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   {legalModal === 'terms' ? 'GSU Connect Terms of Use' : 'GSU Connect Privacy Policy'}
                 </h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-[11px] text-ink-muted mt-0.5">
                   Last updated: November 17, 2026
                 </p>
               </div>
@@ -1400,66 +1400,66 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 type="button"
                 onClick={() => setLegalModal(null)}
                 aria-label="Close legal information"
-                className="min-w-[38px] min-h-[38px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[38px] min-h-[38px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {legalModal === 'terms' ? (
-              <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Who Operates GSU Connect:</strong>{' '}
+                  <strong className="text-ink">Who Operates GSU Connect:</strong>{' '}
                   GSU Connect is the Gombe State University (GSU) student community platform, built to support communication, academic collaboration, and campus updates among verified members of the GSU community. For support or inquiries, contact{' '}
                   <a
                     href={`mailto:${SUPPORT_EMAIL}`}
-                    className="font-semibold text-emerald-700 dark:text-emerald-400 underline"
+                    className="font-semibold text-brand underline"
                   >
                     {SUPPORT_EMAIL}
                   </a>
                   .
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Eligibility &amp; Minimum Age:</strong>{' '}
+                  <strong className="text-ink">Eligibility &amp; Minimum Age:</strong>{' '}
                   To register and use GSU Connect, you must be at least 16 years old and a current or former student, graduate/alumnus, or staff member of Gombe State University.
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Accurate Identity:</strong>{' '}
+                  <strong className="text-ink">Accurate Identity:</strong>{' '}
                   You agree to register with your real name, Matric/Staff ID, department, and academic level. Impersonation, falsified verification documents, or misrepresenting your role or cohort is prohibited and may result in suspension or removal.
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Campus Conduct &amp; Moderation:</strong>{' '}
+                  <strong className="text-ink">Campus Conduct &amp; Moderation:</strong>{' '}
                   Harassment, spam, scams, hate speech, and unauthorized sharing of private student or staff data are forbidden across chats, study spaces, marketplace, and confessions. Admins and authorized moderators may review reported content and suspend accounts that violate campus guidelines.
                 </p>
               </div>
             ) : (
-              <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Operator &amp; Scope:</strong>{' '}
+                  <strong className="text-ink">Operator &amp; Scope:</strong>{' '}
                   GSU Connect is operated as the Gombe State University (GSU) student community platform for verified GSU students, alumni, and staff (minimum age 16+). We process personal data strictly in line with the{' '}
-                  <strong className="text-slate-800 dark:text-slate-100">
+                  <strong className="text-ink">
                     Nigeria Data Protection Act (NDPA)
                   </strong>{' '}
                   to verify campus eligibility and run community features.
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Information Collected:</strong>{' '}
+                  <strong className="text-ink">Information Collected:</strong>{' '}
                   Full name, Matric/Staff ID, department, academic level, recovery email, optional phone number, profile avatar/photo, and verification ID documents uploaded during onboarding.
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Cloud Storage &amp; Visibility:</strong>{' '}
+                  <strong className="text-ink">Cloud Storage &amp; Visibility:</strong>{' '}
                   Account data, messages, and shared files are stored in Supabase. Chats are access-controlled, not end-to-end encrypted; authorized administrative moderation is possible. Phone numbers and recovery emails are kept private, and student IDs are visible only to the applicant and authorized reviewers. Staff applications and their proof are restricted to the applicant and admins. A colleague asked to vouch sees the applicant’s name and department, not the application or its files. GPA calculator entries and notification preferences are stored locally on your device.
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Data Retention:</strong>{' '}
+                  <strong className="text-ink">Data Retention:</strong>{' '}
                   Verification ID documents are deleted within 24 hours after your account is approved. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
                 </p>
                 <p>
-                  <strong className="text-slate-800 dark:text-slate-100">Your NDPA Rights:</strong>{' '}
+                  <strong className="text-ink">Your NDPA Rights:</strong>{' '}
                   Under the Nigeria Data Protection Act (NDPA), you may request access, correction, or erasure of your personal data at any time from your Profile or by emailing{' '}
                   <a
                     href={`mailto:${SUPPORT_EMAIL}`}
-                    className="font-semibold text-emerald-700 dark:text-emerald-400 underline"
+                    className="font-semibold text-brand underline"
                   >
                     {SUPPORT_EMAIL}
                   </a>
@@ -1472,7 +1472,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <button
                 type="button"
                 onClick={() => setLegalModal(null)}
-                className="min-h-[40px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer"
+                className="min-h-[40px] px-4 rounded-xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold cursor-pointer"
               >
                 Close
               </button>
@@ -1488,11 +1488,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           aria-modal="true"
           aria-label="Delete Account and Data"
           onClick={closeDeleteModal}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-md bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-rose-700 dark:text-rose-400">
@@ -1504,14 +1504,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 disabled={deletingAccount}
                 onClick={closeDeleteModal}
                 aria-label="Close delete account dialog"
-                className="min-w-[38px] min-h-[38px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[38px] min-h-[38px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {deleteManualRequired ? (
-              <div className="space-y-3 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="space-y-3 text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800 p-3.5 text-amber-900 dark:text-amber-200">
                   Instant automated server erasure is not yet active on the backend, so we have not removed your account yet. Under the{' '}
                   <strong>Nigeria Data Protection Act (NDPA)</strong>, send a verified deletion request below and our team will erase your account and data promptly.
@@ -1532,23 +1532,23 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     await updateUserLastSeen(currentUser.uid).catch(() => undefined);
                     await signOutUser();
                   }}
-                  className="w-full min-h-[42px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+                  className="w-full min-h-[42px] px-4 rounded-xl border border-line hover:bg-sunken text-xs font-semibold text-ink-soft cursor-pointer"
                 >
                   Clear Local Device Data &amp; Sign Out
                 </button>
               </div>
             ) : (
               <form onSubmit={handleDeleteAccount} className="space-y-3">
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                   In accordance with the{' '}
-                  <strong className="text-slate-800 dark:text-slate-100">
+                  <strong className="text-ink">
                     Nigeria Data Protection Act (NDPA)
                   </strong>
                   , this permanently requests removal of your profile, credentials, and personal account data from GSU Connect. This cannot be undone.
                 </p>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                  <label className="block text-xs font-semibold text-ink-soft mb-1">
                     Type <span className="font-mono font-bold text-rose-600 dark:text-rose-400">DELETE</span> to confirm
                   </label>
                   <input
@@ -1560,12 +1560,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       setDeleteError(null);
                     }}
                     placeholder="DELETE"
-                    className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-mono text-slate-900 dark:text-slate-100 focus:outline-none focus:border-rose-500"
+                    className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm font-mono text-ink focus:outline-none focus:border-rose-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                  <label className="block text-xs font-semibold text-ink-soft mb-1">
                     Enter your password to confirm
                   </label>
                   <input
@@ -1578,7 +1578,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       setDeleteError(null);
                     }}
                     placeholder="Your current password"
-                    className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-rose-500"
+                    className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-rose-500"
                   />
                 </div>
 
@@ -1594,7 +1594,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                     type="button"
                     disabled={deletingAccount}
                     onClick={closeDeleteModal}
-                    className="min-h-[40px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 cursor-pointer"
+                    className="min-h-[40px] px-4 rounded-xl border border-line text-xs font-semibold text-ink-body dark:text-ink-soft cursor-pointer"
                   >
                     Cancel
                   </button>

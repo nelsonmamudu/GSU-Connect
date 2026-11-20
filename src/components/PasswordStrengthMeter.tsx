@@ -20,18 +20,18 @@ export function PasswordStrengthMeter({
   const strength = passwordStrength(value);
   const barTone = (filled: boolean) =>
     !filled
-      ? 'bg-slate-200 dark:bg-slate-700'
+      ? 'bg-sunken dark:bg-sunken'
       : strength.score <= 1
         ? 'bg-red-500'
         : strength.score === 2
           ? 'bg-amber-500'
-          : 'bg-emerald-600';
+          : 'bg-brand';
   const labelTone =
     strength.score <= 1
       ? 'text-red-600 dark:text-red-400'
       : strength.score === 2
         ? 'text-amber-600 dark:text-amber-400'
-        : 'text-emerald-700 dark:text-emerald-400';
+        : 'text-brand dark:text-brand';
 
   return (
     <div className={`flex items-center gap-2 ${className}`} aria-hidden="true">

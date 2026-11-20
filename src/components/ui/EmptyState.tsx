@@ -13,12 +13,12 @@ export interface EmptyStateProps {
 export function EmptyState({ icon: Icon, title, body, className = '', children }: EmptyStateProps) {
   return (
     <div
-      className={`bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 ${elevation.resting} p-6 sm:p-8 text-center space-y-2 ${className}`}
+      className={`bg-surface rounded-2xl border border-line ${elevation.resting} p-6 sm:p-8 text-center space-y-2 ${className}`}
     >
-      {Icon && <Icon className="w-8 h-8 text-emerald-700/60 dark:text-emerald-400/60 mx-auto" />}
-      <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{title}</h3>
+      {Icon && <Icon className="w-8 h-8 text-brand/70 mx-auto" />}
+      <h3 className="text-base font-bold text-ink">{title}</h3>
       {body && (
-        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-[46ch] mx-auto">
+        <p className="text-sm text-ink-muted leading-relaxed max-w-[46ch] mx-auto">
           {body}
         </p>
       )}

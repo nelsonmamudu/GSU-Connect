@@ -1,6 +1,37 @@
 import React from 'react';
 import { Spinner } from './Spinner';
 
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger'
+  | 'dangerSolid';
+
+export type ButtonSize = 'sm' | 'md' | 'lg';
+
+const base =
+  'inline-flex items-center justify-center gap-1.5 font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-surface focus-visible:ring-focus aria-disabled:opacity-60 aria-disabled:cursor-not-allowed';
+
+const sizes: Record<ButtonSize, string> = {
+  sm: 'min-h-[38px] px-3 text-xs',
+  md: 'min-h-[44px] px-4 text-sm',
+  lg: 'min-h-[48px] px-5 text-sm',
+};
+
+const variants: Record<ButtonVariant, string> = {
+  primary: 'bg-brand hover:bg-brand-strong text-on-brand',
+  secondary:
+    'bg-brand-subtle border border-success-line text-brand hover:bg-success-bg',
+  outline:
+    'border border-line bg-surface hover:bg-sunken text-ink-soft',
+  ghost: 'text-ink-muted hover:bg-sunken',
+  danger:
+    'border border-line bg-surface hover:bg-danger-bg hover:border-danger-line hover:text-danger text-ink-soft',
+  dangerSolid: 'bg-danger hover:bg-danger/90 text-white',
+};
+
 /**
  * Both labels occupy the same grid cell, so the button is always at least as
  * wide as the wider of the two. A busy label like "Checking…" therefore cannot
@@ -26,38 +57,6 @@ function ButtonLabel({
     </span>
   );
 }
-
-export type ButtonVariant =
-  | 'primary'
-  | 'secondary'
-  | 'outline'
-  | 'ghost'
-  | 'danger'
-  | 'dangerSolid';
-
-export type ButtonSize = 'sm' | 'md' | 'lg';
-
-const base =
-  'inline-flex items-center justify-center gap-1.5 font-semibold rounded-lg transition-colors cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 focus-visible:ring-emerald-700 dark:focus-visible:ring-emerald-400';
-
-const sizes: Record<ButtonSize, string> = {
-  sm: 'min-h-[38px] px-3 text-xs',
-  md: 'min-h-[44px] px-4 text-sm',
-  lg: 'min-h-[48px] px-5 text-sm',
-};
-
-const variants: Record<ButtonVariant, string> = {
-  primary: 'bg-emerald-700 hover:bg-emerald-800 text-white',
-  secondary:
-    'bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/50 border border-emerald-200/70 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300',
-  outline:
-    'border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200',
-  ghost:
-    'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800',
-  danger:
-    'border border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 dark:hover:border-red-800/70 hover:text-red-700 dark:hover:text-red-300 text-slate-700 dark:text-slate-200',
-  dangerSolid: 'bg-red-600 hover:bg-red-700 text-white',
-};
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

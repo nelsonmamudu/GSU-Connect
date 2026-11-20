@@ -229,19 +229,19 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-4">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-base font-bold text-ink">
                 GSU Confessions &amp; Gist
               </h2>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-sunken text-[11px] font-semibold text-ink-body dark:text-ink-soft">
                 <EyeOff className="w-3 h-3" />
                 <span>Anonymous</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-ink-muted">
               Share campus thoughts, Off-Campus (Tumfure) gist, lecture hall moments, or shoutouts. Names and matric numbers are never displayed.
             </p>
           </div>
@@ -252,7 +252,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               setFormError(null);
               setCreateOpen(true);
             }}
-            className="min-h-[42px] px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer transition-colors"
+            className="min-h-[42px] px-4 rounded-2xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Post Anonymously</span>
@@ -260,12 +260,12 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
         </div>
 
         {submitSuccessNote && (
-          <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-3.5 py-2.5 text-xs text-emerald-900 dark:text-emerald-200 flex items-center justify-between gap-2">
+          <div className="rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-3.5 py-2.5 text-xs text-brand flex items-center justify-between gap-2">
             <span>{submitSuccessNote}</span>
             <button
               type="button"
               onClick={() => setSubmitSuccessNote(null)}
-              className="text-emerald-700 dark:text-emerald-300 hover:opacity-75 cursor-pointer"
+              className="text-brand hover:opacity-75 cursor-pointer"
               aria-label="Dismiss message"
             >
               <X className="w-4 h-4" />
@@ -275,14 +275,14 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
 
         {/* View Switcher */}
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+          <div className="inline-flex items-center gap-1 p-1 bg-sunken rounded-2xl">
             <button
               type="button"
               onClick={() => setViewMode('feed')}
               className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 viewMode === 'feed'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
               Approved Feed ({approvedList.length})
@@ -294,8 +294,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 onClick={() => setViewMode('queue')}
                 className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
                   viewMode === 'queue'
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
                 <span>Moderation Queue</span>
@@ -312,8 +312,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               onClick={() => setViewMode('mine')}
               className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 viewMode === 'mine'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
               My Submissions ({mySubmissions.length})
@@ -321,14 +321,14 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {viewMode === 'feed' && (
-              <div className="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+              <div className="inline-flex items-center gap-1 p-1 bg-sunken rounded-xl">
                 <button
                   type="button"
                   onClick={() => setSortBy('newest')}
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
                     sortBy === 'newest'
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                      : 'text-slate-600 dark:text-slate-400'
+                      ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                      : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
                   Newest
@@ -338,8 +338,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   onClick={() => setSortBy('top')}
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
                     sortBy === 'top'
-                      ? 'bg-white dark:bg-slate-900 text-emerald-700 dark:text-emerald-400 shadow-2xs'
-                      : 'text-slate-600 dark:text-slate-400'
+                      ? 'bg-white dark:bg-surface text-brand dark:text-brand shadow-2xs'
+                      : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
                   Top Upvoted
@@ -351,21 +351,21 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
 
         {/* Search & Category Filter Pills */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search confessions, lecture hall gist, Tumfure, or shoutouts..."
             aria-label="Search confessions"
-            className="w-full min-h-[42px] pl-10 pr-10 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+            className="w-full min-h-[42px] pl-10 pr-10 rounded-2xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
               aria-label="Clear confession search"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -382,8 +382,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 onClick={() => setCategoryFilter(cat)}
                 className={`min-h-[32px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                   active
-                    ? 'bg-emerald-700 border-emerald-700 text-white'
-                    : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-500/60'
+                    ? 'bg-brand border-brand text-white'
+                    : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                 }`}
               >
                 {cat}
@@ -409,20 +409,20 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
 
       {/* Cards */}
       {viewMode === 'mine' && loadingMine && visiblePosts.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center text-sm text-slate-500 dark:text-slate-400">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center text-sm text-ink-muted">
           Loading your anonymous submissions...
         </div>
       ) : visiblePosts.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2">
           <Flame className="w-9 h-9 text-slate-300 dark:text-slate-600 mx-auto" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-bold text-ink">
             {viewMode === 'queue'
               ? 'Moderation queue is clear'
               : viewMode === 'mine'
                 ? 'No anonymous submissions yet'
                 : 'No confessions or gist yet'}
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-ink-muted">
             {viewMode === 'queue'
               ? 'All submitted campus posts have been reviewed.'
               : 'Be the first to share a campus confession, Off-Campus (Tumfure) update, or shoutout.'}
@@ -441,33 +441,33 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
             return (
               <article
                 key={post.id}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col justify-between gap-4"
+                className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 flex flex-col justify-between gap-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0">
-                      <div className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-sunken text-ink-body dark:text-ink-soft flex items-center justify-center shrink-0">
                         <EyeOff className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                        <p className="text-xs font-bold text-ink truncate">
                           Anonymous GSU Student
                         </p>
-                        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                        <p className="text-[11px] text-ink-muted">
                           {formatShortTime(post.createdAt)}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-center gap-1.5">
-                      <span className="px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 text-[11px] font-semibold">
+                      <span className="px-2.5 py-1 rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand text-[11px] font-semibold">
                         {post.category}
                       </span>
                       {viewMode !== 'feed' && (
                         <span
                           className={`px-2 py-1 rounded-xl text-[11px] font-semibold capitalize ${
                             post.status === 'approved'
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300'
+                              ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/80 dark:text-brand'
                               : post.status === 'rejected'
                                 ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
                                 : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
@@ -479,12 +479,12 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                     </div>
                   </div>
 
-                  <p className="text-sm text-slate-800 dark:text-slate-100 leading-relaxed whitespace-pre-wrap break-words">
+                  <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap break-words">
                     {post.text}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2">
+                <div className="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2">
                   {post.status === 'approved' ? (
                     <button
                       type="button"
@@ -492,15 +492,15 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                       onClick={() => handleUpvote(post)}
                       className={`min-h-[36px] px-3 rounded-xl border text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer tabular-nums ${
                         hasUpvoted
-                          ? 'bg-emerald-700 border-emerald-700 text-white'
-                          : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-emerald-500'
+                          ? 'bg-brand border-brand text-white'
+                          : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-brand'
                       }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
                       <span>{upvoteCount}</span>
                     </button>
                   ) : (
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 inline-flex items-center gap-1">
+                    <span className="text-[11px] text-ink-muted inline-flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
                       <span>
                         {post.status === 'pending'
@@ -517,7 +517,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                           type="button"
                           disabled={moderatingId === post.id}
                           onClick={() => handleModerate(post.id, 'approved')}
-                          className="min-h-[36px] px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                          className="min-h-[36px] px-3 rounded-xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
                         >
                           <Check className="w-3.5 h-3.5" />
                           <span>Approve</span>
@@ -540,7 +540,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                         disabled={revealingAuthorId === post.id}
                         onClick={() => handleRevealAuthor(post.id)}
                         title="Admin-only author audit lookup"
-                        className="min-h-[36px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 inline-flex items-center gap-1 cursor-pointer"
+                        className="min-h-[36px] px-2.5 rounded-xl border border-line hover:bg-sunken text-[11px] font-semibold text-ink-body dark:text-ink-soft inline-flex items-center gap-1 cursor-pointer"
                       >
                         <Eye className="w-3.5 h-3.5" />
                         <span>
@@ -567,7 +567,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                           <button
                             type="button"
                             onClick={() => setConfirmDeleteId(null)}
-                            className="min-h-[36px] px-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500 cursor-pointer"
+                            className="min-h-[36px] px-2 rounded-xl border border-line text-xs text-ink-muted cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -577,7 +577,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                           type="button"
                           onClick={() => setConfirmDeleteId(post.id)}
                           aria-label="Delete confession"
-                          className="min-w-[36px] min-h-[36px] rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600 flex items-center justify-center cursor-pointer"
+                          className="min-w-[36px] min-h-[36px] rounded-xl border border-line hover:bg-rose-50 dark:hover:bg-rose-950/40 text-ink-muted hover:text-rose-600 flex items-center justify-center cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -586,7 +586,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 </div>
 
                 {isAdmin && authorChecked && (
-                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 px-3 py-2 text-[11px] text-slate-700 dark:text-slate-300">
+                  <div className="rounded-xl bg-sunken dark:bg-sunken/70 border border-line/80 dark:border-line px-3 py-2 text-[11px] text-ink-soft">
                     {revealedAuthor ? (
                       <span>
                         <span className="font-semibold">Author (admin audit):</span>{' '}
@@ -608,7 +608,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               type="button"
               disabled={loadingMore}
               onClick={onLoadMore}
-              className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer disabled:opacity-60"
+              className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken text-xs font-semibold text-ink-soft cursor-pointer disabled:opacity-60"
             >
               {loadingMore ? 'Loading more...' : 'Load older confessions'}
             </button>
@@ -624,19 +624,19 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
           aria-modal="true"
           aria-label="Post Anonymously"
           onClick={() => !submitting && setCreateOpen(false)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleSubmit}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   Post Anonymously
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-ink-muted">
                   Your name, matric number &amp; department stay hidden from readers.
                 </p>
               </div>
@@ -644,14 +644,14 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 type="button"
                 onClick={() => setCreateOpen(false)}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+              <label className="block text-xs font-semibold text-ink-soft mb-1.5">
                 Category
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -662,8 +662,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                     onClick={() => setCategory(cat)}
                     className={`min-h-[34px] px-3 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                       category === cat
-                        ? 'bg-emerald-700 border-emerald-700 text-white'
-                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                        ? 'bg-brand border-brand text-white'
+                        : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-soft dark:text-ink-soft'
                     }`}
                   >
                     {cat}
@@ -674,10 +674,10 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                <label className="text-xs font-semibold text-ink-soft">
                   Your Message
                 </label>
-                <span className="text-[11px] font-mono text-slate-500 tabular-nums">
+                <span className="text-[11px] font-mono text-ink-muted tabular-nums">
                   {text.length} / 800
                 </span>
               </div>
@@ -689,11 +689,11 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 placeholder="Share respectfully — no harassment, hate speech, or personal doxxing..."
-                className="w-full px-3.5 py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600 resize-none"
+                className="w-full px-3.5 py-2.5 rounded-2xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand resize-none"
               />
             </div>
 
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-ink-muted">
               All submissions go through moderator review before appearing in the campus feed.
             </p>
 
@@ -708,14 +708,14 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 type="button"
                 disabled={submitting}
                 onClick={() => setCreateOpen(false)}
-                className="min-h-[42px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+                className="min-h-[42px] px-4 rounded-xl border border-line text-xs font-semibold text-ink-soft cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="min-h-[42px] px-5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer"
+                className="min-h-[42px] px-5 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold cursor-pointer"
               >
                 {submitting ? 'Submitting...' : 'Submit Anonymously'}
               </button>

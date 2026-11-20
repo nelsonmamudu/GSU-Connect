@@ -159,9 +159,9 @@ export function RecoveryEmailPrompt() {
     <div
       role="dialog"
       aria-label={title}
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,26rem)] rounded-2xl border border-emerald-200 dark:border-emerald-900 bg-white dark:bg-slate-900 shadow-xl p-4 text-sm text-slate-700 dark:text-slate-200 space-y-2"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,26rem)] rounded-2xl border border-success-line bg-surface shadow-xl p-4 text-sm text-ink-soft space-y-2"
     >
-      <p className="font-semibold text-slate-900 dark:text-slate-100">{title}</p>
+      <p className="font-semibold text-ink">{title}</p>
 
       {reauthRequired ? (
         <>
@@ -224,7 +224,7 @@ export function RecoveryEmailPrompt() {
               ? <>We sent a verification link to <span className="font-semibold">{shownMasked}</span>. Confirm it to make this your verified recovery inbox.</>
               : 'Add a verified recovery inbox so password reset links can reach you when that is enabled.'}
           </p>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Check your spam folder — the link expires in 60 minutes.</p>
+          <p className="text-xs text-ink-muted">Check your spam folder — the link expires in 60 minutes.</p>
           {resendCheck.widget}
           {message && <Alert variant="error">{message}</Alert>}
           <div className="flex flex-wrap gap-2">

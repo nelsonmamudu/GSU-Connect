@@ -95,18 +95,18 @@ export function ProofDropzone({
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
       onPaste={handlePaste}
-      className={`rounded-2xl border bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-3 text-left transition-colors ${
+      className={`rounded-2xl border bg-sunken/70 dark:bg-sunken/60 p-3.5 space-y-3 text-left transition-colors ${
         dragOver
-          ? 'border-emerald-600 ring-2 ring-emerald-600/20'
-          : 'border-slate-200/80 dark:border-slate-800'
+          ? 'border-brand ring-2 ring-emerald-600/20'
+          : 'border-line/80 dark:border-line'
       }`}
     >
       <div className="flex items-start gap-2">
-        <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+        <IdCard className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+        <span className="text-xs font-semibold text-ink leading-snug">
           {title}{' '}
           {required !== undefined && (
-            <span className="font-normal text-slate-500 dark:text-slate-400">
+            <span className="font-normal text-ink-muted">
               {required ? '(Required)' : '(Optional now — you can upload later)'}
             </span>
           )}
@@ -133,16 +133,16 @@ export function ProofDropzone({
             <img
               src={previewUrl}
               alt="Preview of selected proof"
-              className="h-24 w-24 rounded-xl border border-slate-200 dark:border-slate-700 object-cover shrink-0"
+              className="h-24 w-24 rounded-xl border border-line object-cover shrink-0"
             />
           ) : (
-            <div className="h-24 w-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex flex-col items-center justify-center gap-1 shrink-0">
-              <IdCard className="w-6 h-6 text-slate-500" />
-              <span className="text-[10px] font-semibold text-slate-500">PDF</span>
+            <div className="h-24 w-24 rounded-xl border border-line bg-surface flex flex-col items-center justify-center gap-1 shrink-0">
+              <IdCard className="w-6 h-6 text-ink-muted" />
+              <span className="text-[10px] font-semibold text-ink-muted">PDF</span>
             </div>
           )}
           <div className="min-w-0 flex-1 space-y-1.5">
-            <p className="text-[11px] font-semibold text-slate-900 dark:text-slate-100 break-all leading-snug">
+            <p className="text-[11px] font-semibold text-ink break-all leading-snug">
               {file.name} ({formatFileSize(file.size)})
             </p>
             <Button
@@ -158,9 +158,9 @@ export function ProofDropzone({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-white/60 dark:bg-slate-900/40 px-3 py-4 text-center">
-          <Upload className="w-5 h-5 text-slate-500" />
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+        <div className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-line bg-white/60 dark:bg-surface/40 px-3 py-4 text-center">
+          <Upload className="w-5 h-5 text-ink-muted" />
+          <p className="text-[11px] text-ink-muted leading-relaxed">
             Drag &amp; drop a file here, paste it, or
           </p>
           <Button
@@ -172,18 +172,18 @@ export function ProofDropzone({
             disabled={disabled}
             aria-invalid={Boolean(error)}
             aria-describedby={error ? 'proof-error' : undefined}
-            className="hover:border-emerald-600"
+            className="hover:border-brand"
           >
             {chooseLabel}
           </Button>
-          <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-[10px] text-ink-muted leading-relaxed">
             {acceptHint}. Redact unrelated personal information.
           </p>
         </div>
       )}
 
       {note && (
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{note}</p>
+        <p className="text-[11px] text-ink-muted leading-relaxed">{note}</p>
       )}
       {error && (
         <p id="proof-error" className="text-xs font-medium text-red-600 dark:text-red-400">

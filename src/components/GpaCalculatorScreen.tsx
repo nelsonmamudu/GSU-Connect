@@ -56,7 +56,7 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   if (gpa >= 4.5) {
     return {
       label: 'First Class Honours',
-      toneClass: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300',
+      toneClass: 'bg-brand-subtle text-brand dark:bg-brand-subtle/80 dark:text-brand',
     };
   }
   if (gpa >= 3.5) {
@@ -80,7 +80,7 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   if (gpa >= 1.0) {
     return {
       label: 'Pass',
-      toneClass: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
+      toneClass: 'bg-sunken text-ink-soft dark:bg-sunken dark:text-ink-soft',
     };
   }
   return {
@@ -219,7 +219,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
     ? getGsuStanding(displayCgpa)
     : {
         label: 'No courses entered yet',
-        toneClass: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300',
+        toneClass: 'bg-sunken text-ink-body dark:bg-sunken dark:text-ink-soft',
       };
   const alreadyAtTarget = displayCgpa >= gpaState.targetCgpa && gpaMetrics.totalUnits > 0;
   const safeRequiredAvg = Math.max(0, gpaMetrics.requiredAvg);
@@ -261,7 +261,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
         <button
           type="button"
           onClick={onBack}
-          className="min-h-[40px] px-3.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-2 cursor-pointer"
+          className="min-h-[40px] px-3.5 rounded-xl bg-surface border border-line/80 dark:border-line hover:bg-sunken text-xs font-semibold text-ink-soft inline-flex items-center gap-2 cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Profile</span>
@@ -270,18 +270,18 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
 
       <section
         aria-label="GSU 5.0 GPA and CGPA Calculator"
-        className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 space-y-5"
+        className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-5"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center shrink-0">
               <Calculator className="w-5 h-5" />
             </div>
             <div className="min-w-0">
-              <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h2 className="text-base font-bold text-ink">
                 GSU 5.0 GPA / CGPA Calculator
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-ink-muted">
                 A=5 · B=4 · C=3 · D=2 · E=1 · F=0
               </p>
             </div>
@@ -292,11 +292,11 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               type="button"
               disabled={!hasEnteredAnyData}
               onClick={handleCopyGpaSummary}
-              className="min-h-[34px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-50 text-xs font-semibold text-slate-600 dark:text-slate-300 inline-flex items-center gap-1.5 cursor-pointer"
+              className="min-h-[34px] px-3 rounded-xl border border-line hover:bg-sunken disabled:opacity-50 text-xs font-semibold text-ink-body dark:text-ink-soft inline-flex items-center gap-1.5 cursor-pointer"
             >
               {copiedGpa ? (
                 <>
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-brand" />
                   <span>Copied</span>
                 </>
               ) : (
@@ -311,14 +311,14 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               onClick={handleApplySemesterToPrior}
               disabled={gpaMetrics.semUnits === 0}
               title="Roll current semester units & points into Prior Standing and clear this semester's courses"
-              className="min-h-[34px] px-3 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/70 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 disabled:opacity-50 text-xs font-semibold text-emerald-800 dark:text-emerald-300 cursor-pointer"
+              className="min-h-[34px] px-3 rounded-xl border border-success-line bg-brand-subtle/70 dark:bg-brand-subtle/50 hover:bg-brand-subtle dark:hover:bg-brand-subtle/50 disabled:opacity-50 text-xs font-semibold text-brand cursor-pointer"
             >
               Roll to Prior
             </button>
             <button
               type="button"
               onClick={() => setGpaState(EMPTY_GPA_STATE)}
-              className="min-h-[34px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 inline-flex items-center gap-1.5 cursor-pointer"
+              className="min-h-[34px] px-3 rounded-xl border border-line hover:bg-sunken text-xs font-semibold text-ink-body dark:text-ink-soft inline-flex items-center gap-1.5 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
@@ -327,8 +327,8 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
         </div>
 
         {/* Device-only storage notice */}
-        <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 px-3.5 py-2.5 flex items-start gap-2.5 text-xs text-slate-600 dark:text-slate-300">
-          <Info className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
+        <div className="rounded-2xl bg-sunken dark:bg-sunken/70 border border-line/70 px-3.5 py-2.5 flex items-start gap-2.5 text-xs text-ink-body dark:text-ink-soft">
+          <Info className="w-4 h-4 text-ink-muted shrink-0 mt-0.5" />
           <span>
             Calculator data is saved only on this device. Clearing your browser data or signing in on another device will not carry these entries over.
           </span>
@@ -336,15 +336,15 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
 
         {/* Live Score Summary */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 p-3.5 border border-slate-100 dark:border-slate-800">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          <div className="rounded-2xl bg-sunken dark:bg-sunken/70 p-3.5 border border-line">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted">
               Semester GPA
             </p>
-            <p className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mt-1 tabular-nums">
+            <p className="text-2xl font-extrabold text-ink mt-1 tabular-nums">
               {gpaMetrics.semUnits > 0 ? (
                 <>
                   {gpaMetrics.semesterGpa.toFixed(2)}
-                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                  <span className="text-xs font-semibold text-ink-muted">
                     {' '}
                     / 5.00
                   </span>
@@ -353,22 +353,22 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 '—'
               )}
             </p>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">
+            <p className="text-[11px] text-ink-muted mt-0.5 tabular-nums">
               {gpaMetrics.semUnits > 0
                 ? `${gpaMetrics.semUnits} units · ${gpaMetrics.semPoints} pts`
                 : 'No semester courses yet'}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/40 p-3.5 border border-emerald-200/70 dark:border-emerald-900/60">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+          <div className="rounded-2xl bg-brand-subtle/70 dark:bg-brand-subtle/40 p-3.5 border border-success-line/70 dark:border-success-line/60">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-brand">
               Cumulative CGPA
             </p>
-            <p className="text-2xl font-extrabold text-emerald-900 dark:text-emerald-200 mt-1 tabular-nums">
+            <p className="text-2xl font-extrabold text-brand mt-1 tabular-nums">
               {hasEnteredAnyData ? (
                 <>
                   {displayCgpa.toFixed(2)}
-                  <span className="text-xs font-semibold text-emerald-700/70 dark:text-emerald-400/70">
+                  <span className="text-xs font-semibold text-brand/70">
                     {' '}
                     / 5.00
                   </span>
@@ -377,13 +377,13 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 '—'
               )}
             </p>
-            <p className="text-[11px] text-emerald-800/80 dark:text-emerald-300/80 mt-0.5 tabular-nums">
+            <p className="text-[11px] text-brand/80 mt-0.5 tabular-nums">
               {hasEnteredAnyData ? `${gpaMetrics.totalUnits} total units` : 'Add courses or prior standing'}
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 p-3.5 border border-slate-100 dark:border-slate-800 flex flex-col justify-between">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1">
+          <div className="rounded-2xl bg-sunken dark:bg-sunken/70 p-3.5 border border-line flex flex-col justify-between">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted flex items-center gap-1">
               <Award className="w-3.5 h-3.5 text-amber-500" />
               <span>Based on what you&apos;ve entered</span>
             </p>
@@ -399,7 +399,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
 
         {/* Grade Distribution Summary */}
         <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
-          <span className="font-semibold text-slate-500 dark:text-slate-400 mr-1">
+          <span className="font-semibold text-ink-muted mr-1">
             Grade Mix:
           </span>
           {(['A', 'B', 'C', 'D', 'E', 'F'] as GsuGradeLetter[]).map((g) => (
@@ -407,8 +407,8 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               key={g}
               className={`px-2 py-0.5 rounded-lg font-mono font-bold tabular-nums border ${
                 gpaMetrics.gradeCounts[g] > 0
-                  ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
-                  : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-800 text-slate-500 dark:text-slate-400'
+                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-success-line dark:border-success-line text-brand dark:text-brand'
+                  : 'bg-sunken dark:bg-sunken/50 border-line/70 dark:border-line text-ink-muted dark:text-ink-muted'
               }`}
             >
               {g}:{gpaMetrics.gradeCounts[g]}
@@ -419,7 +419,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
         {/* Prior Cumulative Standing (Optional) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
           <div>
-            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+            <label className="block text-[11px] font-semibold text-ink-body dark:text-ink-soft mb-1">
               Prior Earned Units (before this semester)
             </label>
             <input
@@ -432,11 +432,11 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 setGpaState((prev) => ({ ...prev, priorUnits: e.target.value }))
               }
               placeholder="0"
-              className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[40px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink tabular-nums focus:outline-none focus:border-brand"
             />
           </div>
           <div>
-            <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+            <label className="block text-[11px] font-semibold text-ink-body dark:text-ink-soft mb-1">
               Prior CGPA (0.00 – 5.00)
             </label>
             <input
@@ -449,10 +449,10 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 setGpaState((prev) => ({ ...prev, priorCgpa: e.target.value }))
               }
               placeholder="0.00"
-              className={`w-full min-h-[40px] px-3 rounded-xl border bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none ${
+              className={`w-full min-h-[40px] px-3 rounded-xl border bg-sunken dark:bg-sunken text-sm text-ink dark:text-ink tabular-nums focus:outline-none ${
                 gpaMetrics.priorCgpaInvalid
                   ? 'border-rose-400 dark:border-rose-600 focus:border-rose-500'
-                  : 'border-slate-200 dark:border-slate-700 focus:border-emerald-600'
+                  : 'border-line dark:border-line focus:border-brand'
               }`}
             />
             {gpaMetrics.priorCgpaInvalid && (
@@ -466,7 +466,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
         {/* Course Rows */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <p className="text-xs font-bold uppercase tracking-wider text-ink-muted">
               This Semester Courses
             </p>
             <button
@@ -485,7 +485,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                   ],
                 }))
               }
-              className="min-h-[34px] px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+              className="min-h-[34px] px-3 rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/60 text-brand text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Add Course</span>
@@ -493,8 +493,8 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
           </div>
 
           {gpaState.courses.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/30 p-5 text-center space-y-2">
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="rounded-2xl border border-dashed border-line bg-sunken/70 dark:bg-sunken/30 p-5 text-center space-y-2">
+              <p className="text-xs text-ink-muted">
                 No courses added yet. Tap &ldquo;Add Course&rdquo; to enter your credit units and grades.
               </p>
             </div>
@@ -507,7 +507,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 return (
                   <div
                     key={course.id}
-                    className="grid grid-cols-12 gap-2 items-center bg-slate-50/80 dark:bg-slate-800/50 rounded-2xl p-2 border border-slate-100 dark:border-slate-800"
+                    className="grid grid-cols-12 gap-2 items-center bg-sunken/80 dark:bg-sunken/50 rounded-2xl p-2 border border-line"
                   >
                     <input
                       type="text"
@@ -524,7 +524,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                         }));
                       }}
                       placeholder="e.g. GST 101"
-                      className="col-span-12 sm:col-span-4 min-h-[38px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                      className="col-span-12 sm:col-span-4 min-h-[38px] px-2.5 rounded-xl border border-line bg-surface text-xs font-semibold text-ink focus:outline-none focus:border-brand"
                     />
 
                     <select
@@ -539,7 +539,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                           ),
                         }));
                       }}
-                      className="col-span-4 sm:col-span-3 min-h-[38px] px-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                      className="col-span-4 sm:col-span-3 min-h-[38px] px-2 rounded-xl border border-line bg-surface text-xs font-semibold text-ink focus:outline-none focus:border-brand"
                     >
                       {[1, 2, 3, 4, 5, 6].map((u) => (
                         <option key={u} value={u}>
@@ -560,7 +560,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                           ),
                         }));
                       }}
-                      className="col-span-4 sm:col-span-3 min-h-[38px] px-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-bold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                      className="col-span-4 sm:col-span-3 min-h-[38px] px-2 rounded-xl border border-line bg-surface text-xs font-bold text-ink focus:outline-none focus:border-brand"
                     >
                       {(['A', 'B', 'C', 'D', 'E', 'F'] as GsuGradeLetter[]).map((g) => (
                         <option key={g} value={g}>
@@ -570,7 +570,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                     </select>
 
                     <div className="col-span-4 sm:col-span-2 flex items-center justify-end gap-1">
-                      <span className="text-[11px] font-mono tabular-nums font-semibold text-slate-500 dark:text-slate-400 px-1.5">
+                      <span className="text-[11px] font-mono tabular-nums font-semibold text-ink-muted px-1.5">
                         {rowPts}pt
                       </span>
                       <button
@@ -583,7 +583,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                         }
                         title={`Points: ${rowPts}`}
                         aria-label={`Remove course ${course.code || idx + 1}`}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -596,15 +596,15 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
         </div>
 
         {/* Target Tracker */}
-        <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 p-4 space-y-3">
+        <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line p-4 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div className="flex items-center gap-2">
-              <Target className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200">
+              <Target className="w-4 h-4 text-brand shrink-0" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-ink-soft">
                 Target CGPA after these units
               </h3>
             </div>
-            <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 overflow-x-auto">
+            <div className="flex flex-wrap items-center gap-1 p-1 rounded-xl bg-surface border border-line overflow-x-auto">
               {[
                 { value: 4.5, label: 'First Class (4.50+)' },
                 { value: 3.5, label: '2:1 Upper (3.50+)' },
@@ -618,8 +618,8 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                   }
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     gpaState.targetCgpa === opt.value
-                      ? 'bg-emerald-700 text-white'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                      ? 'bg-brand text-white'
+                      : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                   }`}
                 >
                   {opt.label}
@@ -629,15 +629,15 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
           </div>
 
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+            <div className="flex items-center justify-between text-[11px] text-ink-muted">
               <span>Current CGPA compared to {gpaState.targetCgpa.toFixed(2)} target</span>
-              <span className="font-semibold tabular-nums text-slate-700 dark:text-slate-200">
+              <span className="font-semibold tabular-nums text-ink-soft">
                 {hasEnteredAnyData ? displayCgpa.toFixed(2) : '—'} / {gpaState.targetCgpa.toFixed(2)} ({targetProgressPct}%)
               </span>
             </div>
-            <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+            <div className="w-full h-2 rounded-full bg-sunken overflow-hidden">
               <div
-                className="h-full rounded-full bg-emerald-600 dark:bg-emerald-500 transition-all duration-300"
+                className="h-full rounded-full bg-brand transition-all duration-300"
                 style={{ width: `${targetProgressPct}%` }}
               />
             </div>
@@ -645,7 +645,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
 
           <div className="flex flex-col sm:flex-row sm:items-start gap-3">
             <div className="sm:w-48 shrink-0">
-              <label className="block text-[11px] font-semibold text-slate-600 dark:text-slate-300 mb-1">
+              <label className="block text-[11px] font-semibold text-ink-body dark:text-ink-soft mb-1">
                 Upcoming Credit Units
               </label>
               <input
@@ -658,10 +658,10 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 onChange={(e) =>
                   setGpaState((prev) => ({ ...prev, upcomingUnits: e.target.value }))
                 }
-                className={`w-full min-h-[38px] px-3 rounded-xl border bg-white dark:bg-slate-900 text-xs font-semibold text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none ${
+                className={`w-full min-h-[38px] px-3 rounded-xl border bg-white dark:bg-surface text-xs font-semibold text-ink dark:text-ink tabular-nums focus:outline-none ${
                   gpaMetrics.upcomingUnitsInvalid
                     ? 'border-rose-400 dark:border-rose-600 focus:border-rose-500'
-                    : 'border-slate-200 dark:border-slate-700 focus:border-emerald-600'
+                    : 'border-line dark:border-line focus:border-brand'
                 }`}
               />
               {gpaMetrics.upcomingUnitsInvalid && (
@@ -671,9 +671,9 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               )}
             </div>
 
-            <div className="flex-1 rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-700 px-3.5 py-2.5">
+            <div className="flex-1 rounded-xl bg-surface border border-line/80 dark:border-line px-3.5 py-2.5">
               {!gpaMetrics.hasUpcomingUnits ? (
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-ink-muted">
                   Enter your upcoming credit units to see the average GPA needed to hit {gpaState.targetCgpa.toFixed(2)}.
                 </p>
               ) : gpaMetrics.requiredAvg > 5 ? (
@@ -681,13 +681,13 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                   <p className="text-xs font-bold text-amber-700 dark:text-amber-300">
                     Needs {gpaMetrics.requiredAvg.toFixed(2)} GPA over next {gpaMetrics.upcomingU} units
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-ink-muted">
                     Exceeds 5.00 max in {gpaMetrics.upcomingU} units — add more upcoming credit units or pick a different target.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-0.5">
-                  <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5">
+                  <p className="text-xs font-bold text-brand flex items-center gap-1.5">
                     <TrendingUp className="w-3.5 h-3.5 shrink-0" />
                     <span>
                       {alreadyAtTarget
@@ -695,7 +695,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                         : `Target ${gpaState.targetCgpa.toFixed(2)}: Need ${safeRequiredAvg.toFixed(2)} GPA over next ${gpaMetrics.upcomingU} units`}
                     </span>
                   </p>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-ink-muted">
                     {describeGradeMixHint(safeRequiredAvg)}
                   </p>
                 </div>

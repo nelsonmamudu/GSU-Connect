@@ -57,9 +57,9 @@ const EVENT_TYPE_STYLES: Record<
     label: 'text-amber-700 dark:text-amber-300',
   },
   campus_event: {
-    card: 'bg-emerald-50/60 dark:bg-emerald-950/25 border-emerald-200/90 dark:border-emerald-900/70',
-    dot: 'bg-emerald-600 dark:bg-emerald-400',
-    label: 'text-emerald-700 dark:text-emerald-300',
+    card: 'bg-brand-subtle/60 dark:bg-brand-subtle/25 border-success-line/90 dark:border-success-line/70',
+    dot: 'bg-brand dark:bg-brand-subtle',
+    label: 'text-brand dark:text-brand',
   },
 };
 
@@ -264,12 +264,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <div className="max-w-4xl mx-auto space-y-4">
       {/* Header Banner */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="space-y-0.5">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="text-base sm:text-lg font-bold text-ink">
             Campus Calendar & Exam Timetable
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-ink-muted">
             Track upcoming exams, departmental seminars, registration deadlines, and university events.
           </p>
         </div>
@@ -278,7 +278,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
           <button
             type="button"
             onClick={openCreateModal}
-            className="min-h-[44px] px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer"
+            className="min-h-[44px] px-4 rounded-2xl bg-brand hover:bg-brand-strong text-on-brand text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>Add Timetable Entry</span>
@@ -287,16 +287,16 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       </div>
 
       {/* Filters & Color Legend */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="inline-flex p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 self-start">
+          <div className="inline-flex p-1 rounded-2xl bg-sunken self-start">
             <button
               type="button"
               onClick={() => setScopeTab('all')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'all'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-300'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft'
               }`}
             >
               All Campus
@@ -306,8 +306,8 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('mine')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'mine'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-300'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft'
               }`}
             >
               My Department
@@ -317,20 +317,20 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('exams')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'exams'
-                  ? 'bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-300'
+                  ? 'bg-white dark:bg-surface text-rose-700 dark:text-rose-300 shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft'
               }`}
             >
               Exams Only
             </button>
           </div>
 
-          <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600 dark:text-slate-300 cursor-pointer select-none">
+          <label className="inline-flex items-center gap-2 text-xs font-medium text-ink-body dark:text-ink-soft cursor-pointer select-none">
             <input
               type="checkbox"
               checked={showPast}
               onChange={(e) => setShowPast(e.target.checked)}
-              className="w-4 h-4 rounded accent-emerald-700 cursor-pointer"
+              className="w-4 h-4 rounded accent-brand cursor-pointer"
             />
             <span>Include past dates</span>
           </label>
@@ -338,21 +338,21 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div className="relative sm:col-span-8">
-            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search course code, hall/venue, department, or event title..."
               aria-label="Search calendar events"
-              className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+              className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear calendar search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 cursor-pointer"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -367,7 +367,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               id="calTypeFilter"
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value as 'all' | CalendarEventType)}
-              className="w-full min-h-[44px] px-3.5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[44px] px-3.5 rounded-2xl border border-line bg-surface dark:bg-sunken text-xs sm:text-sm font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="all">All Event Types</option>
               {(Object.keys(CALENDAR_EVENT_TYPE_LABELS) as CalendarEventType[]).map((key) => (
@@ -380,7 +380,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
 
         {/* Clean Color Key */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1 text-[11px] text-slate-500 dark:text-slate-400">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1 text-[11px] text-ink-muted">
           {(Object.keys(CALENDAR_EVENT_TYPE_LABELS) as CalendarEventType[]).map((key) => (
             <span key={key} className="inline-flex items-center gap-1.5">
               <span className={`w-2 h-2 rounded-full ${EVENT_TYPE_STYLES[key].dot}`} />
@@ -405,14 +405,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
       {/* Chronological Timetable List */}
       {groupedDates.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2.5">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2.5">
+          <div className="w-12 h-12 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center mx-auto">
             <CalendarDays className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-sm font-bold text-ink">
             No scheduled events found
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-ink-muted max-w-sm mx-auto">
             {canManage
               ? 'Post upcoming exam dates, departmental seminars, or registration deadlines for students.'
               : 'Upcoming department exams and campus schedules posted by admins, lecturers, or class reps will appear here.'}
@@ -426,25 +426,25 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             return (
               <section key={dateKey} className="space-y-2.5">
                 <div className="flex items-center justify-between px-1">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-2">
                     <span>{formatCalendarDateHeading(dateKey)}</span>
                     {relTag && (
                       <span
                         className={`text-[11px] normal-case ${
                           relTag === 'Today'
-                            ? 'font-bold text-emerald-700 dark:text-emerald-400'
+                            ? 'font-bold text-brand dark:text-brand'
                             : relTag === 'Tomorrow'
                               ? 'font-semibold text-indigo-700 dark:text-indigo-300'
                               : relTag === 'Past'
-                                ? 'font-medium text-slate-500 dark:text-slate-400'
-                                : 'font-medium text-slate-500 dark:text-slate-400'
+                                ? 'font-medium text-ink-muted dark:text-ink-muted'
+                                : 'font-medium text-ink-muted dark:text-ink-muted'
                         }`}
                       >
                         · {relTag}
                       </span>
                     )}
                   </h3>
-                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                  <span className="text-[11px] font-mono text-ink-muted">
                     {dayEvents.length} {dayEvents.length === 1 ? 'entry' : 'entries'}
                   </span>
                 </div>
@@ -473,23 +473,23 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                               </span>
                               {ev.courseCode && (
                                 <>
-                                  <span className="text-slate-500 dark:text-slate-400" aria-hidden="true">
+                                  <span className="text-ink-muted" aria-hidden="true">
                                     ·
                                   </span>
-                                  <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
+                                  <span className="font-mono font-bold text-ink">
                                     {ev.courseCode}
                                   </span>
                                 </>
                               )}
-                              <span className="text-slate-500 dark:text-slate-400" aria-hidden="true">
+                              <span className="text-ink-muted" aria-hidden="true">
                                 ·
                               </span>
-                              <span className="font-medium text-slate-600 dark:text-slate-300">
+                              <span className="font-medium text-ink-body dark:text-ink-soft">
                                 {ev.level === 'All' ? 'All Levels' : `${ev.level}L`}
                               </span>
                             </div>
 
-                            <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
+                            <h4 className="text-sm sm:text-base font-bold text-ink leading-snug">
                               {ev.title}
                             </h4>
                           </div>
@@ -500,7 +500,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                               onClick={() => downloadCalendarEventIcs(ev)}
                               aria-label={`Add ${ev.title} to device calendar (.ics)`}
                               title="Save to device calendar (.ics)"
-                              className="min-h-[36px] px-2.5 rounded-xl flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-white/80 dark:hover:bg-slate-800/80 cursor-pointer"
+                              className="min-h-[36px] px-2.5 rounded-xl flex items-center gap-1 text-xs font-semibold text-ink-body dark:text-ink-soft hover:text-brand hover:bg-white/80 dark:hover:bg-sunken/80 cursor-pointer"
                             >
                               <Download className="w-3.5 h-3.5" />
                               <span className="hidden sm:inline">.ics</span>
@@ -513,7 +513,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                   onClick={() => openEditModal(ev)}
                                   aria-label={`Edit ${ev.title}`}
                                   title="Edit entry"
-                                  className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-white/70 dark:hover:bg-slate-800/70 cursor-pointer"
+                                  className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink hover:bg-white/70 dark:hover:bg-sunken/70 cursor-pointer"
                                 >
                                   <Pencil className="w-4 h-4" />
                                 </button>
@@ -530,7 +530,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => setConfirmDeleteId(null)}
-                                      className="min-h-[32px] px-2 rounded-lg bg-white/80 dark:bg-slate-800 text-[11px] font-semibold text-slate-600 dark:text-slate-300 cursor-pointer"
+                                      className="min-h-[32px] px-2 rounded-lg bg-white/80 dark:bg-sunken text-[11px] font-semibold text-ink-body dark:text-ink-soft cursor-pointer"
                                     >
                                       Cancel
                                     </button>
@@ -542,7 +542,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                     disabled={busyId === ev.id}
                                     aria-label={`Delete ${ev.title}`}
                                     title="Delete entry"
-                                    className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:text-red-600 dark:text-slate-400 dark:hover:text-red-400 hover:bg-white/70 dark:hover:bg-slate-800/70 cursor-pointer"
+                                    className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-white/70 dark:hover:bg-sunken/70 cursor-pointer"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </button>
@@ -553,31 +553,31 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         </div>
 
                         {ev.description && (
-                          <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
+                          <p className="text-xs text-ink-soft leading-relaxed whitespace-pre-line">
                             {ev.description}
                           </p>
                         )}
 
-                        <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-slate-600 dark:text-slate-300">
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-ink-body dark:text-ink-soft">
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                             <span className="inline-flex items-center gap-1.5 font-mono">
-                              <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                              <Clock className="w-3.5 h-3.5 text-ink-muted" />
                               <span>
                                 {ev.startTime}
                                 {ev.endTime ? ` – ${ev.endTime}` : ''}
                               </span>
                             </span>
                             <span className="inline-flex items-center gap-1.5">
-                              <MapPin className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                              <MapPin className="w-3.5 h-3.5 text-ink-muted" />
                               <span>{ev.venue}</span>
                             </span>
                             <span className="inline-flex items-center gap-1.5">
-                              <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+                              <Building2 className="w-3.5 h-3.5 text-ink-muted" />
                               <span>{ev.department}</span>
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400">
+                          <div className="flex items-center gap-1.5 text-[11px] text-ink-muted">
                             <span>Posted by {ev.authorName}</span>
                             <RoleBadge role={ev.authorRole} />
                           </div>
@@ -598,7 +598,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             type="button"
             disabled={loadingMore}
             onClick={onLoadMore}
-            className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+            className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
           >
             {loadingMore ? 'Loading more...' : 'Load more calendar events'}
           </button>
@@ -607,17 +607,17 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
       {/* Create / Edit Entry Modal */}
       {modalOpen && canManage && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 {editingEvent ? 'Update Timetable Entry' : 'New Timetable / Event Entry'}
               </h3>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
                 aria-label="Close calendar dialog"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -634,7 +634,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div>
                   <label
                     htmlFor="calType"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Entry Type
                   </label>
@@ -642,7 +642,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     id="calType"
                     value={eventType}
                     onChange={(e) => setEventType(e.target.value as CalendarEventType)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {(Object.keys(CALENDAR_EVENT_TYPE_LABELS) as CalendarEventType[]).map((key) => (
                       <option key={key} value={key}>
@@ -655,7 +655,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div>
                   <label
                     htmlFor="calCourseCode"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Course Code (optional)
                   </label>
@@ -666,7 +666,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     value={courseCode}
                     onChange={(e) => setCourseCode(e.target.value)}
                     placeholder="e.g., PHYS 401"
-                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 uppercase focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink uppercase focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
@@ -674,7 +674,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <div>
                 <label
                   htmlFor="calTitle"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Title
                 </label>
@@ -686,7 +686,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., First Semester Exam / Departmental Seminar"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -694,7 +694,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div>
                   <label
                     htmlFor="calDate"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Date
                   </label>
@@ -704,14 +704,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="calStart"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Start Time
                   </label>
@@ -721,14 +721,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     required
                     value={startTime}
                     onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="calEnd"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     End Time (optional)
                   </label>
@@ -737,7 +737,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     type="time"
                     value={endTime}
                     onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
@@ -745,7 +745,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <div>
                 <label
                   htmlFor="calVenue"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Venue / Hall
                 </label>
@@ -757,7 +757,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   value={venue}
                   onChange={(e) => setVenue(e.target.value)}
                   placeholder="e.g., Faculty of Science Twin Lecture Theatre"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -765,7 +765,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div>
                   <label
                     htmlFor="calDept"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Department Scope
                   </label>
@@ -774,7 +774,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       id="calDept"
                       value={department}
                       onChange={(e) => setDepartment(e.target.value)}
-                      className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                      className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                     >
                       <option value="All GSU">All GSU (University-wide)</option>
                       {departments.map((d) => (
@@ -788,7 +788,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       id="calDept"
                       value={department === 'All GSU' ? 'All GSU' : currentUser.department}
                       onChange={(e) => setDepartment(e.target.value)}
-                      className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                      className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                     >
                       <option value={currentUser.department}>{currentUser.department} (your department)</option>
                       <option value="All GSU">All GSU (University-wide)</option>
@@ -799,7 +799,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       type="text"
                       readOnly
                       value={currentUser.department}
-                      className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800/50 text-sm text-slate-600 dark:text-slate-300"
+                      className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-sunken dark:bg-sunken/50 text-sm text-ink-body dark:text-ink-soft"
                     />
                   )}
                 </div>
@@ -807,7 +807,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <div>
                   <label
                     htmlFor="calLevel"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Target Level
                   </label>
@@ -815,7 +815,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                     id="calLevel"
                     value={level}
                     onChange={(e) => setLevel(e.target.value as CalendarLevel)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {CALENDAR_LEVELS.map((lvl) => (
                       <option key={lvl} value={lvl}>
@@ -829,7 +829,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               <div>
                 <label
                   htmlFor="calDesc"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Details / Instructions (optional)
                 </label>
@@ -840,7 +840,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Bring ID card, exam clearance slip, or lab coat..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -848,14 +848,14 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setModalOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {saving ? 'Saving...' : editingEvent ? 'Save Changes' : 'Post Entry'}
                 </button>

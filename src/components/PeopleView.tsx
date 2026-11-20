@@ -315,9 +315,9 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 space-y-3">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={search}
@@ -327,14 +327,14 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                 ? 'Search study partners by name, course code (e.g. CHM 201), or library spot...'
                 : 'Search by full name, matric number, or Staff ID...'
             }
-            className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+            className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand focus:ring-2 focus:ring-focus/15"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch('')}
               aria-label="Clear people search"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-soft absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -342,14 +342,14 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-x-auto max-w-full">
+          <div className="inline-flex items-center gap-1 p-1 bg-sunken rounded-2xl overflow-x-auto max-w-full">
             <button
               type="button"
               onClick={() => setSegment('all')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'all'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
               All Members
@@ -359,8 +359,8 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('dept')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'dept'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
               My Dept
@@ -370,8 +370,8 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('staff')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'staff'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
               Staff
@@ -381,8 +381,8 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('study')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
                 segment === 'study'
-                  ? 'bg-emerald-700 text-white shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  ? 'bg-brand text-white shadow-2xs'
+                  : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" />
@@ -390,10 +390,10 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
             </button>
           </div>
 
-          <div className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 px-1">
+          <div className="inline-flex items-center gap-1.5 text-xs text-ink-muted px-1">
             <span
               className={`w-2 h-2 rounded-full ${
-                onlineCount > 0 ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                onlineCount > 0 ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
               }`}
             />
             <span>{onlineCount} recently active</span>
@@ -406,22 +406,22 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
         <div className="space-y-3">
           <form
             onSubmit={handleSaveStudyProfile}
-            className="bg-white dark:bg-slate-900 rounded-3xl border border-emerald-200/80 dark:border-emerald-900/60 p-4 sm:p-5 space-y-3.5"
+            className="bg-surface rounded-3xl border border-success-line/80 dark:border-success-line/60 p-4 sm:p-5 space-y-3.5"
           >
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                <Sparkles className="w-4 h-4 text-brand" />
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-sm font-bold text-ink">
                     My Study Courses &amp; Preferred Spot
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-ink-muted">
                     Add courses you are reading (max 8) so classmates in the same course can match with you.
                   </p>
                 </div>
               </div>
               {studySavedBanner && (
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400">
+                <span className="inline-flex items-center gap-1 text-xs font-semibold text-brand">
                   <Check className="w-4 h-4" />
                   <span>Study profile saved</span>
                 </span>
@@ -433,7 +433,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                 {myCourses.map((course) => (
                   <span
                     key={course}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800/70 text-xs font-bold text-emerald-800 dark:text-emerald-300"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-brand-subtle dark:bg-brand-subtle/70 border border-success-line dark:border-success-line/70 text-xs font-bold text-brand"
                   >
                     <span>{course}</span>
                     <button
@@ -465,13 +465,13 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                     }
                   }}
                   placeholder="Add course (e.g. CHM 201)"
-                  className="flex-1 min-w-0 min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-slate-100 uppercase placeholder:normal-case focus:outline-none focus:border-emerald-600"
+                  className="flex-1 min-w-0 min-h-[40px] px-3 rounded-xl border border-line bg-sunken text-xs font-semibold text-ink uppercase placeholder:normal-case focus:outline-none focus:border-brand"
                 />
                 <button
                   type="button"
                   onClick={handleAddCourseChip}
                   disabled={myCourses.length >= 8}
-                  className="min-h-[40px] px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1 shrink-0 cursor-pointer disabled:opacity-50"
+                  className="min-h-[40px] px-3 rounded-xl bg-sunken hover:bg-sunken text-xs font-semibold text-ink-soft inline-flex items-center gap-1 shrink-0 cursor-pointer disabled:opacity-50"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add</span>
@@ -479,14 +479,14 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               </div>
 
               <div className="sm:col-span-5 relative">
-                <MapPin className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <MapPin className="w-3.5 h-3.5 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   maxLength={80}
                   value={myStudySpot}
                   onChange={(e) => setMyStudySpot(e.target.value)}
                   placeholder="Preferred spot (e.g. Main Library, Science LT)"
-                  className="w-full min-h-[40px] pl-8 pr-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[40px] pl-8 pr-3 rounded-xl border border-line bg-sunken text-xs text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -494,7 +494,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                 <button
                   type="submit"
                   disabled={savingStudyProfile}
-                  className="w-full min-h-[40px] px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer"
+                  className="w-full min-h-[40px] px-3 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold cursor-pointer"
                 >
                   {savingStudyProfile ? 'Saving...' : 'Save'}
                 </button>
@@ -503,21 +503,21 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
           </form>
 
           {/* Study Match Filters */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="flex-1 relative">
               <input
                 type="text"
                 value={studyCourseFilter}
                 onChange={(e) => setStudyCourseFilter(e.target.value)}
                 placeholder="Filter by course code (e.g. CHM 201, CSC 301)..."
-                className="w-full min-h-[40px] pl-3.5 pr-9 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[40px] pl-3.5 pr-9 rounded-xl border border-line bg-sunken text-xs font-semibold text-ink focus:outline-none focus:border-brand"
               />
               {studyCourseFilter && (
                 <button
                   type="button"
                   onClick={() => setStudyCourseFilter('')}
                   aria-label="Clear course code filter"
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-1.5 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-soft absolute right-1.5 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -531,8 +531,8 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                   onClick={() => setStudyLevelFilter(lvl)}
                   className={`min-h-[34px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                     studyLevelFilter === lvl
-                      ? 'bg-emerald-700 border-emerald-700 text-white'
-                      : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300'
+                      ? 'bg-brand border-brand text-white'
+                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft'
                   }`}
                 >
                   {lvl === 'All' ? 'All Levels' : `${lvl}L`}
@@ -544,12 +544,12 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
       )}
 
       {filteredUsers.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2">
           <Users className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-bold text-ink">
             {searchingRemote ? 'Searching campus directory...' : 'No matching members'}
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <p className="text-sm text-ink-muted">
             {segment === 'study'
               ? 'No students matched that course code or level yet. Try clearing filters or add your own study courses above!'
               : 'Try searching another name, matric number, or Staff ID.'}
@@ -572,7 +572,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
             return (
               <div
                 key={person.uid}
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col gap-3"
+                className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 flex flex-col gap-3"
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <button
@@ -581,7 +581,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                       setProfileModalSnapshot(person);
                       setProfileModalUid(person.uid);
                     }}
-                    className="flex items-center gap-3 min-w-0 flex-1 text-left rounded-xl -m-1 p-1 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors cursor-pointer"
+                    className="flex items-center gap-3 min-w-0 flex-1 text-left rounded-xl -m-1 p-1 hover:bg-sunken dark:hover:bg-sunken/60 transition-colors cursor-pointer"
                   >
                     <div className="relative shrink-0">
                       <UserAvatar
@@ -590,24 +590,24 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                         avatarId={person.avatarId}
                         size="lg"
                         roundedClass="rounded-2xl"
-                        fallbackClassName="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
+                        fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand"
                       />
                       <span
                         title={statusTooltip}
                         aria-label={recentlyActive ? 'Online, recently active' : 'Offline'}
                         className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                          recentlyActive ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                          recentlyActive ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
                         }`}
                       />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate hover:underline">
+                        <span className="text-sm font-semibold text-ink truncate hover:underline">
                           {person.fullName}
                         </span>
                         <RoleBadge role={person.role} />
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                      <p className="text-xs text-ink-muted truncate mt-0.5">
                         <span>{person.department}</span>
                         <span aria-hidden="true"> · </span>
                         <span>
@@ -623,22 +623,22 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                       <div className="flex items-center gap-1.5 mt-1 text-xs">
                         <span
                           className={`w-2 h-2 rounded-full shrink-0 ${
-                            recentlyActive ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                            recentlyActive ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
                           }`}
                         />
                         {recentlyActive ? (
-                          <span className="inline-flex items-center gap-1.5 text-emerald-700 dark:text-emerald-400 font-medium truncate">
+                          <span className="inline-flex items-center gap-1.5 text-brand font-medium truncate">
                             <span>Online</span>
-                            <span aria-hidden="true" className="text-emerald-600/50 dark:text-emerald-400/50">·</span>
+                            <span aria-hidden="true" className="text-brand/50">·</span>
                             <span>Recently active</span>
                           </span>
                         ) : (
-                          <span className="text-slate-500 dark:text-slate-400 truncate">
+                          <span className="text-ink-muted truncate">
                             <span>Offline</span>
                             {diffMs !== null && (
                               <>
                                 <span aria-hidden="true"> · </span>
-                                <span className="text-slate-500 dark:text-slate-400">
+                                <span className="text-ink-muted">
                                   {formatOfflineLastSeen(diffMs)}
                                 </span>
                               </>
@@ -656,7 +656,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                         value={person.role}
                         disabled={updatingRoleUid === person.uid}
                         onChange={(e) => handleRoleChange(person.uid, e.target.value as UserRole)}
-                        className="min-h-[42px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-600 disabled:opacity-60"
+                        className="min-h-[42px] px-2.5 rounded-xl border border-line bg-sunken text-xs font-semibold text-ink focus:outline-none focus:border-brand disabled:opacity-60"
                       >
                         {(Object.keys(ROLE_LABELS) as UserRole[]).map((roleKey) => (
                           <option key={roleKey} value={roleKey}>
@@ -670,7 +670,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                       type="button"
                       onClick={() => handleMessage(person)}
                       disabled={openingUid === person.uid}
-                      className="min-h-[42px] px-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+                      className="min-h-[42px] px-3.5 rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/60 text-brand text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
                     >
                       <MessageCircle className="w-4 h-4" />
                       <span>
@@ -685,7 +685,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                 </div>
 
                 {(personCourses.length > 0 || person.studySpot) && (
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
+                  <div className="pt-2 border-t border-line flex flex-wrap items-center gap-1.5">
                     {personCourses.map((course) => {
                       const isShared = myCourseSet.has(course.toUpperCase());
                       return (
@@ -693,8 +693,8 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                           key={course}
                           className={`px-2 py-0.5 rounded-lg text-[11px] font-bold ${
                             isShared
-                              ? 'bg-emerald-700 text-white'
-                              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                              ? 'bg-brand text-white'
+                              : 'bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft'
                           }`}
                         >
                           {course}
@@ -720,7 +720,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               type="button"
               disabled={loadingMore}
               onClick={onLoadMore}
-              className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer disabled:opacity-60"
+              className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken text-xs font-semibold text-ink-soft cursor-pointer disabled:opacity-60"
             >
               {loadingMore ? 'Loading more...' : 'Load more members'}
             </button>

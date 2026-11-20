@@ -181,7 +181,7 @@ const SignedChatImage: React.FC<
     return (
       <div
         aria-label={alt || 'Loading image'}
-        className={`${rest.className || ''} bg-slate-200/70 dark:bg-slate-800/80 animate-pulse min-h-[120px] min-w-[160px]`}
+        className={`${rest.className || ''} bg-sunken/70 dark:bg-sunken/80 animate-pulse min-h-[120px] min-w-[160px]`}
       />
     );
   }
@@ -2153,7 +2153,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       part.toLowerCase() === trimmedInChatQuery ? (
         <mark
           key={`${keyPrefix}-${idx}`}
-          className="bg-amber-300/90 dark:bg-amber-400/40 text-slate-900 dark:text-amber-50 rounded px-0.5 font-semibold"
+          className="bg-amber-300/90 dark:bg-amber-400/40 text-ink dark:text-amber-50 rounded px-0.5 font-semibold"
         >
           {part}
         </mark>
@@ -2288,10 +2288,10 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         key={chat.id}
         className={`w-full min-h-[68px] rounded-2xl transition-colors flex items-center gap-1 pr-2 border ${
           isSelected
-            ? 'bg-emerald-50/90 dark:bg-emerald-950/50 border-emerald-200 dark:border-emerald-800/80'
+            ? 'bg-brand-subtle/90 dark:bg-brand-subtle/50 border-success-line dark:border-success-line/80'
             : unread > 0
-              ? 'bg-white dark:bg-slate-900 border-emerald-200/80 dark:border-emerald-800/70 hover:border-emerald-300 dark:hover:border-emerald-700'
-              : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+              ? 'bg-white dark:bg-surface border-success-line/80 dark:border-success-line/70 hover:border-success-line dark:hover:border-brand'
+              : 'bg-white dark:bg-surface border-line/80 dark:border-line hover:border-line dark:hover:border-line'
         }`}
       >
         <button
@@ -2303,9 +2303,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             <div
               className={`relative w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center font-semibold text-sm ${
                 chat.type === 'general'
-                  ? 'bg-emerald-700 text-white'
+                  ? 'bg-brand text-white'
                   : chat.type === 'department'
-                    ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200'
+                    ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
                     : 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border border-teal-200/70 dark:border-teal-800/70'
               }`}
             >
@@ -2319,14 +2319,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 avatarId={peer?.avatarId}
                 size="lg"
                 roundedClass="rounded-2xl"
-                fallbackClassName="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
               />
               {peer && (
                 <span
                   title={peerOnline ? 'Online' : 'Offline'}
                   aria-label={peerOnline ? 'Online' : 'Offline'}
                   className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                    peerOnline ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                    peerOnline ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
                   }`}
                 />
               )}
@@ -2336,7 +2336,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 min-w-0">
-                <span className="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">
+                <span className="font-semibold text-sm text-ink truncate">
                   {title}
                 </span>
                 {peer && <RoleBadge role={peer.role} />}
@@ -2347,7 +2347,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         ? 'bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300'
                         : chat.radarStatus === 'venue_changed'
                           ? 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300'
-                          : 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300'
+                          : 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
                     }`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
@@ -2358,8 +2358,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <span
                 className={`text-[11px] tabular-nums font-mono shrink-0 ${
                   unread > 0
-                    ? 'text-emerald-700 dark:text-emerald-400 font-semibold'
-                    : 'text-slate-500 dark:text-slate-400'
+                    ? 'text-brand dark:text-brand font-semibold'
+                    : 'text-ink-muted dark:text-ink-muted'
                 }`}
               >
                 {formatShortTime(chat.lastMessageAt)}
@@ -2367,7 +2367,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             </div>
 
             {(peer?.department || (peer?.idNumber && canViewMemberIdNumber(currentUser, peer.uid)) || chat.department) && (
-              <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+              <p className="text-[11px] text-ink-muted truncate mt-0.5">
                 {peer ? (
                   <>
                     <span>{peer.department}</span>
@@ -2388,8 +2388,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <p
                 className={`text-xs truncate ${
                   unread > 0
-                    ? 'text-slate-900 dark:text-slate-100 font-semibold'
-                    : 'text-slate-500 dark:text-slate-400'
+                    ? 'text-ink dark:text-ink font-semibold'
+                    : 'text-ink-muted dark:text-ink-muted'
                 }`}
               >
                 {chat.type === 'dm' && peer && isBlockedBetweenUsers(currentUser, peer)
@@ -2399,7 +2399,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               {unread > 0 && (
                 <span
                   aria-label={`${unread} unread messages`}
-                  className="min-w-[20px] h-5 px-1.5 rounded-full bg-emerald-700 text-white text-[11px] font-bold font-mono tabular-nums flex items-center justify-center shrink-0"
+                  className="min-w-[20px] h-5 px-1.5 rounded-full bg-brand text-on-brand text-[11px] font-bold font-mono tabular-nums flex items-center justify-center shrink-0"
                 >
                   {unread > 99 ? '99+' : unread}
                 </span>
@@ -2416,8 +2416,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           title={isPinned ? 'Unpin chat' : 'Pin chat to top (max 3)'}
           className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl shrink-0 inline-flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 ${
             isPinned
-              ? 'text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/70'
-              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+              ? 'text-brand dark:text-brand bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/70'
+              : 'text-ink-muted dark:text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
           }`}
         >
           <Pin className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
@@ -2435,14 +2435,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         }`}
       >
         {/* Top Segmented Switcher: Chats | Updates */}
-        <div className="flex items-center gap-1 p-1 bg-slate-200/75 dark:bg-slate-800/90 rounded-2xl">
+        <div className="flex items-center gap-1 p-1 bg-sunken/75 dark:bg-sunken/90 rounded-2xl">
           <button
             type="button"
             onClick={() => setSidebarMode('chats')}
             className={`flex-1 min-h-[40px] px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               sidebarMode === 'chats'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
             <MessageSquare className="w-3.5 h-3.5" />
@@ -2453,14 +2453,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             onClick={() => setSidebarMode('updates')}
             className={`flex-1 min-h-[40px] px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               sidebarMode === 'updates'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span>Updates</span>
             {unviewedStatusCount > 0 && (
-              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-700 text-white text-[10px] font-bold font-mono flex items-center justify-center tabular-nums">
+              <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-brand text-on-brand text-[10px] font-bold font-mono flex items-center justify-center tabular-nums">
                 {unviewedStatusCount > 99 ? '99+' : unviewedStatusCount}
               </span>
             )}
@@ -2468,10 +2468,10 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         </div>
 
         {sidebarMode === 'updates' ? (
-          <div className="flex-1 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 overflow-hidden min-h-[420px]">
+          <div className="flex-1 bg-surface rounded-3xl border border-line/80 dark:border-line overflow-hidden min-h-[420px]">
             <React.Suspense
               fallback={
-                <div className="py-12 text-center text-xs text-slate-500 dark:text-slate-400">
+                <div className="py-12 text-center text-xs text-ink-muted">
                   Loading updates...
                 </div>
               }
@@ -2492,21 +2492,21 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <>
             <div className="flex items-center gap-2">
               <div className="relative flex-1 min-w-0">
-                <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search name, dept, or matric/ID..."
                   aria-label="Search chats by name, department, or matric number"
-                  className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+                  className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-line/80 dark:border-line bg-surface text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-focus/15"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
                     aria-label="Clear chat search"
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink-soft hover:bg-sunken cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -2518,13 +2518,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 onClick={() => setStarredModalOpen(true)}
                 aria-label={`Starred Messages (${starredMessages.length})`}
                 title="View Starred Messages"
-                className="min-h-[44px] px-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-amber-300 dark:hover:border-amber-700 text-slate-700 dark:text-slate-200 inline-flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                className="min-h-[44px] px-3 rounded-2xl border border-line/80 dark:border-line bg-surface hover:border-amber-300 dark:hover:border-amber-700 text-ink-soft inline-flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
               >
                 <Star
                   className={`w-4 h-4 ${
                     starredMessages.length > 0
                       ? 'text-amber-500 fill-current'
-                      : 'text-slate-500 dark:text-slate-400'
+                      : 'text-ink-muted dark:text-ink-muted'
                   }`}
                 />
                 {starredMessages.length > 0 && (
@@ -2555,19 +2555,19 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             sortedChats.dms.length === 0 ? (
               <div
                 role="status"
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-8 text-center space-y-2.5"
+                className="bg-surface rounded-2xl border border-line/80 dark:border-line p-8 text-center space-y-2.5"
               >
-                <div className="w-11 h-11 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto">
+                <div className="w-11 h-11 rounded-2xl bg-sunken text-ink-muted flex items-center justify-center mx-auto">
                   <Search className="w-5 h-5" />
                 </div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">No results</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+                <h3 className="text-sm font-bold text-ink">No results</h3>
+                <p className="text-xs text-ink-muted max-w-xs mx-auto leading-relaxed">
                   No chats match &ldquo;{searchQuery.trim()}&rdquo; by name, department, or matric/ID number.
                 </p>
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="mt-1 inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+                  className="mt-1 inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-sunken hover:bg-sunken text-ink-soft text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Clear Search
                 </button>
@@ -2577,7 +2577,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 {sortedChats.pinned.length > 0 && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between px-1">
-                      <h2 className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 tracking-wide inline-flex items-center gap-1.5">
+                      <h2 className="text-xs font-semibold text-brand tracking-wide inline-flex items-center gap-1.5">
                         <Pin className="w-3.5 h-3.5 fill-current" />
                         <span>Pinned ({sortedChats.pinned.length}/{MAX_PINNED_CHATS})</span>
                       </h2>
@@ -2589,14 +2589,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 {(!trimmedSearch || sortedChats.groups.length > 0 || communitySections.length > 0) && (
                   <div className="space-y-2.5">
                     <div className="flex items-center justify-between px-1">
-                      <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+                      <h2 className="text-xs font-semibold text-ink-muted tracking-wide">
                         Faculty & Dept Communities
                       </h2>
                       {currentUser.role === 'admin' && (
                         <button
                           type="button"
                           onClick={() => setCreateGroupOpen(true)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 min-h-[36px] px-2 cursor-pointer"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand min-h-[36px] px-2 cursor-pointer"
                         >
                           <Plus className="w-3.5 h-3.5" />
                           <span>New Group</span>
@@ -2605,12 +2605,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     </div>
                     {sortedChats.groups.length === 0 &&
                     sortedChats.pinned.every((c) => c.type === 'dm') ? (
-                      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 text-center space-y-2">
-                        <Users className="w-6 h-6 text-emerald-600/50 mx-auto" />
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                      <div className="bg-surface rounded-2xl border border-line/80 dark:border-line p-5 text-center space-y-2">
+                        <Users className="w-6 h-6 text-brand/50 mx-auto" />
+                        <p className="text-sm font-medium text-ink-soft">
                           {groupsReady ? 'Loading university groups...' : 'Setting up your groups...'}
                         </p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="text-xs text-ink-muted">
                           General and your {currentUser.department} cohort chats appear automatically once provisioned.
                         </p>
                       </div>
@@ -2625,37 +2625,37 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           return (
                             <div
                               key={section.id}
-                              className="rounded-2xl border border-slate-200/75 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/50 p-2 space-y-2"
+                              className="rounded-2xl border border-line/75 dark:border-line bg-sunken/70 dark:bg-surface/50 p-2 space-y-2"
                             >
                               <button
                                 type="button"
                                 onClick={() => toggleCommunityCollapsed(section.id)}
                                 aria-expanded={!isCollapsed}
-                                className="w-full px-2 py-1.5 rounded-xl flex items-center justify-between gap-2 text-left hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors cursor-pointer"
+                                className="w-full px-2 py-1.5 rounded-xl flex items-center justify-between gap-2 text-left hover:bg-white/70 dark:hover:bg-sunken/70 transition-colors cursor-pointer"
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  <span className="w-8 h-8 rounded-xl bg-emerald-700/10 dark:bg-emerald-400/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                  <span className="w-8 h-8 rounded-xl bg-brand/10 dark:bg-brand-subtle/15 text-brand flex items-center justify-center shrink-0">
                                     <GraduationCap className="w-4 h-4" />
                                   </span>
                                   <div className="min-w-0">
-                                    <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                                    <p className="text-xs font-bold text-ink truncate">
                                       {section.title}
                                     </p>
-                                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                    <p className="text-[11px] text-ink-muted truncate">
                                       {section.subtitle}
                                     </p>
                                   </div>
                                 </div>
                                 <div className="flex items-center gap-1.5 shrink-0">
                                   {isCollapsed && sectionUnread > 0 && (
-                                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-emerald-700 text-white text-[10px] font-bold font-mono flex items-center justify-center">
+                                    <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-brand text-on-brand text-[10px] font-bold font-mono flex items-center justify-center">
                                       {sectionUnread}
                                     </span>
                                   )}
                                   {isCollapsed ? (
-                                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                                    <ChevronRight className="w-4 h-4 text-ink-muted" />
                                   ) : (
-                                    <ChevronDown className="w-4 h-4 text-slate-500" />
+                                    <ChevronDown className="w-4 h-4 text-ink-muted" />
                                   )}
                                 </div>
                               </button>
@@ -2666,20 +2666,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     <button
                                       type="button"
                                       onClick={() => onOpenAnnouncements(section.announcementScope!)}
-                                      className="w-full min-h-[54px] rounded-xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 hover:border-emerald-300 dark:hover:border-emerald-700 px-3 py-2 flex items-center gap-3 text-left transition-colors cursor-pointer"
+                                      className="w-full min-h-[54px] rounded-xl bg-surface border border-line/80 dark:border-line hover:border-success-line dark:hover:border-brand px-3 py-2 flex items-center gap-3 text-left transition-colors cursor-pointer"
                                     >
                                       <span className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
                                         <Megaphone className="w-4 h-4" />
                                       </span>
                                       <div className="min-w-0 flex-1">
-                                        <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                                        <p className="text-xs font-semibold text-ink truncate">
                                           {section.announcementLabel || 'Announcements'}
                                         </p>
-                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                                        <p className="text-[11px] text-ink-muted truncate">
                                           {section.announcementPreview}
                                         </p>
                                       </div>
-                                      <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
+                                      <ChevronRight className="w-4 h-4 text-ink-muted shrink-0" />
                                     </button>
                                   )}
                                   {section.groups.map(renderChatRow)}
@@ -2696,29 +2696,29 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 {(!trimmedSearch || sortedChats.dms.length > 0) && (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between px-1">
-                      <h2 className="text-xs font-semibold text-slate-500 dark:text-slate-400 tracking-wide">
+                      <h2 className="text-xs font-semibold text-ink-muted tracking-wide">
                         Direct Messages
                       </h2>
                       <button
                         type="button"
                         onClick={onBrowsePeople}
-                        className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 min-h-[36px] px-2 cursor-pointer"
+                        className="text-xs font-semibold text-brand hover:text-brand min-h-[36px] px-2 cursor-pointer"
                       >
                         Find People
                       </button>
                     </div>
                     {sortedChats.dms.length === 0 &&
                     sortedChats.pinned.every((c) => c.type !== 'dm') ? (
-                      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 text-center space-y-2">
+                      <div className="bg-surface rounded-2xl border border-line/80 dark:border-line p-5 text-center space-y-2">
                         <MessageSquare className="w-6 h-6 text-slate-300 dark:text-slate-600 mx-auto" />
-                        <p className="text-sm font-medium text-slate-700 dark:text-slate-200">No private chats yet</p>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                        <p className="text-sm font-medium text-ink-soft">No private chats yet</p>
+                        <p className="text-xs text-ink-muted">
                           Search approved students or staff in the People tab to start a 1-to-1 chat.
                         </p>
                         <button
                           type="button"
                           onClick={onBrowsePeople}
-                          className="mt-1 inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-800 transition-colors cursor-pointer"
+                          className="mt-1 inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-brand text-on-brand text-xs font-semibold hover:bg-brand-strong transition-colors cursor-pointer"
                         >
                           Browse People
                         </button>
@@ -2736,30 +2736,30 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Right column: Active conversation */}
       <div
-        className={`relative lg:col-span-8 flex flex-col min-w-0 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden ${
+        className={`relative lg:col-span-8 flex flex-col min-w-0 bg-white dark:bg-surface rounded-3xl border border-line/80 dark:border-line shadow-xs overflow-hidden ${
           activeChat ? 'flex h-[calc(100dvh-7.5rem)] lg:h-[calc(100dvh-6.5rem)]' : 'hidden lg:flex lg:h-[calc(100dvh-6.5rem)]'
         }`}
       >
         {!activeChat ? (
           <div className="flex-1 flex flex-col items-center justify-center p-8 text-center">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center mb-3">
               <MessageSquare className="w-7 h-7" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Select a conversation</h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs mt-1">
+            <h3 className="text-base font-bold text-ink">Select a conversation</h3>
+            <p className="text-sm text-ink-muted max-w-xs mt-1">
               Choose GSU General, your department cohort, or a direct message to begin chatting in real time.
             </p>
           </div>
         ) : (
           <>
             {/* Conversation Header */}
-            <div className="px-3 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
+            <div className="px-3 sm:px-5 py-3 border-b border-line flex items-center justify-between gap-2 bg-white/95 dark:bg-surface/95 backdrop-blur-sm">
               <div className="flex items-center gap-2 min-w-0 flex-1">
                 <button
                   type="button"
                   onClick={() => onSelectChat(null)}
                   aria-label="Back to chats"
-                  className="lg:hidden min-w-[44px] min-h-[44px] -ml-1 rounded-xl flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
+                  className="lg:hidden min-w-[44px] min-h-[44px] -ml-1 rounded-xl flex items-center justify-center text-ink-body dark:text-ink-soft hover:bg-sunken cursor-pointer shrink-0"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
@@ -2773,7 +2773,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       setGroupInfoOpen(true);
                     }
                   }}
-                  className="min-w-0 flex-1 text-left flex items-center gap-2.5 cursor-pointer rounded-xl px-1.5 py-1 -mx-1.5 hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors"
+                  className="min-w-0 flex-1 text-left flex items-center gap-2.5 cursor-pointer rounded-xl px-1.5 py-1 -mx-1.5 hover:bg-sunken dark:hover:bg-sunken/60 transition-colors"
                 >
                   {activeChat.type === 'dm' && getDmPeer(activeChat) && (() => {
                     const peer = getDmPeer(activeChat)!;
@@ -2786,13 +2786,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           avatarId={peer.avatarId}
                           size="md"
                           roundedClass="rounded-2xl"
-                          fallbackClassName="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200"
+                          fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
                         />
                         <span
                           title={peerOnline ? 'Online' : 'Offline'}
                           aria-label={peerOnline ? 'Online' : 'Offline'}
                           className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                            peerOnline ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                            peerOnline ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
                           }`}
                         />
                       </div>
@@ -2800,21 +2800,21 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   })()}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 min-w-0">
-                      <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+                      <h2 className="text-sm sm:text-base font-bold text-ink truncate">
                         {getChatDisplayTitle(activeChat)}
                       </h2>
                       {activeChat.type === 'dm' && getDmPeer(activeChat) && (
                         <RoleBadge role={getDmPeer(activeChat)!.role} />
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate flex items-center gap-1.5">
+                    <p className="text-xs text-ink-muted truncate flex items-center gap-1.5">
                       {activeChat.type === 'dm' && getDmPeer(activeChat) ? (
                         <>
                           <span
                             className={
                               isMemberOnline(getDmPeer(activeChat)!)
-                                ? 'text-emerald-700 dark:text-emerald-400 font-medium shrink-0'
-                                : 'text-slate-500 dark:text-slate-400 shrink-0'
+                                ? 'text-brand dark:text-brand font-medium shrink-0'
+                                : 'text-ink-muted dark:text-ink-muted shrink-0'
                             }
                           >
                             {isMemberOnline(getDmPeer(activeChat)!)
@@ -2828,14 +2828,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         <>
                           <span
                             className={`w-2 h-2 rounded-full shrink-0 ${
-                              activeGroupOnlineCount > 0 ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                              activeGroupOnlineCount > 0 ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
                             }`}
                           />
                           <span
                             className={
                               activeGroupOnlineCount > 0
-                                ? 'text-emerald-700 dark:text-emerald-400 font-medium shrink-0'
-                                : 'text-slate-500 dark:text-slate-400 shrink-0'
+                                ? 'text-brand dark:text-brand font-medium shrink-0'
+                                : 'text-ink-muted dark:text-ink-muted shrink-0'
                             }
                           >
                             {activeGroupOnlineCount} online
@@ -2862,8 +2862,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title="Search in conversation"
                   className={`min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center transition-colors cursor-pointer ${
                     inChatSearchOpen
-                      ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200'
+                      ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand'
+                      : 'text-ink-muted dark:text-ink-muted hover:bg-sunken dark:hover:bg-sunken hover:text-ink-soft dark:hover:text-ink-soft'
                   }`}
                 >
                   <Search className="w-4 h-4" />
@@ -2901,8 +2901,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     title="Live Class Radar & Exam Countdown"
                     className={`min-h-[38px] px-2.5 rounded-xl inline-flex items-center gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                       activeChat.radarStatus
-                        ? 'bg-emerald-700 text-white hover:bg-emerald-800'
-                        : 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                        ? 'bg-brand text-white hover:bg-brand-strong'
+                        : 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                     }`}
                   >
                     <Radio className="w-3.5 h-3.5" />
@@ -2916,7 +2916,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={() => setGroupInfoOpen(true)}
                     aria-label="Group info, members, and shared media"
                     title="Group Info & Media Hub"
-                    className="min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer"
+                    className="min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center text-ink-muted hover:bg-sunken hover:text-ink-soft transition-colors cursor-pointer"
                   >
                     <Info className="w-4 h-4" />
                   </button>
@@ -2930,8 +2930,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={pinnedChatSet.has(activeChat.id) ? 'Unpin chat' : 'Pin chat'}
                   className={`min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center transition-colors cursor-pointer ${
                     pinnedChatSet.has(activeChat.id)
-                      ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400'
-                      : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200'
+                      ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand'
+                      : 'text-ink-muted dark:text-ink-muted hover:bg-sunken dark:hover:bg-sunken hover:text-ink-soft dark:hover:text-ink-soft'
                   }`}
                 >
                   <Pin
@@ -2946,7 +2946,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={blockingBusy}
                     className={`min-h-[40px] px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer ${
                       iBlockedDm
-                        ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                         : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/60'
                     }`}
                   >
@@ -2968,9 +2968,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
             {/* In-Chat Keyword Search Bar */}
             {inChatSearchOpen && (
-              <div className="shrink-0 px-3 sm:px-5 py-2 border-b border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-900/95 flex items-center gap-2">
+              <div className="shrink-0 px-3 sm:px-5 py-2 border-b border-line bg-sunken/90 dark:bg-surface/95 flex items-center gap-2">
                 <div className="relative flex-1 min-w-0">
-                  <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <Search className="w-3.5 h-3.5 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                   <input
                     type="text"
                     autoFocus
@@ -2986,11 +2986,11 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       }
                     }}
                     placeholder="Find keywords in this conversation..."
-                    className="w-full min-h-[38px] pl-8 pr-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[38px] pl-8 pr-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
                 {trimmedInChatQuery && (
-                  <span className="text-[11px] font-mono tabular-nums text-slate-500 dark:text-slate-400 shrink-0">
+                  <span className="text-[11px] font-mono tabular-nums text-ink-muted shrink-0">
                     {inChatMatches.length > 0
                       ? `${inChatSearchActiveIdx + 1}/${inChatMatches.length}`
                       : '0 matches'}
@@ -3002,7 +3002,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={inChatMatches.length === 0}
                     onClick={() => stepInChatSearch(-1)}
                     aria-label="Previous match"
-                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-800 disabled:opacity-40 cursor-pointer"
+                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-ink-body dark:text-ink-soft hover:bg-sunken/70 dark:hover:bg-sunken disabled:opacity-40 cursor-pointer"
                   >
                     <ChevronUp className="w-4 h-4" />
                   </button>
@@ -3011,7 +3011,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={inChatMatches.length === 0}
                     onClick={() => stepInChatSearch(1)}
                     aria-label="Next match"
-                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200/70 dark:hover:bg-slate-800 disabled:opacity-40 cursor-pointer"
+                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-ink-body dark:text-ink-soft hover:bg-sunken/70 dark:hover:bg-sunken disabled:opacity-40 cursor-pointer"
                   >
                     <ChevronDown className="w-4 h-4" />
                   </button>
@@ -3022,7 +3022,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       setInChatSearchQuery('');
                     }}
                     aria-label="Close in-chat search"
-                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-slate-500 hover:bg-slate-200/70 dark:hover:bg-slate-800 cursor-pointer"
+                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-ink-muted hover:bg-sunken/70 dark:hover:bg-sunken cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -3041,20 +3041,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
             {/* Sticky Pinned Group Message Banner */}
             {activeChat.type !== 'dm' && activeChat.pinnedMessageId && (
-              <div className="shrink-0 px-3 sm:px-5 py-2 border-b border-emerald-100 dark:border-emerald-900/50 bg-emerald-50/75 dark:bg-emerald-950/35 flex items-center justify-between gap-2">
+              <div className="shrink-0 px-3 sm:px-5 py-2 border-b border-success-line dark:border-success-line/50 bg-brand-subtle/75 dark:bg-brand-subtle/35 flex items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={() => scrollToMessage(activeChat.pinnedMessageId!)}
                   className="flex-1 min-w-0 text-left flex items-center gap-2.5 cursor-pointer group"
                 >
-                  <span className="w-7 h-7 rounded-lg bg-emerald-700/10 dark:bg-emerald-400/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <span className="w-7 h-7 rounded-lg bg-brand/10 dark:bg-brand-subtle/15 text-brand flex items-center justify-center shrink-0">
                     <Pin className="w-3.5 h-3.5 fill-current" />
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300 truncate">
+                    <p className="text-[11px] font-bold text-brand truncate">
                       Pinned · {activeChat.pinnedMessageSender || 'Announcement'}
                     </p>
-                    <p className="text-xs text-slate-700 dark:text-slate-200 truncate group-hover:underline">
+                    <p className="text-xs text-ink-soft truncate group-hover:underline">
                       {activeChat.pinnedMessageText}
                     </p>
                   </div>
@@ -3066,7 +3066,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={handleUnpinBanner}
                     aria-label="Unpin group message"
                     title="Unpin message"
-                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-white/70 dark:hover:bg-slate-800/70 transition-colors cursor-pointer shrink-0"
+                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-white/70 dark:hover:bg-sunken/70 transition-colors cursor-pointer shrink-0"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -3075,8 +3075,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             )}
 
             {reportBanner && (
-              <div className="mx-4 mt-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-3.5 py-2.5 text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <div className="mx-4 mt-3 rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-3.5 py-2.5 text-xs text-brand flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-brand shrink-0" />
                 <span>{reportBanner}</span>
               </div>
             )}
@@ -3086,16 +3086,16 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <div
                 ref={feedContainerRef}
                 onScroll={handleFeedScroll}
-                className="flex-1 overflow-y-auto px-3 sm:px-5 py-4 space-y-3 bg-[#FAFBFB] dark:bg-slate-950/60"
+                className="flex-1 overflow-y-auto px-3 sm:px-5 py-4 space-y-3 bg-[#FAFBFB] dark:bg-canvas/60"
               >
               {loadingMessages ? (
-                <div className="py-12 text-center text-xs text-slate-500 dark:text-slate-400">
+                <div className="py-12 text-center text-xs text-ink-muted">
                   Loading messages...
                 </div>
               ) : messages.length === 0 ? (
                 <div className="py-12 text-center space-y-1">
-                  <p className="text-sm font-medium text-slate-600 dark:text-slate-300">No messages yet</p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-sm font-medium text-ink-body dark:text-ink-soft">No messages yet</p>
+                  <p className="text-xs text-ink-muted">
                     Say hello to start the conversation.
                   </p>
                 </div>
@@ -3129,7 +3129,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             setLoadingOlderMessages(false);
                           }
                         }}
-                        className="min-h-[34px] px-4 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 text-xs font-semibold text-slate-700 dark:text-slate-200 shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+                        className="min-h-[34px] px-4 rounded-full bg-surface border border-line hover:border-brand text-xs font-semibold text-ink-soft shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
                       >
                         {loadingOlderMessages ? 'Loading older...' : 'Load older messages'}
                       </button>
@@ -3148,7 +3148,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       new Date(msgDateMs).toDateString() !== new Date(prevMsgDateMs).toDateString());
                   const dateDividerNode = showDateDivider ? (
                     <div className="flex justify-center py-1.5">
-                      <span className="px-3 py-1 rounded-full bg-slate-200/75 dark:bg-slate-800/90 text-[11px] font-semibold text-slate-600 dark:text-slate-300 shadow-2xs">
+                      <span className="px-3 py-1 rounded-full bg-sunken/75 dark:bg-sunken/90 text-[11px] font-semibold text-ink-body dark:text-ink-soft shadow-2xs">
                         {formatDateDividerLabel(msgDateMs)}
                       </span>
                     </div>
@@ -3169,26 +3169,26 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           }}
                           className={`flex justify-center py-1 rounded-2xl transition-colors duration-500 ${
                             isCallHighlighted
-                              ? 'bg-emerald-500/15 dark:bg-emerald-500/20 ring-2 ring-emerald-500/40'
+                              ? 'bg-brand/15 dark:bg-brand/20 ring-2 ring-emerald-500/40'
                               : ''
                           }`}
                         >
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-2xs text-xs">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface border border-line/80 dark:border-line shadow-2xs text-xs">
                           {isMissedOrDeclined ? (
                             <PhoneMissed className="w-3.5 h-3.5 text-red-500 dark:text-red-400 shrink-0" />
                           ) : (
-                            <PhoneCall className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                            <PhoneCall className="w-3.5 h-3.5 text-brand shrink-0" />
                           )}
                           <span
                             className={`font-medium ${
                               isMissedOrDeclined
                                 ? 'text-red-700 dark:text-red-300'
-                                : 'text-slate-700 dark:text-slate-200'
+                                : 'text-ink-soft dark:text-ink-soft'
                             }`}
                           >
                             {renderHighlightedText(msg.text)}
                           </span>
-                          <span className="text-[11px] font-mono tabular-nums text-slate-500 dark:text-slate-400">
+                          <span className="text-[11px] font-mono tabular-nums text-ink-muted">
                             · {formatShortTime(msg.createdAt)}
                           </span>
                         </div>
@@ -3293,7 +3293,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         isMine ? 'items-end' : 'items-start'
                       } ${
                         isHighlighted
-                          ? 'bg-emerald-500/15 dark:bg-emerald-500/20 ring-2 ring-emerald-500/40 p-1.5 -mx-1.5'
+                          ? 'bg-brand/15 dark:bg-brand/20 ring-2 ring-emerald-500/40 p-1.5 -mx-1.5'
                           : ''
                       }`}
                     >
@@ -3323,7 +3323,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 avatarId={senderProfile?.avatarId}
                                 size="sm"
                                 roundedClass="rounded-full"
-                                fallbackClassName="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200"
+                                fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand"
                               />
                             </button>
                           );
@@ -3332,7 +3332,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         {dragOffset > 14 && (
                           <div
                             aria-hidden="true"
-                            className="absolute -left-9 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-emerald-100 dark:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 flex items-center justify-center shadow-xs"
+                            className="absolute -left-9 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-brand-subtle dark:bg-brand-subtle/70 text-brand flex items-center justify-center shadow-xs"
                           >
                             <Reply className="w-3.5 h-3.5" />
                           </div>
@@ -3347,7 +3347,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               idx === 0 ? 'top-full mt-1.5' : '-top-12'
                             } ${
                               isMine ? 'right-0' : 'left-0'
-                            } bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-lg px-1.5 py-1 flex items-center gap-0.5`}
+                            } bg-white dark:bg-sunken border border-line dark:border-line rounded-2xl shadow-lg px-1.5 py-1 flex items-center gap-0.5`}
                           >
                             {MESSAGE_REACTIONS.map(({ emoji, label }) => {
                               const selected = myReaction === emoji;
@@ -3362,8 +3362,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   aria-pressed={selected}
                                   className={`min-w-[36px] min-h-[36px] rounded-xl text-lg flex items-center justify-center transition-transform hover:scale-115 active:scale-95 cursor-pointer ${
                                     selected
-                                      ? 'bg-emerald-100 dark:bg-emerald-900/70 ring-1 ring-emerald-400 dark:ring-emerald-600'
-                                      : 'hover:bg-slate-100 dark:hover:bg-slate-700'
+                                      ? 'bg-brand-subtle dark:bg-brand-subtle/70 ring-1 ring-emerald-400 dark:ring-emerald-600'
+                                      : 'hover:bg-sunken dark:hover:bg-sunken'
                                   }`}
                                 >
                                   {emoji}
@@ -3423,8 +3423,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           }}
                           className={`rounded-2xl px-3.5 py-2.5 shadow-2xs select-text ${
                             isMine
-                              ? 'bg-emerald-700 text-white rounded-br-md'
-                              : 'bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-slate-900 dark:text-slate-100 rounded-bl-md'
+                              ? 'bg-brand text-white rounded-br-md'
+                              : 'bg-white dark:bg-sunken border border-line/80 dark:border-line text-ink dark:text-ink rounded-bl-md'
                           }`}
                         >
                           <div className="flex items-center flex-wrap gap-1.5 mb-1">
@@ -3436,12 +3436,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               <button
                                 type="button"
                                 onClick={() => openUserProfile(msg.senderId)}
-                                className="text-xs font-semibold text-slate-900 dark:text-slate-100 hover:underline cursor-pointer text-left"
+                                className="text-xs font-semibold text-ink hover:underline cursor-pointer text-left"
                               >
                                 {msg.senderName}
                               </button>
                             ) : (
-                              <span className="text-xs font-semibold text-slate-900 dark:text-slate-100">
+                              <span className="text-xs font-semibold text-ink">
                                 {msg.senderName}
                               </span>
                             )}
@@ -3452,7 +3452,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             />
                             <span
                               className={`text-[11px] font-mono tabular-nums ${
-                                isMine ? 'text-emerald-200' : 'text-slate-500 dark:text-slate-400'
+                                isMine ? 'text-emerald-200' : 'text-ink-muted dark:text-ink-muted'
                               }`}
                             >
                               {formatShortTime(msg.createdAt)}
@@ -3462,7 +3462,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`text-[10px] italic ${
                                   isMine
                                     ? 'text-emerald-100/80'
-                                    : 'text-slate-500 dark:text-slate-400'
+                                    : 'text-ink-muted dark:text-ink-muted'
                                 }`}
                               >
                                 · Edited
@@ -3474,7 +3474,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`w-3 h-3 ${
                                   isMine
                                     ? 'text-emerald-100 fill-current'
-                                    : 'text-emerald-600 dark:text-emerald-400 fill-current'
+                                    : 'text-brand dark:text-brand fill-current'
                                 }`}
                               />
                             )}
@@ -3506,7 +3506,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               className={`w-full text-left rounded-xl px-2.5 py-1.5 mb-2 border transition-colors cursor-pointer ${
                                 isMine
                                   ? 'bg-black/15 hover:bg-black/25 border-white/20 text-white'
-                                  : 'bg-slate-100/90 hover:bg-slate-200/70 dark:bg-slate-900/70 dark:hover:bg-slate-900 border-slate-200/90 dark:border-slate-700 text-slate-800 dark:text-slate-200'
+                                  : 'bg-sunken/90 hover:bg-sunken/70 dark:bg-surface/70 dark:hover:bg-surface border-line/90 dark:border-line text-ink dark:text-ink-soft'
                               }`}
                             >
                               <div className="flex items-center gap-1 text-[11px] font-bold truncate">
@@ -3519,7 +3519,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`text-xs line-clamp-2 break-words mt-0.5 ${
                                   isMine
                                     ? 'text-emerald-50/90'
-                                    : 'text-slate-600 dark:text-slate-300'
+                                    : 'text-ink-body dark:text-ink-soft'
                                 }`}
                               >
                                 {msg.replyToSnippet || 'Original message'}
@@ -3532,7 +3532,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               className={`text-sm italic leading-relaxed ${
                                 isMine
                                   ? 'text-emerald-100/80'
-                                  : 'text-slate-500 dark:text-slate-400'
+                                  : 'text-ink-muted dark:text-ink-muted'
                               }`}
                             >
                               {DELETED_MESSAGE_PLACEHOLDER}
@@ -3543,7 +3543,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-dashed text-xs italic ${
                                   isMine
                                     ? 'border-white/25 text-emerald-100/80'
-                                    : 'border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400'
+                                    : 'border-line dark:border-line text-ink-muted dark:text-ink-muted'
                                 }`}
                               >
                                 <span className="w-5 h-5 rounded-full border border-dashed border-current flex items-center justify-center text-[10px] font-bold not-italic">
@@ -3574,9 +3574,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 type="button"
                                 disabled={isMsgPending || openingViewOnceMsgId === msg.id}
                                 onClick={() => handleOpenViewOnce(msg)}
-                                className="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-dashed border-emerald-400 dark:border-emerald-700 text-emerald-900 dark:text-emerald-200 text-xs transition-colors cursor-pointer disabled:opacity-60"
+                                className="inline-flex items-center gap-2.5 px-3 py-2 rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/60 border border-dashed border-brand text-brand text-xs transition-colors cursor-pointer disabled:opacity-60"
                               >
-                                <span className="w-6 h-6 rounded-full border-2 border-dashed border-emerald-600 dark:border-emerald-400 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-[11px] font-bold shrink-0">
+                                <span className="w-6 h-6 rounded-full border-2 border-dashed border-brand text-brand flex items-center justify-center text-[11px] font-bold shrink-0">
                                   1
                                 </span>
                                 <div className="text-left min-w-0">
@@ -3593,7 +3593,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       </>
                                     )}
                                   </p>
-                                  <p className="text-[10px] text-emerald-700 dark:text-emerald-400">
+                                  <p className="text-[10px] text-brand">
                                     Tap to open once
                                   </p>
                                 </div>
@@ -3647,7 +3647,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`truncate ${
                                     isMine
                                       ? 'text-emerald-100/85'
-                                      : 'text-slate-500 dark:text-slate-400'
+                                      : 'text-ink-muted dark:text-ink-muted'
                                   }`}
                                 >
                                   {formatFileSize(msg.fileSizeBytes || 0)}
@@ -3667,7 +3667,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 font-semibold px-2 py-1 rounded-lg transition-colors shrink-0 cursor-pointer ${
                                     isMine
                                       ? 'bg-white/15 hover:bg-white/25 text-white'
-                                      : 'bg-slate-100 dark:bg-slate-700/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200'
+                                      : 'bg-sunken dark:bg-sunken/80 hover:bg-sunken dark:hover:bg-sunken text-ink-soft dark:text-ink-soft'
                                   }`}
                                 >
                                   <Download className="w-3 h-3" />
@@ -3686,8 +3686,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   <div
                                     className={`rounded-xl p-2.5 flex items-center gap-2 border ${
                                       isMine
-                                        ? 'bg-emerald-800/55 border-white/20'
-                                        : 'bg-slate-50 dark:bg-slate-900/70 border-slate-200 dark:border-slate-700'
+                                        ? 'bg-brand-strong/55 border-white/20'
+                                        : 'bg-sunken dark:bg-surface/70 border-line dark:border-line'
                                     }`}
                                   >
                                     <div
@@ -3708,7 +3708,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         className={`text-[11px] font-mono mt-0.5 ${
                                           isMine
                                             ? 'text-emerald-100/80'
-                                            : 'text-slate-500 dark:text-slate-400'
+                                            : 'text-ink-muted dark:text-ink-muted'
                                         }`}
                                       >
                                         {badge} · {formatFileSize(msg.fileSizeBytes || 0)}
@@ -3740,7 +3740,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                                             isMine
                                               ? 'bg-white/15 hover:bg-white/25 text-white'
-                                              : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                              : 'bg-white dark:bg-sunken border border-line dark:border-line text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                                           }`}
                                         >
                                           <Eye className="w-3.5 h-3.5" />
@@ -3765,7 +3765,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                                           isMine
                                             ? 'bg-white/15 hover:bg-white/25 text-white'
-                                            : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                            : 'bg-white dark:bg-sunken border border-line dark:border-line text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                                         }`}
                                       >
                                         <Download className="w-3.5 h-3.5" />
@@ -3784,7 +3784,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             <div
                               className={`min-w-[225px] max-w-[300px] rounded-xl p-3 space-y-2 border ${
                                 isMine
-                                  ? 'bg-emerald-800/50 border-white/20'
+                                  ? 'bg-brand-strong/50 border-white/20'
                                   : 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-200/80 dark:border-amber-800/60'
                               }`}
                             >
@@ -3817,7 +3817,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`text-xs space-y-1 ${
                                   isMine
                                     ? 'text-emerald-50/95'
-                                    : 'text-slate-700 dark:text-slate-300'
+                                    : 'text-ink-soft dark:text-ink-soft'
                                 }`}
                               >
                                 <p className="flex items-center gap-1.5 font-medium">
@@ -3837,7 +3837,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[11px] leading-relaxed pt-0.5 ${
                                       isMine
                                         ? 'text-emerald-100/85'
-                                        : 'text-slate-500 dark:text-slate-400'
+                                        : 'text-ink-muted dark:text-ink-muted'
                                     }`}
                                   >
                                     {msg.eventNotes}
@@ -3849,8 +3849,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             <div
                               className={`min-w-[225px] max-w-[300px] rounded-xl p-3 space-y-2.5 border ${
                                 isMine
-                                  ? 'bg-emerald-800/50 border-white/20'
-                                  : 'bg-slate-50 dark:bg-slate-900/70 border-slate-200 dark:border-slate-700'
+                                  ? 'bg-brand-strong/50 border-white/20'
+                                  : 'bg-sunken dark:bg-surface/70 border-line dark:border-line'
                               }`}
                             >
                               <button
@@ -3892,7 +3892,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[11px] truncate mt-0.5 ${
                                       isMine
                                         ? 'text-emerald-100/85'
-                                        : 'text-slate-500 dark:text-slate-400'
+                                        : 'text-ink-muted dark:text-ink-muted'
                                     }`}
                                   >
                                     {msg.contactDepartment} ·{' '}
@@ -3908,7 +3908,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         className={`text-[10px] font-mono mt-0.5 ${
                                           isMine
                                             ? 'text-emerald-100/80'
-                                            : 'text-slate-500 dark:text-slate-400'
+                                            : 'text-ink-muted dark:text-ink-muted'
                                         }`}
                                       >
                                         {msg.contactIdNumber}
@@ -3924,7 +3924,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`w-full min-h-[36px] rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60 ${
                                     isMine
                                       ? 'bg-white/20 hover:bg-white/30 text-white'
-                                      : 'bg-emerald-700 hover:bg-emerald-800 text-white'
+                                      : 'bg-brand hover:bg-brand-strong text-white'
                                   }`}
                                 >
                                   <MessageSquare className="w-3.5 h-3.5" />
@@ -3960,7 +3960,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       className={`w-4 h-4 mt-0.5 shrink-0 ${
                                         isMine
                                           ? 'text-emerald-200'
-                                          : 'text-emerald-700 dark:text-emerald-400'
+                                          : 'text-brand dark:text-brand'
                                       }`}
                                     />
                                     <p className="text-sm font-bold leading-snug break-words">
@@ -3988,10 +3988,10 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                             isMine
                                               ? isSelected
                                                 ? 'border-white/80 bg-white/20 text-white'
-                                                : 'border-white/25 bg-emerald-800/40 hover:bg-emerald-800/60 text-emerald-50'
+                                                : 'border-white/25 bg-brand-strong/40 hover:bg-brand-strong/60 text-emerald-50'
                                               : isSelected
-                                                ? 'border-emerald-500 dark:border-emerald-500 bg-emerald-50/70 dark:bg-emerald-950/40 text-slate-900 dark:text-slate-100'
-                                                : 'border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/50 hover:border-slate-300 dark:hover:border-slate-600 text-slate-800 dark:text-slate-200'
+                                                ? 'border-brand dark:border-brand bg-brand-subtle/70 dark:bg-brand-subtle/40 text-ink dark:text-ink'
+                                                : 'border-line dark:border-line bg-sunken/70 dark:bg-surface/50 hover:border-line dark:hover:border-line text-ink dark:text-ink-soft'
                                           }`}
                                         >
                                           <div
@@ -4003,8 +4003,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                                   ? 'bg-white/25'
                                                   : 'bg-white/15'
                                                 : isSelected
-                                                  ? 'bg-emerald-500/20 dark:bg-emerald-500/25'
-                                                  : 'bg-slate-200/70 dark:bg-slate-700/50'
+                                                  ? 'bg-brand/20 dark:bg-brand/25'
+                                                  : 'bg-sunken/70 dark:bg-sunken/50'
                                             }`}
                                           />
                                           <div className="relative flex items-center justify-between gap-2 text-xs">
@@ -4027,7 +4027,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[11px] ${
                                       isMine
                                         ? 'text-emerald-100/85'
-                                        : 'text-slate-500 dark:text-slate-400'
+                                        : 'text-ink-muted dark:text-ink-muted'
                                     }`}
                                   >
                                     {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
@@ -4055,7 +4055,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isMine
                                       ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
-                                      : 'text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
+                                      : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
                                   }`}
                                 >
                                   <Reply className="w-3 h-3" />
@@ -4077,7 +4077,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         : 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40'
                                       : isMine
                                         ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+                                        : 'text-ink-muted dark:text-ink-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
                                   }`}
                                 >
                                   <Star className={`w-3 h-3 ${isStarred ? 'fill-current' : ''}`} />
@@ -4099,7 +4099,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isMine
                                       ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
-                                      : 'text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40'
+                                      : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
                                   }`}
                                 >
                                   <SmilePlus className="w-3 h-3" />
@@ -4122,7 +4122,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`inline-flex items-center justify-center py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                       isMine
                                         ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
-                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700'
+                                        : 'text-ink-muted dark:text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                                     }`}
                                   >
                                     <MoreHorizontal className="w-3.5 h-3.5" />
@@ -4132,7 +4132,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     <div
                                       data-msg-menu="true"
                                       role="menu"
-                                      className={`absolute z-30 bottom-full mb-1.5 w-44 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl py-1.5 text-slate-800 dark:text-slate-100 ${
+                                      className={`absolute z-30 bottom-full mb-1.5 w-44 rounded-2xl bg-white dark:bg-surface border border-line dark:border-line shadow-xl py-1.5 text-ink dark:text-ink ${
                                         isMine ? 'right-0' : 'left-0'
                                       }`}
                                     >
@@ -4141,18 +4141,18 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           type="button"
                                           role="menuitem"
                                           onClick={() => handleCopyMessageText(msg)}
-                                          className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer"
+                                          className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-sunken flex items-center gap-2 cursor-pointer"
                                         >
                                           {copiedMsgId === msg.id ? (
                                             <>
-                                              <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                                              <span className="text-emerald-700 dark:text-emerald-400">
+                                              <Check className="w-3.5 h-3.5 text-brand" />
+                                              <span className="text-brand">
                                                 Copied!
                                               </span>
                                             </>
                                           ) : (
                                             <>
-                                              <Copy className="w-3.5 h-3.5 text-slate-500" />
+                                              <Copy className="w-3.5 h-3.5 text-ink-muted" />
                                               <span>Copy text</span>
                                             </>
                                           )}
@@ -4165,16 +4165,16 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           role="menuitem"
                                           disabled={pinningMsgBusy}
                                           onClick={() => handleTogglePinMessageInGroup(msg)}
-                                          className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer"
+                                          className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-sunken flex items-center gap-2 cursor-pointer"
                                         >
                                           {isPinnedMsg ? (
                                             <>
-                                              <PinOff className="w-3.5 h-3.5 text-slate-500" />
+                                              <PinOff className="w-3.5 h-3.5 text-ink-muted" />
                                               <span>Unpin from group</span>
                                             </>
                                           ) : (
                                             <>
-                                              <Pin className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                                              <Pin className="w-3.5 h-3.5 text-brand" />
                                               <span>Pin to group</span>
                                             </>
                                           )}
@@ -4186,9 +4186,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           type="button"
                                           role="menuitem"
                                           onClick={() => startEditMessage(msg)}
-                                          className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer"
+                                          className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-sunken flex items-center gap-2 cursor-pointer"
                                         >
-                                          <Pencil className="w-3.5 h-3.5 text-slate-500" />
+                                          <Pencil className="w-3.5 h-3.5 text-ink-muted" />
                                           <span>Edit message</span>
                                         </button>
                                       )}
@@ -4215,9 +4215,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           setMoreMenuMsgId(null);
                                           setReportingMessage(msg);
                                         }}
-                                        className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2 cursor-pointer"
+                                        className="w-full px-3 py-2 text-left text-xs font-medium hover:bg-sunken flex items-center gap-2 cursor-pointer"
                                       >
-                                        <Flag className="w-3.5 h-3.5 text-slate-500" />
+                                        <Flag className="w-3.5 h-3.5 text-ink-muted" />
                                         <span>Report message</span>
                                       </button>
                                     </div>
@@ -4253,8 +4253,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   : 'cursor-pointer'
                               } ${
                                 group.reactedByMe
-                                  ? 'bg-emerald-50 dark:bg-emerald-950/70 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200'
-                                  : 'bg-white dark:bg-slate-800 border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600'
+                                  ? 'bg-brand-subtle dark:bg-brand-subtle/70 border-success-line dark:border-brand text-brand dark:text-brand'
+                                  : 'bg-white dark:bg-sunken border-line/90 dark:border-line text-ink-soft dark:text-ink-soft hover:border-line dark:hover:border-line'
                               }`}
                             >
                               <span className="leading-none">{group.emoji}</span>
@@ -4281,23 +4281,23 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 }
                                 aria-expanded={isExpanded}
                                 title="View read receipt details"
-                                className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 cursor-pointer"
+                                className="inline-flex items-center gap-1 text-[11px] text-ink-muted hover:text-ink dark:hover:text-ink-soft cursor-pointer"
                               >
-                                <CheckCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                <CheckCheck className="w-3.5 h-3.5 text-brand shrink-0" />
                                 <span>{seenSummary}</span>
                               </button>
 
                               {isExpanded && (
-                                <div className="mt-1 max-w-xs rounded-xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 px-2.5 py-2 shadow-xs flex flex-wrap gap-1.5">
+                                <div className="mt-1 max-w-xs rounded-xl bg-surface dark:bg-sunken border border-line/80 dark:border-line px-2.5 py-2 shadow-xs flex flex-wrap gap-1.5">
                                   {msgReaders.map((reader) => (
                                     <span
                                       key={reader.uid}
-                                      className="inline-flex items-center gap-1 text-[11px] text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-700/80 rounded-md px-2 py-0.5"
+                                      className="inline-flex items-center gap-1 text-[11px] text-ink-soft bg-sunken dark:bg-sunken/80 rounded-md px-2 py-0.5"
                                     >
-                                      <CheckCheck className="w-3 h-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                                      <CheckCheck className="w-3 h-3 text-brand shrink-0" />
                                       <span>{reader.fullName}</span>
                                       {reader.lastReadAt && (
-                                        <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400">
+                                        <span className="text-[10px] font-mono text-ink-muted">
                                           · {formatShortTime(reader.lastReadAt)}
                                         </span>
                                       )}
@@ -4307,8 +4307,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               )}
                             </>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
-                              <Check className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 shrink-0" />
+                            <span className="inline-flex items-center gap-1 text-[11px] text-ink-muted">
+                              <Check className="w-3.5 h-3.5 text-ink-muted shrink-0" />
                               <span>Sent</span>
                             </span>
                           )}
@@ -4328,9 +4328,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   type="button"
                   onClick={jumpToBottom}
                   aria-label="Scroll to latest messages"
-                  className="absolute bottom-3 right-4 z-10 min-h-[38px] px-3 rounded-full bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-700 shadow-lg text-xs font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 inline-flex items-center gap-1.5 cursor-pointer"
+                  className="absolute bottom-3 right-4 z-10 min-h-[38px] px-3 rounded-full bg-white/95 dark:bg-surface/95 border border-line shadow-lg text-xs font-semibold text-ink hover:bg-sunken inline-flex items-center gap-1.5 cursor-pointer"
                 >
-                  <ChevronDown className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+                  <ChevronDown className="w-4 h-4 text-brand" />
                   <span>
                     {unseenBelowCount > 0
                       ? `${unseenBelowCount} new ${unseenBelowCount === 1 ? 'message' : 'messages'}`
@@ -4357,14 +4357,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             {!isDmBlocked && activeTypers.length > 0 && (
               <div
                 aria-live="polite"
-                className="px-4 py-1.5 bg-[#FAFBFB] dark:bg-slate-950/60 border-t border-slate-100/80 dark:border-slate-800/70 flex items-center gap-2"
+                className="px-4 py-1.5 bg-[#FAFBFB] dark:bg-canvas/60 border-t border-line/80 dark:border-line/70 flex items-center gap-2"
               >
                 <span className="inline-flex items-center gap-0.5" aria-hidden="true">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-bounce [animation-delay:-0.3s]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-bounce [animation-delay:-0.15s]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-bounce" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-bounce [animation-delay:-0.3s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-bounce [animation-delay:-0.15s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-bounce" />
                 </span>
-                <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400 truncate">
+                <span className="text-xs font-medium text-brand truncate">
                   {typingSummary}
                 </span>
               </div>
@@ -4390,7 +4390,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             {attachmentMenuOpen && !isDmBlocked && (
               <div
                 data-attachment-area="true"
-                className="relative z-30 border-t border-slate-200/80 dark:border-slate-800 bg-slate-950/95 dark:bg-slate-950 text-slate-100 px-4 pt-2.5 pb-4 rounded-t-3xl shadow-2xl"
+                className="relative z-30 border-t border-line/80 dark:border-line bg-slate-950/95 dark:bg-canvas text-slate-100 px-4 pt-2.5 pb-4 rounded-t-3xl shadow-2xl"
               >
                 <div className="w-10 h-1 rounded-full bg-slate-700 mx-auto mb-3" />
                 <div className="flex items-center justify-between mb-3 px-1">
@@ -4401,7 +4401,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="button"
                     onClick={() => setAttachmentMenuOpen(false)}
                     aria-label="Close attachment menu"
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-slate-500 hover:text-white hover:bg-slate-800 cursor-pointer"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-ink-muted hover:text-white hover:bg-slate-800 cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -4445,7 +4445,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       }}
                       className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                     >
-                      <span className="w-13 h-13 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                      <span className="w-13 h-13 rounded-full bg-gradient-to-br from-brand to-teal-600 text-white shadow-lg shadow-emerald-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                         <BarChart3 className="w-5 h-5" />
                       </span>
                       <span className="text-xs font-medium text-slate-200">Poll</span>
@@ -4479,9 +4479,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
             {/* Quoted Reply Preview Bar / Active Edit Banner */}
             {!isDmBlocked && (replyingTo || editingMessage) && (
-              <div className="px-3 sm:px-4 py-2 border-t border-slate-100 dark:border-slate-800 bg-slate-50/90 dark:bg-slate-800/70 flex items-center justify-between gap-2.5">
+              <div className="px-3 sm:px-4 py-2 border-t border-line bg-sunken/90 dark:bg-sunken/70 flex items-center justify-between gap-2.5">
                 <div className="flex items-center gap-2.5 min-w-0 flex-1">
-                  <span className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                  <span className="w-8 h-8 rounded-xl bg-brand-subtle dark:bg-brand-subtle/70 text-brand flex items-center justify-center shrink-0">
                     {editingMessage ? (
                       <Pencil className="w-4 h-4" />
                     ) : (
@@ -4489,12 +4489,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     )}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-emerald-800 dark:text-emerald-300 truncate">
+                    <p className="text-xs font-bold text-brand truncate">
                       {editingMessage
                         ? 'Editing message'
                         : `Replying to ${replyingTo!.senderName}`}
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 truncate">
+                    <p className="text-xs text-ink-body dark:text-ink-soft truncate">
                       {editingMessage
                         ? editingMessage.text
                         : getMessageSnippet(replyingTo!)}
@@ -4512,7 +4512,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     }
                   }}
                   aria-label={editingMessage ? 'Cancel editing message' : 'Cancel reply'}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-200/70 dark:hover:bg-slate-700/70 cursor-pointer shrink-0"
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken/70 cursor-pointer shrink-0"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -4521,8 +4521,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
             {/* Message Input Bar */}
             {isDmBlocked ? (
-              <div className="p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/70 text-center space-y-2">
-                <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+              <div className="p-4 border-t border-line bg-sunken dark:bg-sunken/70 text-center space-y-2">
+                <p className="text-xs font-medium text-ink-body dark:text-ink-soft">
                   {iBlockedDm
                     ? 'You blocked this conversation. Unblock to send messages again.'
                     : 'You cannot send messages in this conversation.'}
@@ -4532,20 +4532,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="button"
                     onClick={handleToggleBlock}
                     disabled={blockingBusy}
-                    className="inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-emerald-700 text-white text-xs font-semibold hover:bg-emerald-800 cursor-pointer"
+                    className="inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-brand text-on-brand text-xs font-semibold hover:bg-brand-strong cursor-pointer"
                   >
                     Unblock User
                   </button>
                 )}
               </div>
             ) : recordingPhase === 'recording' ? (
-              <div className="p-2 sm:p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-1.5 w-full min-w-0">
+              <div className="p-2 sm:p-3 border-t border-line bg-surface flex items-center gap-1.5 w-full min-w-0">
                 <button
                   type="button"
                   onClick={cancelVoiceRecording}
                   aria-label="Cancel voice recording"
                   title="Discard recording"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/50 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-red-50 dark:hover:bg-red-950/50 text-ink-body dark:text-ink-soft hover:text-red-600 dark:hover:text-red-400 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -4565,7 +4565,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   onClick={stopAndPreviewVoiceRecording}
                   aria-label="Stop recording to preview"
                   title="Stop & preview"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-sunken text-ink inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Square className="w-3.5 h-3.5 fill-current" />
                 </button>
@@ -4578,8 +4578,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={viewOnceVoice ? 'View Once enabled' : 'Enable View Once'}
                   className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-full border-2 border-dashed inline-flex items-center justify-center text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOnceVoice
-                      ? 'bg-emerald-700 border-emerald-500 text-white'
-                      : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-emerald-500'
+                      ? 'bg-brand border-brand text-white'
+                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand'
                   }`}
                 >
                   1
@@ -4591,25 +4591,25 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   disabled={sendingVoice}
                   aria-label="Send voice note"
                   title="Send voice note"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-brand hover:bg-brand-strong disabled:opacity-40 text-on-brand inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
             ) : recordingPhase === 'preview' && recordedVoiceDraft ? (
-              <div className="p-2 sm:p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-1.5 w-full min-w-0">
+              <div className="p-2 sm:p-3 border-t border-line bg-surface flex items-center gap-1.5 w-full min-w-0">
                 <button
                   type="button"
                   onClick={cancelVoiceRecording}
                   disabled={sendingVoice}
                   aria-label="Discard voice note"
                   title="Discard voice note"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-950/50 text-slate-600 dark:text-slate-300 hover:text-red-600 dark:hover:text-red-400 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-red-50 dark:hover:bg-red-950/50 text-ink-body dark:text-ink-soft hover:text-red-600 dark:hover:text-red-400 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
 
-                <div className="flex-1 min-w-0 px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/80">
+                <div className="flex-1 min-w-0 px-2.5 py-1 rounded-full border border-line bg-sunken/80">
                   <VoiceNotePlayer
                     src={recordedVoiceDraft.previewUrl}
                     durationSec={recordedVoiceDraft.durationSec}
@@ -4625,8 +4625,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={viewOnceVoice ? 'View Once enabled' : 'Enable View Once'}
                   className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-full border-2 border-dashed inline-flex items-center justify-center text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOnceVoice
-                      ? 'bg-emerald-700 border-emerald-500 text-white'
-                      : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-emerald-500'
+                      ? 'bg-brand border-brand text-white'
+                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand'
                   }`}
                 >
                   1
@@ -4637,7 +4637,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   onClick={sendVoiceRecordingNow}
                   disabled={sendingVoice}
                   aria-label="Send voice note"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-emerald-700 hover:bg-emerald-800 disabled:opacity-40 text-white inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-brand hover:bg-brand-strong disabled:opacity-40 text-on-brand inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -4645,9 +4645,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             ) : (
               <form
                 onSubmit={handleSend}
-                className="p-2.5 sm:p-3 border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center gap-2 w-full min-w-0"
+                className="p-2.5 sm:p-3 border-t border-line bg-surface flex items-center gap-2 w-full min-w-0"
               >
-                <div className="flex-1 min-w-0 min-h-[46px] pl-4 pr-1.5 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/90 focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:border-emerald-600 focus-within:ring-2 focus-within:ring-emerald-600/15 flex items-center gap-1 transition-colors">
+                <div className="flex-1 min-w-0 min-h-[46px] pl-4 pr-1.5 rounded-full border border-line bg-sunken/80 dark:bg-sunken/90 focus-within:bg-white dark:focus-within:bg-sunken focus-within:border-brand focus-within:ring-2 focus-within:ring-focus/15 flex items-center gap-1 transition-colors">
                   <input
                     ref={composerInputRef}
                     type="text"
@@ -4659,7 +4659,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         ? 'Edit your message...'
                         : `Message ${getChatDisplayTitle(activeChat)}...`
                     }
-                    className="flex-1 min-w-0 w-full bg-transparent py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
+                    className="flex-1 min-w-0 w-full bg-transparent py-2 text-sm text-ink placeholder:text-ink-muted focus:outline-none"
                   />
                   {!editingMessage && (
                     <button
@@ -4671,8 +4671,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       title="Attach media, file, poll, event, or contact"
                       className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-full shrink-0 inline-flex items-center justify-center transition-colors cursor-pointer ${
                         attachmentMenuOpen
-                          ? 'bg-emerald-100 dark:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300'
-                          : 'text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-300 hover:bg-slate-200/70 dark:hover:bg-slate-700/60'
+                          ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
+                          : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-sunken/70 dark:hover:bg-sunken/60'
                       }`}
                     >
                       <Paperclip className="w-4 h-4 -rotate-45" />
@@ -4686,7 +4686,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={savingEdit || !draft.trim()}
                     aria-label="Save edited message"
                     title="Save edited message"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-emerald-700 hover:bg-emerald-800 active:scale-95 disabled:opacity-50 text-white inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 disabled:opacity-50 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
                   >
                     <Check className="w-5 h-5" />
                   </button>
@@ -4695,7 +4695,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="submit"
                     aria-label="Send message"
                     title="Send message"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
                   >
                     <Send className="w-4 h-4 translate-x-[0.5px]" />
                   </button>
@@ -4709,7 +4709,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={sendingVoice}
                     aria-label="Record voice note"
                     title="Record voice note"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-emerald-700 hover:bg-emerald-800 active:scale-95 disabled:opacity-40 text-white inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 disabled:opacity-40 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
                   >
                     <Mic className="w-5 h-5" />
                   </button>
@@ -4722,28 +4722,28 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Report Message Modal */}
       {reportingMessage && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Report Message</h3>
+              <h3 className="text-base font-bold text-ink">Report Message</h3>
               <button
                 type="button"
                 onClick={() => setReportingMessage(null)}
                 aria-label="Close report dialog"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/80 p-3 text-xs text-slate-700 dark:text-slate-300 space-y-1">
-              <p className="font-semibold text-slate-900 dark:text-slate-100">{reportingMessage.senderName}</p>
+            <div className="rounded-2xl bg-sunken dark:bg-sunken/70 border border-line dark:border-line/80 p-3 text-xs text-ink-soft space-y-1">
+              <p className="font-semibold text-ink">{reportingMessage.senderName}</p>
               <p className="line-clamp-3">{reportingMessage.text}</p>
             </div>
 
             <form onSubmit={handleSubmitReport} className="space-y-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Reason
                 </label>
                 <div className="grid grid-cols-2 gap-2">
@@ -4754,8 +4754,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       onClick={() => setReportReason(reason)}
                       className={`min-h-[40px] px-3 rounded-xl border text-xs font-medium text-left transition-colors cursor-pointer ${
                         reportReason === reason
-                          ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-600 text-emerald-900 dark:text-emerald-200'
-                          : 'bg-white dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
+                          ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand dark:text-brand'
+                          : 'bg-white dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-line dark:hover:border-line'
                       }`}
                     >
                       {reason}
@@ -4765,7 +4765,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               </div>
 
               <div>
-                <label htmlFor="reportDetails" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="reportDetails" className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Additional details (optional)
                 </label>
                 <textarea
@@ -4775,7 +4775,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   value={reportDetails}
                   onChange={(e) => setReportDetails(e.target.value)}
                   placeholder="Provide context for the moderation team..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="w-full p-3 rounded-xl border border-line bg-sunken/60 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 />
               </div>
 
@@ -4783,7 +4783,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setReportingMessage(null)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -4815,12 +4815,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Create Group Poll Modal */}
       {pollModalOpen && activeChat && activeChat.type !== 'dm' && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <BarChart3 className="w-5 h-5 text-emerald-700 dark:text-emerald-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <BarChart3 className="w-5 h-5 text-brand" />
+                <h3 className="text-base font-bold text-ink">
                   Create Group Poll
                 </h3>
               </div>
@@ -4828,7 +4828,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={() => setPollModalOpen(false)}
                 aria-label="Close poll dialog"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -4844,7 +4844,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <div>
                 <label
                   htmlFor="pollQuestionInput"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Question
                 </label>
@@ -4856,20 +4856,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
                   placeholder="e.g., Preferred time for CHM 201 revision?"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  <label className="text-xs font-semibold text-ink-soft">
                     Options (2–6)
                   </label>
                   {pollOptions.length < 6 && (
                     <button
                       type="button"
                       onClick={() => setPollOptions((prev) => [...prev, ''])}
-                      className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                      className="text-xs font-semibold text-brand hover:underline inline-flex items-center gap-1 cursor-pointer"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       <span>Add option</span>
@@ -4891,7 +4891,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         );
                       }}
                       placeholder={`Option ${idx + 1}`}
-                      className="flex-1 min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                      className="flex-1 min-h-[42px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                     />
                     {pollOptions.length > 2 && (
                       <button
@@ -4900,7 +4900,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           setPollOptions((prev) => prev.filter((_, i) => i !== idx))
                         }
                         aria-label={`Remove option ${idx + 1}`}
-                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -4913,14 +4913,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setPollModalOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={sendingPoll}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {sendingPoll ? 'Posting...' : 'Post Poll'}
                 </button>
@@ -4932,12 +4932,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Gallery Image Preview & Caption Modal */}
       {imageDraft && activeChat && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[92dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <ImageIcon className="w-5 h-5 text-violet-600 dark:text-violet-400 shrink-0" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+                <h3 className="text-base font-bold text-ink truncate">
                   Send Photo
                 </h3>
               </div>
@@ -4945,7 +4945,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={clearImageDraft}
                 aria-label="Cancel photo"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -4959,14 +4959,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               />
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-mono">
+            <p className="text-xs text-ink-muted truncate font-mono">
               {imageDraft.fileName} · {formatFileSize(imageDraft.fileSizeBytes)}
             </p>
 
             <form onSubmit={handleSendImageDraft} className="space-y-3">
               {viewOncePhoto ? (
-                <div className="px-3.5 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/70 text-xs text-emerald-800 dark:text-emerald-200 flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full border-2 border-dashed border-emerald-600 dark:border-emerald-400 flex items-center justify-center text-[10px] font-bold shrink-0">
+                <div className="px-3.5 py-2.5 rounded-xl bg-brand-subtle dark:bg-brand-subtle/50 border border-success-line dark:border-success-line/70 text-xs text-brand flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full border-2 border-dashed border-brand flex items-center justify-center text-[10px] font-bold shrink-0">
                     1
                   </span>
                   <span>View Once enabled — photo deletes permanently after opening once.</span>
@@ -4978,14 +4978,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   value={mediaCaption}
                   onChange={(e) => setMediaCaption(e.target.value)}
                   placeholder="Add a caption (optional)..."
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               )}
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={clearImageDraft}
-                  className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="min-h-[44px] px-4 rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -4997,8 +4997,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={viewOncePhoto ? 'View Once enabled' : 'Send as View Once'}
                   className={`min-h-[44px] px-3 rounded-xl border-2 border-dashed inline-flex items-center gap-1.5 text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOncePhoto
-                      ? 'bg-emerald-700 border-emerald-500 text-white'
-                      : 'bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-emerald-500'
+                      ? 'bg-brand border-brand text-white'
+                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-brand'
                   }`}
                 >
                   <span>1</span>
@@ -5007,7 +5007,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <button
                   type="submit"
                   disabled={sendingMedia}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold inline-flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>{sendingMedia ? 'Sending...' : viewOncePhoto ? 'Send Once' : 'Send Photo'}</span>
@@ -5020,12 +5020,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Document Preview & Caption Modal */}
       {docDraft && activeChat && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+                <h3 className="text-base font-bold text-ink truncate">
                   Send Document
                 </h3>
               </div>
@@ -5033,22 +5033,22 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={() => setDocDraft(null)}
                 aria-label="Cancel document"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 p-3.5 flex items-center gap-3">
+            <div className="rounded-2xl border border-line bg-sunken dark:bg-sunken/80 p-3.5 flex items-center gap-3">
               <div className="w-11 h-11 rounded-xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 flex flex-col items-center justify-center font-mono text-[10px] font-bold shrink-0">
                 <FileText className="w-4 h-4 mb-0.5" />
                 <span>{getFileTypeBadge(docDraft.fileName, docDraft.mimeType)}</span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 break-words">
+                <p className="text-sm font-semibold text-ink break-words">
                   {docDraft.fileName}
                 </p>
-                <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="text-xs font-mono text-ink-muted mt-0.5">
                   {getFileTypeBadge(docDraft.fileName, docDraft.mimeType)} ·{' '}
                   {formatFileSize(docDraft.fileSizeBytes)}
                 </p>
@@ -5062,20 +5062,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 value={mediaCaption}
                 onChange={(e) => setMediaCaption(e.target.value)}
                 placeholder="Add a note about this file (optional)..."
-                className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
               />
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setDocDraft(null)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={sendingMedia}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold inline-flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold inline-flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                   <span>{sendingMedia ? 'Sending...' : 'Send File'}</span>
@@ -5088,12 +5088,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Share Event / Reminder Modal */}
       {eventModalOpen && activeChat && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   Share Campus Event
                 </h3>
               </div>
@@ -5101,7 +5101,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={() => setEventModalOpen(false)}
                 aria-label="Close event dialog"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -5109,7 +5109,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
             {upcomingCalendarEvents.length > 0 && (
               <div className="space-y-1.5">
-                <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                <p className="text-xs font-semibold text-ink-body dark:text-ink-soft">
                   Quick-share upcoming campus timetable
                 </p>
                 <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
@@ -5119,12 +5119,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       type="button"
                       disabled={sendingEvent}
                       onClick={() => handleSendCalendarPresetEvent(ev)}
-                      className="w-full text-left rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/70 hover:border-amber-400 dark:hover:border-amber-600 px-3 py-2 transition-colors cursor-pointer disabled:opacity-50"
+                      className="w-full text-left rounded-xl border border-line bg-sunken/70 hover:border-amber-400 dark:hover:border-amber-600 px-3 py-2 transition-colors cursor-pointer disabled:opacity-50"
                     >
-                      <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                      <p className="text-xs font-bold text-ink truncate">
                         {ev.title}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                      <p className="text-[11px] text-ink-muted truncate mt-0.5">
                         {ev.date} · {ev.startTime} · {ev.venue}
                       </p>
                     </button>
@@ -5140,7 +5140,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             )}
 
             <form onSubmit={handleSendCustomEvent} className="space-y-3">
-              <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+              <p className="text-xs font-semibold text-ink-body dark:text-ink-soft">
                 Or compose an event reminder
               </p>
               <input
@@ -5150,7 +5150,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 value={eventTitle}
                 onChange={(e) => setEventTitle(e.target.value)}
                 placeholder="Event title (e.g., CHM 201 Tutorial)"
-                className="w-full min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[42px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
               />
               <div className="grid grid-cols-2 gap-2">
                 <input
@@ -5158,7 +5158,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   required
                   value={eventDate}
                   onChange={(e) => setEventDate(e.target.value)}
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
                 <input
                   type="text"
@@ -5167,7 +5167,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   value={eventTime}
                   onChange={(e) => setEventTime(e.target.value)}
                   placeholder="Time (e.g., 10:00 AM)"
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
               <input
@@ -5177,7 +5177,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 value={eventVenue}
                 onChange={(e) => setEventVenue(e.target.value)}
                 placeholder="Venue (e.g., SLT Hall B, Tudun Wada)"
-                className="w-full min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[42px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
               />
               <textarea
                 rows={2}
@@ -5185,20 +5185,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 value={eventNotes}
                 onChange={(e) => setEventNotes(e.target.value)}
                 placeholder="Optional reminder notes..."
-                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full p-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
               />
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setEventModalOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={sendingEvent}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {sendingEvent ? 'Sharing...' : 'Share Event'}
                 </button>
@@ -5210,12 +5210,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Share Verified GSU Contact Modal */}
       {contactModalOpen && activeChat && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[85dvh] flex flex-col bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md max-h-[85dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Contact className="w-5 h-5 text-sky-600 dark:text-sky-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   Share GSU Contact
                 </h3>
               </div>
@@ -5223,26 +5223,26 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={() => setContactModalOpen(false)}
                 aria-label="Close contact picker"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={contactSearch}
                 onChange={(e) => setContactSearch(e.target.value)}
                 placeholder="Search verified student or staff..."
-                className="w-full min-h-[42px] pl-10 pr-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[42px] pl-10 pr-3 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
               />
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
               {filteredContactCandidates.length === 0 ? (
-                <p className="py-8 text-center text-xs text-slate-500 dark:text-slate-400">
+                <p className="py-8 text-center text-xs text-ink-muted">
                   No matching verified contacts found.
                 </p>
               ) : (
@@ -5252,7 +5252,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="button"
                     disabled={sendingContact}
                     onClick={() => handleShareContact(person)}
-                    className="w-full text-left rounded-2xl border border-slate-200/80 dark:border-slate-800 hover:border-sky-400 dark:hover:border-sky-600 bg-slate-50/70 dark:bg-slate-800/60 px-3 py-2.5 flex items-center gap-3 transition-colors cursor-pointer disabled:opacity-50"
+                    className="w-full text-left rounded-2xl border border-line/80 dark:border-line hover:border-sky-400 dark:hover:border-sky-600 bg-sunken/70 dark:bg-sunken/60 px-3 py-2.5 flex items-center gap-3 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     <UserAvatar
                       name={person.fullName}
@@ -5264,12 +5264,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        <span className="text-sm font-semibold text-ink truncate">
                           {person.fullName}
                         </span>
                         <RoleBadge role={person.role} />
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                      <p className="text-xs text-ink-muted truncate">
                         {person.department} ·{' '}
                         {formatCompactLevelLabel(person.level, person.is_alumni)}
                         {canViewMemberIdNumber(currentUser, person.uid) && person.idNumber && (
@@ -5280,7 +5280,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         )}
                       </p>
                     </div>
-                    <Send className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <Send className="w-4 h-4 text-brand shrink-0" />
                   </button>
                 ))
               )}
@@ -5295,13 +5295,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="Delete message for everyone"
-          className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-slate-950/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-canvas/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-sm bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-sm bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   Delete for Everyone?
                 </h3>
               </div>
@@ -5309,22 +5309,22 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={() => setConfirmDeleteMsg(null)}
                 aria-label="Cancel delete"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
               This will permanently remove the content of this message from{' '}
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
+              <span className="font-semibold text-ink">
                 {getChatDisplayTitle(activeChat)}
               </span>{' '}
               for all participants and replace it with &ldquo;{DELETED_MESSAGE_PLACEHOLDER}&rdquo;.
             </p>
 
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/80 p-3 text-xs text-slate-700 dark:text-slate-300 space-y-1">
-              <p className="font-semibold text-slate-900 dark:text-slate-100">
+            <div className="rounded-2xl bg-sunken dark:bg-sunken/70 border border-line dark:border-line/80 p-3 text-xs text-ink-soft space-y-1">
+              <p className="font-semibold text-ink">
                 {confirmDeleteMsg.senderId === currentUser.uid
                   ? 'You'
                   : confirmDeleteMsg.senderName}
@@ -5338,7 +5338,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <button
                 type="button"
                 onClick={() => setConfirmDeleteMsg(null)}
-                className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
               >
                 Cancel
               </button>
@@ -5380,22 +5380,22 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           aria-modal="true"
           aria-label="Group info and shared media hub"
           onClick={() => setGroupInfoOpen(false)}
-          className="fixed inset-0 z-50 bg-slate-900/55 dark:bg-slate-950/80 backdrop-blur-xs flex justify-end"
+          className="fixed inset-0 z-50 bg-slate-900/55 dark:bg-canvas/80 backdrop-blur-xs flex justify-end"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md h-full bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 shadow-2xl flex flex-col"
+            className="w-full max-w-md h-full bg-surface border-l border-line shadow-2xl flex flex-col"
           >
-            <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3">
+            <div className="p-4 sm:p-5 border-b border-line flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-700 text-white flex items-center justify-center shrink-0">
+                <div className="w-11 h-11 rounded-2xl bg-brand text-on-brand flex items-center justify-center shrink-0">
                   <Users className="w-5 h-5" />
                 </div>
                 <div className="min-w-0">
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 truncate">
+                  <h3 className="text-base font-bold text-ink truncate">
                     {getChatDisplayTitle(activeChat)}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-xs text-ink-muted truncate">
                     {getChatSubtitle(activeChat)}
                   </p>
                 </div>
@@ -5404,14 +5404,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 onClick={() => setGroupInfoOpen(false)}
                 aria-label="Close group info"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer shrink-0"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Hub Tabs */}
-            <div className="px-4 py-2.5 border-b border-slate-100 dark:border-slate-800 grid grid-cols-4 gap-1 bg-slate-50/70 dark:bg-slate-950/40">
+            <div className="px-4 py-2.5 border-b border-line grid grid-cols-4 gap-1 bg-sunken/70 dark:bg-canvas/40">
               {(
                 [
                   { id: 'members', label: 'Members', count: groupInfoMembers.length },
@@ -5426,8 +5426,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   onClick={() => setGroupInfoTab(tab.id)}
                   className={`min-h-[38px] px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     groupInfoTab === tab.id
-                      ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-2xs border border-slate-200/70 dark:border-slate-700'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                      ? 'bg-white dark:bg-sunken text-brand dark:text-brand shadow-2xs border border-line/70 dark:border-line'
+                      : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                   }`}
                 >
                   {tab.label} ({tab.count})
@@ -5438,7 +5438,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {groupInfoTab === 'members' && (
                 groupInfoMembers.length === 0 ? (
-                  <p className="text-xs text-slate-500 dark:text-slate-400 text-center py-8">
+                  <p className="text-xs text-ink-muted text-center py-8">
                     No members loaded yet.
                   </p>
                 ) : (
@@ -5451,8 +5451,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           onClick={() => {
                             if (canInspect) openUserProfile(member.uid);
                           }}
-                          className={`p-2.5 rounded-2xl border border-slate-200/70 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/50 flex items-center gap-3 ${
-                            canInspect ? 'cursor-pointer hover:border-emerald-300 dark:hover:border-emerald-700 transition-colors' : ''
+                          className={`p-2.5 rounded-2xl border border-line/70 dark:border-line bg-sunken/60 dark:bg-sunken/50 flex items-center gap-3 ${
+                            canInspect ? 'cursor-pointer hover:border-success-line dark:hover:border-brand transition-colors' : ''
                           }`}
                         >
                           <div className="relative shrink-0">
@@ -5462,22 +5462,22 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               avatarId={member.userObj?.avatarId}
                               size="md"
                               roundedClass="rounded-full"
-                              fallbackClassName="bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200"
+                              fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand"
                             />
                             <span
                               className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                                member.online ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                                member.online ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
                               }`}
                             />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-1.5 flex-wrap">
-                              <span className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                              <span className="text-xs font-bold text-ink truncate">
                                 {member.uid === currentUser.uid ? 'You' : member.fullName}
                               </span>
                               <RoleBadge role={member.role} showStudent={false} />
                             </div>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                            <p className="text-[11px] text-ink-muted truncate mt-0.5">
                               {member.department} ·{' '}
                               {formatCompactLevelLabel(
                                 member.level,
@@ -5490,7 +5490,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 </>
                               )}{' '}
                               ·{' '}
-                              <span className={member.online ? 'text-emerald-700 dark:text-emerald-400 font-medium' : ''}>
+                              <span className={member.online ? 'text-brand dark:text-brand font-medium' : ''}>
                                 {member.online ? 'Online' : 'Offline'}
                               </span>
                             </p>
@@ -5504,7 +5504,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 handleMessageGroupMember(member.uid, member);
                               }}
                               aria-label={`Message ${member.fullName}`}
-                              className="min-w-[36px] min-h-[36px] rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 text-emerald-700 dark:text-emerald-400 flex items-center justify-center cursor-pointer shrink-0"
+                              className="min-w-[36px] min-h-[36px] rounded-xl bg-surface border border-line hover:border-brand text-brand flex items-center justify-center cursor-pointer shrink-0"
                             >
                               <MessageSquare className="w-4 h-4" />
                             </button>
@@ -5520,7 +5520,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 groupHubData.mediaImages.length === 0 && groupHubData.voiceNotes.length === 0 ? (
                   <div className="text-center py-10 space-y-2">
                     <ImageIcon className="w-7 h-7 text-slate-300 dark:text-slate-600 mx-auto" />
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-ink-muted">
                       No shared photos or voice notes in this chat yet.
                     </p>
                   </div>
@@ -5542,7 +5542,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     : undefined,
                               })
                             }
-                            className="aspect-square rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 cursor-pointer hover:opacity-90 transition-opacity"
+                            className="aspect-square rounded-xl overflow-hidden bg-sunken border border-line/80 dark:border-line cursor-pointer hover:opacity-90 transition-opacity"
                           >
                             <SignedChatImage
                               src={imgMsg.mediaData!}
@@ -5556,16 +5556,16 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
                     {groupHubData.voiceNotes.length > 0 && (
                       <div className="space-y-2">
-                        <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                        <p className="text-[11px] font-bold uppercase tracking-wider text-ink-muted">
                           Voice Notes ({groupHubData.voiceNotes.length})
                         </p>
                         {groupHubData.voiceNotes.map((vMsg) => (
                           <div
                             key={vMsg.id}
-                            className="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/80 space-y-1"
+                            className="p-2.5 rounded-2xl bg-sunken dark:bg-sunken/70 border border-line/70 dark:border-line/80 space-y-1"
                           >
-                            <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                              <span className="font-semibold text-slate-700 dark:text-slate-200">
+                            <div className="flex items-center justify-between text-[11px] text-ink-muted">
+                              <span className="font-semibold text-ink-soft">
                                 {vMsg.senderId === currentUser.uid ? 'You' : vMsg.senderName}
                               </span>
                               <span>{formatShortTime(vMsg.createdAt)}</span>
@@ -5586,7 +5586,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 groupHubData.docs.length === 0 ? (
                   <div className="text-center py-10 space-y-2">
                     <FileText className="w-7 h-7 text-slate-300 dark:text-slate-600 mx-auto" />
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-ink-muted">
                       No PDFs, past questions, or handouts shared here yet.
                     </p>
                   </div>
@@ -5601,17 +5601,17 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       return (
                         <div
                           key={docMsg.id}
-                          className="p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 flex items-center gap-2.5"
+                          className="p-3 rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 flex items-center gap-2.5"
                         >
                           <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 flex flex-col items-center justify-center font-mono text-[10px] font-bold shrink-0">
                             <FileText className="w-3.5 h-3.5 mb-0.5" />
                             <span>{badge}</span>
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">
+                            <p className="text-xs font-bold text-ink truncate">
                               {docMsg.fileName || 'Document'}
                             </p>
-                            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                            <p className="text-[11px] text-ink-muted truncate mt-0.5">
                               {formatFileSize(docMsg.fileSizeBytes || 0)} ·{' '}
                               {docMsg.senderId === currentUser.uid ? 'You' : docMsg.senderName} ·{' '}
                               {formatShortTime(docMsg.createdAt)}
@@ -5639,7 +5639,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               }}
                               aria-label={`Preview ${docMsg.fileName || 'document'}`}
                               title="Preview file"
-                              className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-emerald-500 flex items-center justify-center shrink-0 cursor-pointer"
+                              className="w-9 h-9 rounded-xl bg-surface border border-line text-ink-soft hover:border-brand flex items-center justify-center shrink-0 cursor-pointer"
                             >
                               <Eye className="w-4 h-4" />
                             </button>
@@ -5661,7 +5661,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             }}
                             aria-label={`Download ${docMsg.fileName || 'document'}`}
                             title="Download file"
-                            className="w-9 h-9 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-emerald-500 flex items-center justify-center shrink-0 cursor-pointer"
+                            className="w-9 h-9 rounded-xl bg-surface border border-line text-ink-soft hover:border-brand flex items-center justify-center shrink-0 cursor-pointer"
                           >
                             <Download className="w-4 h-4" />
                           </button>
@@ -5676,7 +5676,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 groupHubData.links.length === 0 ? (
                   <div className="text-center py-10 space-y-2">
                     <Link2 className="w-7 h-7 text-slate-300 dark:text-slate-600 mx-auto" />
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-ink-muted">
                       No web links shared in this conversation yet.
                     </p>
                   </div>
@@ -5685,10 +5685,10 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     {groupHubData.links.map((item, idx) => (
                       <div
                         key={`${item.msgId}-${idx}`}
-                        className="p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 space-y-1.5"
+                        className="p-3 rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 space-y-1.5"
                       >
-                        <div className="flex items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400">
-                          <span className="font-semibold text-slate-700 dark:text-slate-200 truncate">
+                        <div className="flex items-center justify-between gap-2 text-[11px] text-ink-muted">
+                          <span className="font-semibold text-ink-soft truncate">
                             {item.senderName}
                           </span>
                           <span className="shrink-0">{formatShortTime(item.createdAt)}</span>
@@ -5698,7 +5698,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             href={item.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs font-medium text-emerald-700 dark:text-emerald-400 hover:underline truncate inline-flex items-center gap-1 min-w-0 flex-1"
+                            className="text-xs font-medium text-brand hover:underline truncate inline-flex items-center gap-1 min-w-0 flex-1"
                           >
                             <ExternalLink className="w-3.5 h-3.5 shrink-0" />
                             <span className="truncate">{item.url}</span>
@@ -5709,7 +5709,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               setGroupInfoOpen(false);
                               scrollToMessage(item.msgId);
                             }}
-                            className="text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 shrink-0 cursor-pointer"
+                            className="text-[11px] font-semibold text-ink-body dark:text-ink-soft hover:text-brand shrink-0 cursor-pointer"
                           >
                             View msg
                           </button>
@@ -5734,14 +5734,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         >
           <div className="w-full max-w-xl flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-7 h-7 rounded-full border-2 border-dashed border-emerald-400 text-emerald-300 flex items-center justify-center text-xs font-bold shrink-0">
+              <span className="w-7 h-7 rounded-full border-2 border-dashed border-brand text-emerald-300 flex items-center justify-center text-xs font-bold shrink-0">
                 1
               </span>
               <div className="min-w-0">
                 <p className="text-sm font-bold truncate">
                   {activeViewOnceModal.senderName}
                 </p>
-                <p className="text-[11px] text-slate-500 truncate">
+                <p className="text-[11px] text-ink-muted truncate">
                   {activeViewOnceModal.kind === 'voice'
                     ? 'View-once voice message'
                     : 'View-once photo'}{' '}
@@ -5881,22 +5881,22 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           aria-modal="true"
           aria-label="Broadcast live class radar and exam countdown"
           onClick={() => !radarSaving && setRadarModalOpen(false)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">
-                <span className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                <span className="w-9 h-9 rounded-xl bg-brand-subtle dark:bg-brand-subtle/70 text-brand flex items-center justify-center shrink-0">
                   <Radio className="w-5 h-5" />
                 </span>
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                  <h3 className="text-base font-bold text-ink">
                     Live Class Radar &amp; Exam Countdown
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-xs text-ink-muted truncate">
                     Broadcast instant status to {getChatDisplayTitle(activeChat)}
                   </p>
                 </div>
@@ -5906,7 +5906,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 disabled={radarSaving}
                 onClick={() => setRadarModalOpen(false)}
                 aria-label="Close live radar modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -5920,7 +5920,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
             <form onSubmit={handleSaveRadar} className="space-y-3.5">
               <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-semibold text-ink-soft">
                   Quick Status Preset
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -5933,8 +5933,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         onClick={() => setRadarStatusDraft(key)}
                         className={`min-h-[40px] px-3 rounded-xl border text-xs font-semibold text-left transition-colors cursor-pointer ${
                           selected
-                            ? 'border-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-200 ring-2 ring-emerald-500/20'
-                            : 'border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
+                            ? 'border-brand bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand ring-2 ring-emerald-500/20'
+                            : 'border-line dark:border-line bg-sunken/70 dark:bg-sunken/60 text-ink-soft dark:text-ink-soft hover:border-line dark:hover:border-line'
                         }`}
                       >
                         {RADAR_STATUS_LABELS[key]}
@@ -5948,7 +5948,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <div>
                   <label
                     htmlFor="radarCourseInput"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Course Code (optional)
                   </label>
@@ -5959,13 +5959,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     value={radarCourseDraft}
                     onChange={(e) => setRadarCourseDraft(e.target.value)}
                     placeholder="e.g., CSC 301"
-                    className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="radarVenueInput"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Venue / Hall
                   </label>
@@ -5976,7 +5976,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     value={radarVenueDraft}
                     onChange={(e) => setRadarVenueDraft(e.target.value)}
                     placeholder="e.g., Science Complex Twin Hall"
-                    className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
@@ -5995,8 +5995,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={() => setRadarVenueDraft(presetVenue)}
                     className={`min-h-[28px] px-2.5 rounded-lg border text-[11px] font-medium transition-colors cursor-pointer ${
                       radarVenueDraft === presetVenue
-                        ? 'bg-emerald-700 border-emerald-700 text-white'
-                        : 'bg-slate-50 dark:bg-slate-800/80 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-500/60'
+                        ? 'bg-brand border-brand text-white'
+                        : 'bg-sunken dark:bg-sunken/80 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                     }`}
                   >
                     {presetVenue}
@@ -6008,11 +6008,11 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <div className="flex items-center justify-between mb-1">
                   <label
                     htmlFor="radarNoteInput"
-                    className="text-xs font-semibold text-slate-700 dark:text-slate-300"
+                    className="text-xs font-semibold text-ink-soft"
                   >
                     Short Update Note (optional)
                   </label>
-                  <span className="text-[11px] font-mono tabular-nums text-slate-500">
+                  <span className="text-[11px] font-mono tabular-nums text-ink-muted">
                     {radarNoteDraft.length} / 200
                   </span>
                 </div>
@@ -6023,13 +6023,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   value={radarNoteDraft}
                   onChange={(e) => setRadarNoteDraft(e.target.value)}
                   placeholder="e.g., Dr. Bello just arrived — attendance sheet moving now"
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
-              <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 p-3.5 space-y-2.5">
+              <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line p-3.5 space-y-2.5">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800 dark:text-slate-200">
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-ink dark:text-ink-soft">
                     <Timer className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                     <span>Exam / Test Countdown Timer (optional)</span>
                   </div>
@@ -6040,7 +6040,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         const d = new Date(Date.now() + 2 * 3_600_000);
                         setRadarExamAtDraft(toLocalDateTimeInputValue(d));
                       }}
-                      className="min-h-[26px] px-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[10.5px] font-semibold text-slate-600 dark:text-slate-300 hover:border-indigo-500 cursor-pointer"
+                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-indigo-500 cursor-pointer"
                     >
                       +2 Hours
                     </button>
@@ -6052,7 +6052,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         d.setHours(9, 0, 0, 0);
                         setRadarExamAtDraft(toLocalDateTimeInputValue(d));
                       }}
-                      className="min-h-[26px] px-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[10.5px] font-semibold text-slate-600 dark:text-slate-300 hover:border-indigo-500 cursor-pointer"
+                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-indigo-500 cursor-pointer"
                     >
                       Tomorrow 9 AM
                     </button>
@@ -6064,7 +6064,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         d.setHours(9, 0, 0, 0);
                         setRadarExamAtDraft(toLocalDateTimeInputValue(d));
                       }}
-                      className="min-h-[26px] px-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-[10.5px] font-semibold text-slate-600 dark:text-slate-300 hover:border-indigo-500 cursor-pointer"
+                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-indigo-500 cursor-pointer"
                     >
                       +7 Days
                     </button>
@@ -6078,14 +6078,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onChange={(e) => setRadarExamTitleDraft(e.target.value)}
                     placeholder="e.g., CHM 201 Midterm Exam"
                     aria-label="Exam or test title"
-                    className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[40px] px-3 rounded-xl border border-line bg-surface text-xs text-ink focus:outline-none focus:border-brand"
                   />
                   <input
                     type="datetime-local"
                     value={radarExamAtDraft}
                     onChange={(e) => setRadarExamAtDraft(e.target.value)}
                     aria-label="Exam date and time"
-                    className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[40px] px-3 rounded-xl border border-line bg-surface text-xs text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
@@ -6105,14 +6105,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   type="button"
                   disabled={radarSaving}
                   onClick={() => setRadarModalOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={radarSaving}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {radarSaving ? 'Broadcasting...' : 'Broadcast Radar'}
                 </button>

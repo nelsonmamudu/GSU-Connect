@@ -815,3 +815,78 @@ separators were left alone — they carry no information.
   no Chromium and `playwright-core` cannot download one. Static checks only.
 - **`tests/proof-card-browser.test.mjs`.** Updated for the new gate copy but
   still never executed — it needs the user's Chromium.
+
+---
+
+## 9. The palette (2026-11-20)
+
+Chosen direction: **richer emerald + warm neutrals**. Token scope: **full layer**.
+
+### 9.1 The ramps
+
+Both ramps are redefined in `@theme` in `src/index.css`. The app already picked the
+right step per theme (`bg-white` in light, `dark:bg-slate-900` in dark), so the same
+ramp serves both modes and the numbering keeps Tailwind's convention.
+
+**Warm neutrals** — a warm grey with a faint olive bias so it sits next to the emerald
+instead of fighting it. This is the main "was bland" fix: the old ramp was blue-slate.
+
+| step | value | role |
+| --- | --- | --- |
+| 50 | `#f8f7f4` | canvas-adjacent wash |
+| 100 | `#f2f0ea` | sunken panels |
+| 200 | `#e6e3da` | hairline borders |
+| 300 | `#d8d4c9` | strong hairline, disabled fills |
+| 400 | `#b3afa4` | muted text on dark |
+| 500 | `#6f6a62` | muted text on light (5.4:1 on white) |
+| 600 | `#57534b` | body text on light (7.7:1) |
+| 700 | `#44403a` | soft text on light (10.5:1) |
+| 800 | `#2a2721` | dark sunken panels |
+| 900 | `#1d1b17` | dark surfaces, light-mode ink |
+| 950 | `#141310` | dark canvas |
+
+**Emerald** — deeper and more saturated than the previous palette. `emerald-800`
+(`#0b4f3c`) is the primary fill and carries white text at 9.4:1; `emerald-400`
+(`#4fa582`) is the dark-mode accent at 5.9:1 on the dark surface.
+
+### 9.2 Role tokens
+
+`--color-canvas`, `surface`, `sunken`, `line`, `line-strong`, `ink`, `ink-soft`,
+`ink-body`, `ink-muted`, `brand`, `brand-strong`, `brand-subtle`, `on-brand`,
+`focus`, plus `success` / `warn` / `danger` / `info` each with `-bg` and `-line`.
+
+Dark mode is a **swap of the `html.dark` block** in `index.css` — never a second set
+of `dark:` classes. Components that read a role token need no dark variant at all;
+the migration stripped 700-odd redundant `dark:` duplicates that this made obvious.
+
+Every semantic pair was checked: `danger` `#b42318` on `danger-bg` `#fdecea` is 5.8:1,
+`warn` `#8a4b0b` on `#fcf3e2` is 6.2:1, `info` `#1d4ed8` on `#eef3fe` is 6.0:1, and
+the dark-mode equivalents land between 6.2:1 and 8.9:1.
+
+### 9.3 Migration
+
+Two one-shot scripts, kept in `scripts/` because they document the mapping:
+
+- `migrate-tokens.py` — prefix-aware ramp → role substitution. `dark:bg-slate-800`
+  became `dark:bg-sunken`; a **bare** `bg-slate-800` (a scrim, a dark media surface)
+  was deliberately left alone, because mapping it to `sunken` would have turned a dark
+  overlay light.
+- `finish-token-migration.py` — `bg-[#F6F8F7]` → `bg-canvas`, bare `bg-white` →
+  `bg-surface`, `text-white` → `text-on-brand` on brand fills, and redundant `dark:`
+  duplicates removed.
+
+112 distinct role utilities are in use and all 112 are present in the built CSS.
+
+### 9.4 Still on the ramp, deliberately
+
+- **Scrims and dark media surfaces** — `bg-slate-900/45`, `bg-slate-950/95`,
+  `bg-slate-950`. These are overlays, not surfaces, and read correctly in both themes.
+- **Text on dark fills in light mode** — `text-emerald-100`, `text-slate-200`. Mapping
+  them to `brand`/`ink` would make them vanish, because those tokens are dark in light
+  mode.
+- **Decorative rings** — `ring-emerald-500/40`, `ring-slate-900`.
+- **Semantic colours outside the chosen direction** — `red`, `amber`, `teal`, `rose`
+  remain on their Tailwind ramps. They were already contrast-checked and the direction
+  was "emerald + neutrals", not a repaint of every state colour. The `success` /
+  `warn` / `danger` / `info` role tokens exist and the shared primitives use them, so
+  this is a mechanical follow-up with a ready mapping rather than an open question.

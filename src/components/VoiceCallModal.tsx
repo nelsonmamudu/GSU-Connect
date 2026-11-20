@@ -690,7 +690,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
             <PhoneIncoming className="w-3.5 h-3.5" />
             <span>GSU Connect Voice</span>
           </div>
-          <p className="text-xs text-slate-500">1-to-1 Campus Voice Call</p>
+          <p className="text-xs text-ink-muted">1-to-1 Campus Voice Call</p>
         </div>
 
         <div className="flex flex-col items-center space-y-3.5">
@@ -709,7 +709,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               avatarId={peerAvatarProps.avatarId}
               size="2xl"
               roundedClass="rounded-full"
-              fallbackClassName="bg-emerald-700 text-white"
+              fallbackClassName="bg-brand text-white"
             />
           </div>
 
@@ -719,7 +719,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               {peerUser && <RoleBadge role={peerUser.role} inverted />}
             </div>
             {(peerDepartment || peerUser) && (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-ink-muted">
                 {peerDepartment}
                 {peerUser && (
                   <>
@@ -744,7 +744,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 </p>
               )}
               {liveCall.status === 'ended' && elapsedSec > 0 && (
-                <p className="text-xs font-mono text-slate-500 tabular-nums">
+                <p className="text-xs font-mono text-ink-muted tabular-nums">
                   Duration {formatDuration(elapsedSec)}
                 </p>
               )}
@@ -753,7 +753,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
         </div>
 
         {ringtoneNeedsTap && !isCaller && liveCall.status === 'ringing' && (
-          <p className="text-[11px] text-emerald-300/90 bg-emerald-950/60 border border-emerald-800/60 rounded-xl px-3 py-1.5">
+          <p className="text-[11px] text-emerald-300/90 bg-emerald-950/60 border border-brand/60 rounded-xl px-3 py-1.5">
             Tap anywhere to hear incoming ringtone
           </p>
         )}
@@ -791,7 +791,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 disabled={accepting}
                 onClick={handleAnswerCall}
                 aria-label="Accept call"
-                className="w-15 h-15 rounded-full bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="w-15 h-15 rounded-full bg-brand hover:bg-brand disabled:opacity-60 text-on-brand flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
               >
                 <Phone className="w-6 h-6" />
               </button>
@@ -810,13 +810,13 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 aria-pressed={muted}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                   muted
-                    ? 'bg-white text-slate-950'
+                    ? 'bg-white text-ink'
                     : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
                 }`}
               >
                 {muted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
-              <span className="text-[11px] font-medium text-slate-500">
+              <span className="text-[11px] font-medium text-ink-muted">
                 {muted ? 'Unmute' : 'Mute'}
               </span>
             </div>
@@ -841,13 +841,13 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 aria-pressed={speakerOn}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
                   speakerOn
-                    ? 'bg-white text-slate-950'
+                    ? 'bg-white text-ink'
                     : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
                 }`}
               >
                 <Volume2 className="w-5 h-5" />
               </button>
-              <span className="text-[11px] font-medium text-slate-500">Speaker</span>
+              <span className="text-[11px] font-medium text-ink-muted">Speaker</span>
             </div>
           </div>
         )}

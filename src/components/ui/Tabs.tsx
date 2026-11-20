@@ -36,7 +36,7 @@ export function Tabs<T extends string>({
       <div
         role="tablist"
         aria-label={label}
-        className="inline-flex flex-nowrap items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-2xl min-w-max"
+        className="inline-flex flex-nowrap items-center gap-1 p-1 bg-sunken rounded-2xl min-w-max"
       >
         {tabs.map((tab) => {
           const active = tab.key === value;
@@ -50,8 +50,8 @@ export function Tabs<T extends string>({
               onClick={() => onChange(tab.key)}
               className={`min-h-[44px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${focusRing} ${
                 active
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
+                  ? 'bg-surface text-ink shadow-2xs'
+                  : 'text-ink-soft hover:text-ink'
               }`}
             >
               {Icon && <Icon className="w-3.5 h-3.5" />}

@@ -121,14 +121,14 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
   return (
     <div className="space-y-4">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-        <div className="inline-flex items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-2xl self-start">
+        <div className="inline-flex items-center gap-1 p-1 bg-sunken/70 dark:bg-sunken rounded-2xl self-start">
           <button
             type="button"
             onClick={() => setFilter('all')}
             className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'all'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
             All Notices
@@ -138,8 +138,8 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             onClick={() => setFilter('department')}
             className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'department'
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
             {currentUser.department}
@@ -148,20 +148,20 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 flex-1 lg:max-w-xl lg:justify-end">
           <div className="relative flex-1 sm:max-w-xs">
-            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search notices, courses, authors..."
-              className="w-full min-h-[42px] pl-9 pr-9 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[42px] pl-9 pr-9 rounded-2xl border border-line bg-surface text-xs text-ink placeholder:text-ink-muted focus:outline-none focus:border-brand"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear announcement search"
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-soft absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -172,7 +172,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             <button
               type="button"
               onClick={() => setComposerOpen(true)}
-              className="min-h-[44px] px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
+              className="min-h-[44px] px-4 rounded-2xl bg-brand hover:bg-brand-strong text-on-brand text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0"
             >
               <Plus className="w-4 h-4" />
               <span>Post Announcement</span>
@@ -199,12 +199,12 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
       )}
 
       {filteredAnnouncements.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2">
           <Megaphone className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-bold text-ink">
             {searchQuery.trim() ? 'No matching announcements' : 'No announcements yet'}
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          <p className="text-sm text-ink-muted max-w-sm mx-auto">
             {searchQuery.trim()
               ? 'Try another keyword or clear your search filter.'
               : 'Official notices from university admins, lecturers, class reps, and departmental helpers will appear here.'}
@@ -221,11 +221,11 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             return (
               <article
                 key={item.id}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 flex flex-col justify-between gap-3"
+                className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 flex flex-col justify-between gap-3"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 leading-snug">
+                    <h3 className="text-base font-bold text-ink leading-snug">
                       {item.title}
                     </h3>
                     <div className="flex items-center gap-1 -mt-1 -mr-1 shrink-0">
@@ -234,12 +234,12 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                         onClick={() => handleCopyAnnouncement(item)}
                         aria-label="Copy announcement text"
                         title="Copy announcement"
-                        className="min-w-[34px] min-h-[34px] px-2 rounded-xl flex items-center justify-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer"
+                        className="min-w-[34px] min-h-[34px] px-2 rounded-xl flex items-center justify-center gap-1 text-xs font-semibold text-ink-muted hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40 transition-colors cursor-pointer"
                       >
                         {isCopied ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                            <span className="text-emerald-700 dark:text-emerald-400">Copied</span>
+                            <Check className="w-3.5 h-3.5 text-brand" />
+                            <span className="text-brand">Copied</span>
                           </>
                         ) : (
                           <Copy className="w-3.5 h-3.5" />
@@ -250,7 +250,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                           type="button"
                           onClick={() => setConfirmDeleteId(item.id)}
                           aria-label="Delete announcement"
-                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -269,7 +269,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                             type="button"
                             disabled={isDeleting}
                             onClick={() => setConfirmDeleteId(null)}
-                            className="min-h-[28px] px-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[28px] px-2 rounded-lg text-ink-body dark:text-ink-soft hover:bg-white dark:hover:bg-sunken text-[11px] font-semibold cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -277,13 +277,13 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                       )}
                     </div>
                   </div>
-                  <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-sm text-ink-soft leading-relaxed whitespace-pre-wrap">
                     {item.body}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{item.authorName}</span>
+                <div className="pt-3 border-t border-line flex items-center flex-wrap gap-2 text-xs text-ink-muted">
+                  <span className="font-semibold text-ink dark:text-ink-soft">{item.authorName}</span>
                   <RoleBadge role={item.authorRole} />
                   <span aria-hidden="true">·</span>
                   <span>{item.scope}</span>
@@ -304,7 +304,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             type="button"
             disabled={loadingMore}
             onClick={onLoadMore}
-            className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+            className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
           >
             {loadingMore ? 'Loading more...' : 'Load older announcements'}
           </button>
@@ -312,15 +312,15 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
       )}
 
       {composerOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">New Announcement</h3>
+              <h3 className="text-base font-bold text-ink">New Announcement</h3>
               <button
                 type="button"
                 onClick={() => setComposerOpen(false)}
                 aria-label="Close composer"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -328,14 +328,14 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
 
             <form onSubmit={handlePublish} className="space-y-3.5">
               <div>
-                <label htmlFor="annScope" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="annScope" className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Audience
                 </label>
                 <select
                   id="annScope"
                   value={scope}
                   onChange={(e) => setScope(e.target.value)}
-                  className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 >
                   <option value="All GSU">All GSU</option>
                   <option value={currentUser.department}>{currentUser.department}</option>
@@ -351,7 +351,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
               </div>
 
               <div>
-                <label htmlFor="annTitle" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="annTitle" className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Headline
                 </label>
                 <input
@@ -363,12 +363,12 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g. CSC 301 Lecture Venue Update"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 />
               </div>
 
               <div>
-                <label htmlFor="annBody" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="annBody" className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Details
                 </label>
                 <textarea
@@ -380,7 +380,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                   value={body}
                   onChange={(e) => setBody(e.target.value)}
                   placeholder="Write your announcement clearly for students and staff..."
-                  className="w-full p-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="w-full p-3.5 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 />
               </div>
 
@@ -394,14 +394,14 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setComposerOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {submitting ? 'Posting...' : 'Publish'}
                 </button>

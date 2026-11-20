@@ -78,10 +78,10 @@ function TimelineRow({
         aria-hidden="true"
         className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
           done
-            ? 'bg-emerald-600 text-white'
+            ? 'bg-brand text-white'
             : current
-              ? 'border-2 border-emerald-600'
-              : 'border-2 border-slate-300 dark:border-slate-600'
+              ? 'border-2 border-brand'
+              : 'border-2 border-line dark:border-line'
         }`}
       >
         {done && <CheckCircle2 className="w-3 h-3" />}
@@ -90,14 +90,14 @@ function TimelineRow({
         <p
           className={`text-xs font-semibold ${
             done || current
-              ? 'text-slate-900 dark:text-slate-100'
-              : 'text-slate-500 dark:text-slate-400'
+              ? 'text-ink dark:text-ink'
+              : 'text-ink-muted dark:text-ink-muted'
           }`}
         >
           {label}
         </p>
         {hint && (
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{hint}</p>
+          <p className="text-[11px] text-ink-muted leading-relaxed">{hint}</p>
         )}
       </div>
     </li>
@@ -504,29 +504,29 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
 
   const statusBadgeTone =
     user.status === 'approved'
-      ? 'emerald'
+      ? 'brand'
       : isRejected || isSuspended
-        ? 'red'
-        : 'amber';
+        ? 'danger'
+        : 'warn';
 
   return (
-    <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 sm:p-8 text-center space-y-5">
+    <div className="min-h-screen bg-canvas flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line shadow-sm p-6 sm:p-8 text-center space-y-5">
         <div className={`w-14 h-14 rounded-2xl mx-auto flex items-center justify-center ${iconTone}`}>
           <Icon className="w-7 h-7" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{title}</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{description}</p>
+          <h1 className="text-xl font-bold text-ink">{title}</h1>
+          <p className="text-sm text-ink-body dark:text-ink-soft leading-relaxed">{description}</p>
         </div>
 
         {isPending && !isLecturerRequest && hasIdCard === false && (
           <p role="status" className="rounded-xl bg-amber-50 p-3 font-semibold text-amber-900">Upload proof to enter the review queue.</p>
         )}
         {isPending && (
-          <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 px-4 py-3.5 text-left space-y-3">
-            <p className="text-xs font-bold text-slate-900 dark:text-slate-100">What happens next</p>
+          <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line px-4 py-3.5 text-left space-y-3">
+            <p className="text-xs font-bold text-ink">What happens next</p>
             <ol className="space-y-2">
               <TimelineRow done label="Account created" />
               <TimelineRow
@@ -542,7 +542,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 hint={isLecturerRequest ? 'An admin will review your staff submission.' : 'An authorized reviewer will check your submission.'}
               />
             </ol>
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            <p className="text-[11px] text-ink-muted leading-relaxed">
               Review timing depends on admin availability, so there is no fixed
               deadline. This page updates automatically once a decision is made —
               or tap “Check status” to look again.
@@ -554,7 +554,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           <Button type="button" variant="outline" onClick={()=>void check(true)} loading={checking} loadingLabel="Checking…">
             Check status
           </Button>
-          <p role="status" className="text-xs text-slate-500 dark:text-slate-400 text-center">{checkMessage}</p>
+          <p role="status" className="text-xs text-ink-muted text-center">{checkMessage}</p>
         </div>
         {(isRejected || isSuspended) && (
           <div className="space-y-2.5 text-left">
@@ -564,11 +564,11 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 <span className="block">{user.rejectionReason}</span>
               </Alert>
             )}
-            <p className="text-xs text-slate-600 dark:text-slate-300 text-center leading-relaxed">
+            <p className="text-xs text-ink-body dark:text-ink-soft text-center leading-relaxed">
               Think this is a mistake? Contact support at{' '}
               <a
                 href="mailto:GSUConnect0@gmail.com"
-                className="font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
+                className="font-semibold text-brand hover:underline"
               >
                 GSUConnect0@gmail.com
               </a>
@@ -580,10 +580,10 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           {method && <p>Evidence received: {method}. Final admin review is required.</p>}
           <StaffProofAction path={staffPath} state={vouchState} onUpdate={()=>void check()}/></>}
         {!isSuspended && authUser && (!isLecturerRequest || staffPath==='id' || staffPath==='document') && (
-          <section aria-label="Verification proof" className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2 text-left">
+          <section aria-label="Verification proof" className="rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 p-3.5 space-y-2 text-left">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-2.5 min-w-0">
-                <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <IdCard className="w-4 h-4 text-brand shrink-0 mt-0.5" />
                 <div className="min-w-0 space-y-1">
                   {attachedFileName ? (
                     <>
@@ -591,34 +591,34 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                         <img
                           src={proofPreviewUrl}
                           alt="Preview of attached proof"
-                          className="mt-1 h-28 w-28 rounded-xl border border-slate-200 dark:border-slate-700 object-cover"
+                          className="mt-1 h-28 w-28 rounded-xl border border-line object-cover"
                         />
                       ) : proofPreviewUrl && attachedIsPdf ? (
                         <a
                           href={proofPreviewUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
+                          className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-brand hover:underline"
                         >
                           <IdCard className="w-3.5 h-3.5" /> Open PDF
                         </a>
                       ) : proofPreviewLoading ? (
-                        <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Loading preview…</p>
+                        <p className="mt-1 text-[11px] text-ink-muted">Loading preview…</p>
                       ) : null}
-                      <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug break-all">
+                      <p className="text-xs font-semibold text-ink leading-snug break-all">
                         {attachedFileName}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                      <p className="text-[11px] text-ink-muted leading-relaxed">
                         {needsReplacement ? 'Upload a replacement to resubmit' : 'Attached for reviewer verification'}
                       </p>
                     </>
                   ) : (
                     <>
-                      <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
+                      <p className="text-xs font-semibold text-ink leading-snug">
                         {user.accountType === 'staff'
                           ? staffProof : studentProof}
                       </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                      <p className="text-[11px] text-ink-muted leading-relaxed">
                         {isLecturerRequest && staffPath === 'id' ? 'JPEG, PNG or WebP' : 'JPEG, PNG, WebP or PDF'} · photos resized under 1 MB{(!isLecturerRequest || staffPath !== 'id') && ' · PDFs up to 3 MB'}
                       </p>
                     </>
@@ -657,8 +657,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               </div>
             )}
             {uploadStep && <p role="status" className="text-sm font-semibold">{uploadStep}</p>}
-            {compressionNote && <p role="status" className="text-[11px] text-slate-500 dark:text-slate-400">{compressionNote}</p>}
-            {showPickers && <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            {compressionNote && <p role="status" className="text-[11px] text-ink-muted">{compressionNote}</p>}
+            {showPickers && <p className="text-[11px] text-ink-muted leading-relaxed">
               Private verification file. Deleted within 24 hours after approval; replaced copies too.
             </p>}
           </section>
@@ -670,22 +670,22 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           </Alert>
         )}
 
-        <div className="bg-slate-50 dark:bg-slate-800/70 rounded-2xl p-4 text-left space-y-2.5 text-sm border border-slate-100 dark:border-slate-700/80">
+        <div className="bg-sunken dark:bg-sunken/70 rounded-2xl p-4 text-left space-y-2.5 text-sm border border-line dark:border-line/80">
           <div className="flex justify-between gap-3">
-            <span className="text-slate-500 dark:text-slate-400">Full Name</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100 text-right">
+            <span className="text-ink-muted">Full Name</span>
+            <span className="font-semibold text-ink text-right">
               {toTitleCase(user.fullName)}
             </span>
           </div>
           <div className="flex justify-between gap-3">
-            <span className="text-slate-500 dark:text-slate-400">
+            <span className="text-ink-muted">
               {user.accountType === 'staff' ? 'Staff ID' : 'Matric No.'}
             </span>
-            <span className="font-mono font-medium text-slate-900 dark:text-slate-100 text-right">{user.idNumber}</span>
+            <span className="font-mono font-medium text-ink text-right">{user.idNumber}</span>
           </div>
           <div className="flex justify-between gap-3">
-            <span className="text-slate-500 dark:text-slate-400">Requested Role</span>
-            <span className="font-semibold text-slate-900 dark:text-slate-100 text-right">
+            <span className="text-ink-muted">Requested Role</span>
+            <span className="font-semibold text-ink text-right">
               {isLecturerRequest ? 'Lecturer / Staff' : 'Student'}
             </span>
           </div>
@@ -693,22 +693,22 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           {!editingDetails ? (
             <>
               <div className="flex justify-between gap-3">
-                <span className="text-slate-500 dark:text-slate-400">
+                <span className="text-ink-muted">
                   {user.accountType === 'staff' ? 'Department / Office' : 'Department'}
                 </span>
-                <span className="font-medium text-slate-900 dark:text-slate-100 text-right">
+                <span className="font-medium text-ink text-right">
                   {displayDepartment}
                 </span>
               </div>
               <div className="flex justify-between items-center gap-3">
-                <span className="text-slate-500 dark:text-slate-400">Level</span>
+                <span className="text-ink-muted">Level</span>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-slate-900 dark:text-slate-100 text-right">
+                  <span className="font-medium text-ink text-right">
                     {formatLevelLabel(displayLevel, user.is_alumni)}
                   </span>
                   {canEditStudentDetails && (
                     <Button type="button" variant="ghost" size="sm" onClick={handleOpenEditDetails}
-                      className="text-emerald-700 dark:text-emerald-400 hover:bg-transparent px-2">
+                      className="text-brand hover:bg-transparent px-2">
                       <Edit3 className="w-3 h-3" />
                       <span>Edit details</span>
                     </Button>
@@ -719,7 +719,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           ) : (
             <form
               onSubmit={handleSaveDetails}
-              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 space-y-3"
+              className="rounded-xl border border-line bg-surface p-3 space-y-3"
             >
               <Field label="Department" htmlFor="edit-pending-department">
                 <DepartmentPicker
@@ -745,7 +745,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                       </option>
                     ))}
                   </Select>
-                  <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="w-4 h-4 text-ink-muted shrink-0 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
               </Field>
 
@@ -768,8 +768,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
 
           {user.email && (
             <div className="flex justify-between gap-3">
-              <span className="text-slate-500 dark:text-slate-400">GSU Email</span>
-              <span className="font-mono text-xs text-slate-900 dark:text-slate-100 text-right break-all">
+              <span className="text-ink-muted">GSU Email</span>
+              <span className="font-mono text-xs text-ink text-right break-all">
                 {user.email}
               </span>
             </div>
@@ -777,15 +777,15 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
 
           <div className="space-y-1.5">
             <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1">
-              <span className="text-slate-500 dark:text-slate-400">Recovery Email</span>
+              <span className="text-ink-muted">Recovery Email</span>
               {!editingRecovery && (
-                <span className="overflow-x-auto whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">
+                <span className="overflow-x-auto whitespace-nowrap text-sm font-medium text-ink">
                   {loadingRecovery ? 'Loading...' : recoveryEmail || 'Not set'}
                 </span>
               )}
               {!editingRecovery && authUser && !loadingRecovery && (
                 <Button type="button" variant="ghost" size="sm" onClick={handleOpenEditRecovery}
-                  className="justify-self-start text-emerald-700 dark:text-emerald-400 hover:bg-transparent px-2">
+                  className="justify-self-start text-brand hover:bg-transparent px-2">
                   <Edit3 className="w-3 h-3" />
                   <span>Edit details</span>
                 </Button>
@@ -829,13 +829,13 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 </div>
               </form>
             )}
-            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[11px] text-ink-muted">
               Password reset links are sent here. You’ll be asked to verify this inbox after approval.
             </p>
           </div>
 
           <div className="flex justify-between items-center gap-3">
-            <span className="text-slate-500 dark:text-slate-400">Status</span>
+            <span className="text-ink-muted">Status</span>
             <Badge tone={statusBadgeTone} className="capitalize px-2.5">
               {hasIdCard===null?'Checking…':isPending && !hasIdCard?'Incomplete':user.status}
             </Badge>

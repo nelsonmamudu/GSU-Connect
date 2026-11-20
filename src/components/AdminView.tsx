@@ -881,7 +881,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         {isAdmin && <p className="text-xs">For admin reviews, verify your authenticator in Profile first.</p>}
         {cohortNotice && <p role="status">{cohortNotice}</p>}
         {!isAdmin && (
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-ink-muted">
             Showing pending student sign-ups for {currentUser.department} (Lecturer requests require an Admin)
           </p>
         )}
@@ -891,7 +891,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {subTab === 'pending' && (
         <>
           {scopedPending.length > 0 && (
-            <div className="space-y-2.5 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4">
+            <div className="space-y-2.5 bg-surface rounded-3xl border border-line/80 dark:border-line p-4">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                 <Field label="Search pending sign-ups" htmlFor="pending-search" hideLabel className="flex-1">
                   <Input
@@ -938,7 +938,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 )}
               </ChipRow>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
+              <p className="text-xs text-ink-muted tabular-nums">
                 Showing {visiblePending.length} of {pendingSummary.total}
                 {pendingSummary.oldestWaitingHours !== null &&
                   ` · oldest waiting ${pendingSummary.oldestWaitingHours}h`}
@@ -1005,28 +1005,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       <div className="min-w-0 flex-1 space-y-1">
                         <div className="flex items-center justify-between gap-2 flex-wrap">
                           <h3
-                            className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate"
+                            className="text-sm font-bold text-ink truncate"
                             title={user.fullName}
                           >
                             {user.fullName}
                           </h3>
-                          <Badge tone={isLecturerReq ? 'indigo' : 'slate'} className="shrink-0">
+                          <Badge tone={isLecturerReq ? 'info' : 'neutral'} className="shrink-0">
                             {user.invited && 'Rep invite · '}Requested: {isLecturerReq ? 'Lecturer' : 'Student'}
                           </Badge>
                         </div>
 
-                        <p className="text-xs text-slate-600 dark:text-slate-300">
-                          <span className="text-slate-500 dark:text-slate-400">
+                        <p className="text-xs text-ink-body dark:text-ink-soft">
+                          <span className="text-ink-muted">
                             {user.accountType === 'staff' ? 'Staff ID: ' : 'Matric No: '}
                           </span>
-                          <span className="font-mono text-slate-800 dark:text-slate-200">{user.idNumber}</span>
+                          <span className="font-mono text-ink dark:text-ink-soft">{user.idNumber}</span>
                         </p>
 
-                        <p className="text-xs text-slate-600 dark:text-slate-300">
-                          <span className="text-slate-500 dark:text-slate-400">
+                        <p className="text-xs text-ink-body dark:text-ink-soft">
+                          <span className="text-ink-muted">
                             {user.accountType === 'staff' ? 'Dept / Office: ' : 'Department: '}
                           </span>
-                          <span className="font-medium text-slate-800 dark:text-slate-200">{user.department}</span>
+                          <span className="font-medium text-ink dark:text-ink-soft">{user.department}</span>
                           <span aria-hidden="true"> · </span>
                           <span>
                             {formatLevelLabel(user.level, user.is_alumni)}
@@ -1034,11 +1034,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         </p>
 
                         <p
-                          className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate"
+                          className="text-[11px] text-ink-muted font-mono truncate"
                           title={user.email || undefined}
                         >
                           Email:{' '}
-                          <span className="text-slate-700 dark:text-slate-300">
+                          <span className="text-ink-soft">
                             {user.email || '—'}
                           </span>
                         </p>
@@ -1047,10 +1047,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
                     {!isLecturerReq && <><p className="text-sm font-medium">Student requested {user.level}</p>{cohortPicker(user)}</>}
                     {isAdmin && (
-                      <div className="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/70 rounded-2xl px-3.5 py-2 border border-slate-100 dark:border-slate-700/80">
+                      <div className="flex items-center justify-between gap-3 bg-sunken dark:bg-sunken/70 rounded-2xl px-3.5 py-2 border border-line dark:border-line/80">
                         <label
                           htmlFor={`approve-role-${user.uid}`}
-                          className="text-xs font-semibold text-slate-600 dark:text-slate-300 whitespace-nowrap"
+                          className="text-xs font-semibold text-ink-body dark:text-ink-soft whitespace-nowrap"
                         >
                           Assign Role
                         </label>
@@ -1075,8 +1075,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     )}
 
                     {user.proofMethod && (
-                      <p className="text-xs text-slate-600 dark:text-slate-300">
-                        <span className="font-semibold text-slate-500 dark:text-slate-400">Evidence: </span>
+                      <p className="text-xs text-ink-body dark:text-ink-soft">
+                        <span className="font-semibold text-ink-muted">Evidence: </span>
                         {user.proofMethod}{user.proofDetail && ` · ${user.proofDetail}`}
                       </p>
                     )}
@@ -1098,7 +1098,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </Alert>
                     )}
                     {confirmId === user.uid ? (
-                      <div className="rounded-xl border border-emerald-300 dark:border-emerald-800/70 p-3 space-y-2">
+                      <div className="rounded-xl border border-success-line dark:border-success-line/70 p-3 space-y-2">
                         {!isLecturerReq && levelDifference(user.level,selectedLevel(user)) && (
                           <p className="text-sm font-medium text-amber-700">
                             {levelDifference(user.level,selectedLevel(user))}
@@ -1198,25 +1198,25 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 return (
                   <div
                     key={report.id}
-                    className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-3.5"
+                    className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 space-y-3.5"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="space-y-0.5">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                          <span className="text-sm font-bold text-ink">
                             {report.reason}
                           </span>
                           <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">·</span>
-                          <span className="text-xs text-slate-600 dark:text-slate-300">{report.chatName}</span>
+                          <span className="text-xs text-ink-body dark:text-ink-soft">{report.chatName}</span>
                           <span aria-hidden="true" className="text-slate-300 dark:text-slate-600">·</span>
-                          <span className="text-xs text-slate-500 dark:text-slate-400 font-mono tabular-nums">
+                          <span className="text-xs text-ink-muted font-mono tabular-nums">
                             {formatDateTime(report.createdAt)}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Sender: <span className="font-semibold text-slate-800 dark:text-slate-200">{report.reportedUserName}</span>
+                        <p className="text-xs text-ink-muted">
+                          Sender: <span className="font-semibold text-ink dark:text-ink-soft">{report.reportedUserName}</span>
                           {' · '}
-                          Reported by: <span className="font-medium text-slate-700 dark:text-slate-300">{report.reporterName}</span>
+                          Reported by: <span className="font-medium text-ink-soft">{report.reporterName}</span>
                         </p>
                       </div>
 
@@ -1225,20 +1225,20 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           isOpen
                             ? 'text-amber-700 dark:text-amber-400'
                             : report.status === 'resolved'
-                              ? 'text-emerald-700 dark:text-emerald-400'
-                              : 'text-slate-500 dark:text-slate-400'
+                              ? 'text-brand dark:text-brand'
+                              : 'text-ink-muted dark:text-ink-muted'
                         }`}
                       >
                         {report.status}
                       </span>
                     </div>
 
-                    <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700/80 p-3.5 text-sm text-slate-800 dark:text-slate-200 whitespace-pre-wrap">
+                    <div className="rounded-2xl bg-sunken dark:bg-sunken/70 border border-line dark:border-line/80 p-3.5 text-sm text-ink dark:text-ink-soft whitespace-pre-wrap">
                       {report.messageText}
                     </div>
 
                     {report.details && (
-                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                      <p className="text-xs text-ink-body dark:text-ink-soft">
                         Note: {report.details}
                       </p>
                     )}
@@ -1269,14 +1269,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           type="button"
                           disabled={busyId === report.id}
                           onClick={() => handleDismissReport(report.id)}
-                          className="min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold cursor-pointer"
+                          className="min-h-[42px] px-3.5 rounded-xl border border-line hover:bg-sunken text-ink-soft text-xs font-semibold cursor-pointer"
                         >
                           Dismiss
                         </button>
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Resolution: <span className="font-medium text-slate-700 dark:text-slate-200">{report.resolutionAction.replace('_', ' ')}</span>
+                      <p className="text-xs text-ink-muted">
+                        Resolution: <span className="font-medium text-ink-soft">{report.resolutionAction.replace('_', ' ')}</span>
                       </p>
                     )}
                   </div>
@@ -1303,22 +1303,22 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* Users & Roles */}
       {subTab === 'users' && (
         <div className="space-y-3">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3">
+          <div className="bg-surface rounded-2xl border border-line/80 dark:border-line p-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
                 placeholder="Search users by name, ID, or department..."
-                className="w-full min-h-[44px] pl-10 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                className="w-full min-h-[44px] pl-10 pr-10 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
               />
               {userSearch && (
                 <button
                   type="button"
                   onClick={() => setUserSearch('')}
                   aria-label="Clear user search"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-soft absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1327,7 +1327,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           </div>
 
           {userBanner && (
-            <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-4 py-2.5 text-xs text-emerald-900 dark:text-emerald-200 font-medium">
+            <div className="rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-4 py-2.5 text-xs text-brand font-medium">
               {userBanner}
             </div>
           )}
@@ -1380,12 +1380,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
               return (
                 <div
                   key={user.uid}
-                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col gap-3"
+                  className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 flex flex-col gap-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-sm font-bold text-slate-900 dark:text-slate-100">
+                        <span className="text-sm font-bold text-ink">
                           {user.fullName}
                         </span>
                         <RoleBadge role={user.role} showStudent />
@@ -1396,7 +1396,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           </span>
                         )}
                         {user.is_alumni && user.is_exempt && !expired && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200/70 dark:border-emerald-800/70">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-brand-subtle dark:bg-brand-subtle/60 text-brand border border-success-line/70">
                             Exempt
                           </span>
                         )}
@@ -1416,12 +1416,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           </span>
                         )}
                         {user.status === 'rejected' && (
-                          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+                          <span className="text-xs font-semibold text-ink-muted">
                             Rejected
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-xs text-ink-muted mt-0.5">
                         <span className="font-mono">{user.idNumber}</span>
                         <span aria-hidden="true"> · </span>
                         <span>{user.department}</span>
@@ -1439,7 +1439,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         value={user.department}
                         disabled={busyId === user.uid}
                         onChange={(e) => handleRequestDepartmentChange(user, e.target.value)}
-                        className="min-h-[42px] max-w-[200px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-600 disabled:opacity-60"
+                        className="min-h-[42px] max-w-[200px] px-2.5 rounded-xl border border-line bg-sunken text-xs font-medium text-ink focus:outline-none focus:border-brand disabled:opacity-60"
                       >
                         {!departments.some((d) => d.name === user.department) && (
                           <option value={user.department}>{user.department}</option>
@@ -1456,7 +1456,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         value={user.role}
                         disabled={busyId === user.uid || isSelf}
                         onChange={(e) => handleRequestRoleChange(user, e.target.value as UserRole)}
-                        className="min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-emerald-600 disabled:opacity-60"
+                        className="min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-xs font-semibold text-ink focus:outline-none focus:border-brand disabled:opacity-60"
                       >
                         {(Object.keys(ROLE_LABELS) as UserRole[]).map((roleKey) => (
                           <option key={roleKey} value={roleKey}>
@@ -1472,7 +1472,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           onClick={() => handleToggleSuspend(user)}
                           className={`min-h-[42px] px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
                             isSuspended
-                              ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60'
+                              ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                               : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/60'
                           }`}
                         >
@@ -1493,8 +1493,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   </div>
 
                   {user.is_alumni && !isSelf && (
-                    <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
-                      <label className="inline-flex items-center gap-2.5 text-xs font-medium text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                    <div className="pt-2.5 border-t border-line flex flex-wrap items-center justify-between gap-2.5">
+                      <label className="inline-flex items-center gap-2.5 text-xs font-medium text-ink-soft cursor-pointer select-none">
                         <button
                           type="button"
                           role="switch"
@@ -1504,8 +1504,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           onClick={() => handleToggleAlumniExempt(user)}
                           className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors cursor-pointer disabled:opacity-60 ${
                             user.is_exempt
-                              ? 'bg-emerald-700 border-emerald-600'
-                              : 'bg-slate-200 dark:bg-slate-700 border-slate-300 dark:border-slate-600'
+                              ? 'bg-brand border-brand'
+                              : 'bg-sunken dark:bg-sunken border-line dark:border-line'
                           }`}
                         >
                           <span
@@ -1554,22 +1554,22 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* Groups Directory & Creation */}
       {subTab === 'groups' && (
         <div className="space-y-3">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={groupSearch}
                 onChange={(e) => setGroupSearch(e.target.value)}
                 placeholder="Search groups by name, department, or level..."
-                className="w-full min-h-[44px] pl-10 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                className="w-full min-h-[44px] pl-10 pr-10 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
               />
               {groupSearch && (
                 <button
                   type="button"
                   onClick={() => setGroupSearch('')}
                   aria-label="Clear group search"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-soft absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1580,7 +1580,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               <button
                 type="button"
                 onClick={() => setCreateGroupOpen(true)}
-                className="min-h-[44px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                className="min-h-[44px] px-4 rounded-xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Create Group</span>
@@ -1589,7 +1589,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           </div>
 
           {groupBanner && (
-            <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-4 py-2.5 text-xs text-emerald-900 dark:text-emerald-200 font-medium">
+            <div className="rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-4 py-2.5 text-xs text-brand font-medium">
               {groupBanner}
             </div>
           )}
@@ -1628,13 +1628,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 return (
                   <div
                     key={group.id}
-                    className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 flex items-center justify-between gap-3"
+                    className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 flex items-center justify-between gap-3"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                      <p className="text-sm font-bold text-ink truncate">
                         {group.name}
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                      <p className="text-xs text-ink-muted truncate mt-0.5">
                         {scopeLabel}
                       </p>
                     </div>
@@ -1645,7 +1645,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           type="button"
                           onClick={() => onOpenGroup(group.id)}
                           aria-label={`Open ${group.name}`}
-                          className="min-h-[40px] px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                          className="min-h-[40px] px-3 rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/60 text-brand text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                         >
                           <MessageSquare className="w-3.5 h-3.5" />
                           <span>Open</span>
@@ -1657,7 +1657,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           disabled={busyId === group.id}
                           onClick={() => setConfirmDeleteGroupId(group.id)}
                           aria-label={`Delete ${group.name}`}
-                          className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                          className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -1676,7 +1676,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             type="button"
                             disabled={busyId === group.id}
                             onClick={() => setConfirmDeleteGroupId(null)}
-                            className="min-h-[30px] px-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-800 text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[30px] px-2 rounded-lg text-ink-body dark:text-ink-soft hover:bg-white dark:hover:bg-sunken text-[11px] font-semibold cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -1694,22 +1694,22 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* Departments Directory (Admins only) */}
       {isAdmin && subTab === 'departments' && (
         <div className="space-y-3">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={deptSearch}
                 onChange={(e) => setDeptSearch(e.target.value)}
                 placeholder="Search departments or faculties..."
-                className="w-full min-h-[44px] pl-10 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                className="w-full min-h-[44px] pl-10 pr-10 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
               />
               {deptSearch && (
                 <button
                   type="button"
                   onClick={() => setDeptSearch('')}
                   aria-label="Clear department search"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-ink-soft absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1720,7 +1720,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               <button
                 type="button"
                 onClick={openAddDepartment}
-                className="min-h-[44px] px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                className="min-h-[44px] px-4 rounded-xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Department</span>
@@ -1729,7 +1729,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           </div>
 
           {deptMessage && (
-            <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-4 py-2.5 text-xs text-emerald-900 dark:text-emerald-200 font-medium">
+            <div className="rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-4 py-2.5 text-xs text-brand font-medium">
               {deptMessage}
             </div>
           )}
@@ -1773,13 +1773,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
               {filteredDepartments.map((dept) => (
                 <div
                   key={dept.id}
-                  className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 flex items-center justify-between gap-3"
+                  className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                    <p className="text-sm font-bold text-ink truncate">
                       {dept.name}
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
+                    <p className="text-xs text-ink-muted truncate mt-0.5">
                       Faculty of {dept.faculty}
                     </p>
                   </div>
@@ -1790,7 +1790,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         type="button"
                         onClick={() => openEditDepartment(dept)}
                         aria-label={`Edit ${dept.name}`}
-                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-emerald-800 dark:hover:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors cursor-pointer"
+                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60 transition-colors cursor-pointer"
                       >
                         <Edit3 className="w-4 h-4" />
                       </button>
@@ -1799,7 +1799,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         disabled={busyId === dept.id}
                         onClick={() => handleRequestDeleteDepartment(dept)}
                         aria-label={`Delete ${dept.name}`}
-                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-60"
+                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-60"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1814,16 +1814,16 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
       {/* Auth Domain Settings (Admins only) */}
       {isAdmin && subTab === 'settings' && (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 max-w-xl space-y-4">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-6 max-w-xl space-y-4">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center shrink-0">
               <Globe className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 University Email Domain
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
+              <p className="text-xs text-ink-muted mt-0.5 leading-relaxed">
                 Optional GSU email domain suggested during sign-up (e.g., for campus email login). Student submissions go to authorized reviewers. Only admins decide lecturer and staff applications. This suggestion does not change the verified staff email domain.
               </p>
             </div>
@@ -1831,11 +1831,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
           <form onSubmit={handleSaveEmailDomain} className="space-y-3">
             <div>
-              <label htmlFor="allowedDomainInput" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label htmlFor="allowedDomainInput" className="block text-xs font-semibold text-ink-soft mb-1.5">
                 Email Domain
               </label>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-mono text-slate-500 dark:text-slate-400 select-none">@</span>
+                <span className="text-sm font-mono text-ink-muted select-none">@</span>
                 <input
                   id="allowedDomainInput"
                   type="text"
@@ -1843,7 +1843,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   value={domainInput}
                   onChange={(e) => setDomainInput(e.target.value)}
                   placeholder="gsu.edu.ng"
-                  className="flex-1 min-w-0 min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm font-mono text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="flex-1 min-w-0 min-h-[44px] px-3.5 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm font-mono text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 />
               </div>
             </div>
@@ -1851,7 +1851,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <button
               type="submit"
               disabled={domainBusy}
-              className="w-full sm:w-auto min-h-[44px] px-5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer"
+              className="w-full sm:w-auto min-h-[44px] px-5 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold cursor-pointer"
             >
               {domainBusy ? 'Saving...' : 'Save Domain'}
             </button>
@@ -1861,7 +1861,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 role="status"
                 className={`rounded-2xl px-3.5 py-2.5 text-xs font-medium ${
                   domainMessage.type === 'ok'
-                    ? 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 text-emerald-900 dark:text-emerald-200'
+                    ? 'bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 text-brand dark:text-brand'
                     : 'bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 text-red-800 dark:text-red-300'
                 }`}
               >
@@ -1874,17 +1874,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
       {/* Add / Edit Department Modal */}
       {deptModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 {editingDept ? 'Edit Department' : 'Add Department'}
               </h3>
               <button
                 type="button"
                 onClick={() => setDeptModalOpen(false)}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1892,7 +1892,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
             <form onSubmit={handleSaveDepartment} className="space-y-3.5">
               <div>
-                <label htmlFor="deptName" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="deptName" className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Department Name
                 </label>
                 <input
@@ -1904,19 +1904,19 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   value={deptNameInput}
                   onChange={(e) => setDeptNameInput(e.target.value)}
                   placeholder="e.g. Science Laboratory Technology"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 />
               </div>
 
               <div>
-                <label htmlFor="deptFaculty" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label htmlFor="deptFaculty" className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Faculty
                 </label>
                 <select
                   id="deptFaculty"
                   value={deptFacultyInput}
                   onChange={(e) => setDeptFacultyInput(e.target.value)}
-                  className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                 >
                   {GSU_FACULTIES.map((fac) => (
                     <option key={fac} value={fac}>
@@ -1929,7 +1929,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
               {deptFacultyInput === '__other__' && (
                 <div>
-                  <label htmlFor="customFaculty" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label htmlFor="customFaculty" className="block text-xs font-semibold text-ink-soft mb-1.5">
                     Faculty Name
                   </label>
                   <input
@@ -1941,7 +1941,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     value={customFacultyInput}
                     onChange={(e) => setCustomFacultyInput(e.target.value)}
                     placeholder="e.g. Environmental Sciences"
-                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
                   />
                 </div>
               )}
@@ -1950,14 +1950,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setDeptModalOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={deptBusy}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {deptBusy ? 'Saving...' : editingDept ? 'Save Changes' : 'Add Department'}
                 </button>
@@ -1990,11 +1990,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="Reject sign-up request"
-          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 Reject Sign-up Request
               </h3>
               <button
@@ -2002,15 +2002,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 disabled={busyId === rejectTarget.uid}
                 onClick={() => setRejectTarget(null)}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
               Are you sure you want to reject{' '}
-              <span className="font-semibold text-slate-900 dark:text-slate-100">{rejectTarget.fullName}</span>{' '}
+              <span className="font-semibold text-ink">{rejectTarget.fullName}</span>{' '}
               ({rejectTarget.idNumber})? Give a reason they will see on their Awaiting Approval page:
             </p>
 
@@ -2021,7 +2021,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               value={rejectionReasonInput}
               onChange={(e) => setRejectionReasonInput(e.target.value)}
               placeholder="Required reason (e.g. Matric number could not be matched with department records.)"
-              className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+              className="w-full p-3 rounded-xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
             />
 
             <p className="text-xs break-words">Applicant will see: {rejectionReasonInput.trim() || 'Add a reason above.'}</p>
@@ -2030,7 +2030,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === rejectTarget.uid}
                 onClick={() => setRejectTarget(null)}
-                className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
               >
                 Cancel
               </button>
@@ -2051,20 +2051,20 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {idCardModal && (
         <div
           onClick={() => setIdCardModal(null)}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-center justify-center p-4"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-3xl p-5 space-y-4 shadow-2xl"
+            className="w-full max-w-lg bg-surface border border-line/80 dark:border-line rounded-3xl p-5 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 min-w-0">
-                <IdCard className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                <IdCard className="w-5 h-5 text-brand shrink-0" />
                 <div className="min-w-0">
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                  <h3 className="text-sm font-bold text-ink truncate">
                     {idCardModal.user.fullName} — Verification proof
                   </h3>
-                  <p className="text-xs font-mono text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-xs font-mono text-ink-muted truncate">
                     {idCardModal.user.idNumber}
                   </p>
                   {idCardModal.fileName && <p className="text-sm break-words">{idCardModal.fileName}</p>}
@@ -2074,15 +2074,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 onClick={() => setIdCardModal(null)}
                 aria-label="Close verification preview"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-slate-700 p-3 flex items-center justify-center min-h-[240px]">
+            <div className="rounded-2xl bg-sunken dark:bg-sunken/70 border border-line/80 dark:border-line p-3 flex items-center justify-center min-h-[240px]">
               {idCardModal.loading ? (
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-ink-muted">
                   Loading private verification file...
                 </p>
               ) : idCardModal.error ? (
@@ -2094,7 +2094,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   <iframe
                     src={idCardModal.url}
                     title={idCardModal.fileName || "Verification document PDF"}
-                    className="w-full h-[360px] rounded-xl border border-slate-200 dark:border-slate-700"
+                    className="w-full h-[360px] rounded-xl border border-line"
                   />
                 ) : (
                   <img
@@ -2115,11 +2115,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="Confirm expire alumni account"
-          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 Expire Alumni Account
               </h3>
               <button
@@ -2127,15 +2127,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 disabled={busyId === expireTarget.uid}
                 onClick={() => setExpireTarget(null)}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
               Are you sure you want to expire the Alumni account for{' '}
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
+              <span className="font-semibold text-ink">
                 {expireTarget.fullName}
               </span>{' '}
               ({expireTarget.idNumber})? They will be signed out and locked out of GSU Connect with an Account expired notice.
@@ -2146,7 +2146,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === expireTarget.uid}
                 onClick={() => setExpireTarget(null)}
-                className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
               >
                 Cancel
               </button>
@@ -2173,11 +2173,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
               ? 'Confirm role change'
               : 'Confirm department change'
           }
-          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 {pendingUserChange.kind === 'role'
                   ? 'Confirm Role Change'
                   : 'Confirm Department Change'}
@@ -2187,40 +2187,40 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 disabled={busyId === pendingUserChange.user.uid}
                 onClick={() => setPendingUserChange(null)}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {pendingUserChange.kind === 'role' ? (
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 Change role for{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                <span className="font-semibold text-ink">
                   {pendingUserChange.user.fullName}
                 </span>{' '}
                 ({pendingUserChange.user.idNumber}) from{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                <span className="font-semibold text-ink">
                   {ROLE_LABELS[pendingUserChange.user.role]}
                 </span>{' '}
                 to{' '}
-                <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                <span className="font-semibold text-brand">
                   {ROLE_LABELS[pendingUserChange.nextRole]}
                 </span>
                 ?
               </p>
             ) : (
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 Move{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                <span className="font-semibold text-ink">
                   {pendingUserChange.user.fullName}
                 </span>{' '}
                 ({pendingUserChange.user.idNumber}) from{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                <span className="font-semibold text-ink">
                   {pendingUserChange.user.department}
                 </span>{' '}
                 to{' '}
-                <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                <span className="font-semibold text-brand">
                   {pendingUserChange.nextDepartment}
                 </span>
                 ?
@@ -2232,7 +2232,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === pendingUserChange.user.uid}
                 onClick={() => setPendingUserChange(null)}
-                className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
               >
                 Cancel
               </button>
@@ -2240,7 +2240,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === pendingUserChange.user.uid}
                 onClick={handleConfirmUserChange}
-                className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
               >
                 {busyId === pendingUserChange.user.uid ? 'Saving...' : 'Confirm'}
               </button>
@@ -2255,11 +2255,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
           role="dialog"
           aria-modal="true"
           aria-label="Confirm delete department"
-          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 Delete Department
               </h3>
               <button
@@ -2267,15 +2267,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 disabled={busyId === deleteDeptTarget.id}
                 onClick={() => setDeleteDeptTarget(null)}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+            <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
               Are you sure you want to remove{' '}
-              <span className="font-semibold text-slate-900 dark:text-slate-100">
+              <span className="font-semibold text-ink">
                 {deleteDeptTarget.name}
               </span>{' '}
               (Faculty of {deleteDeptTarget.faculty}) from the departments directory?
@@ -2286,7 +2286,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === deleteDeptTarget.id}
                 onClick={() => setDeleteDeptTarget(null)}
-                className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
               >
                 Cancel
               </button>

@@ -271,20 +271,20 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
   return (
     <div className="space-y-4">
       {/* Header */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 space-y-4">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-base font-bold text-ink">
               Off-Campus (Tumfure) Rides &amp; Errands
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-ink-muted">
               Coordinate Keke/cab fare splits between Off-Campus (Tumfure), Main Gate, Main Campus &amp; Town, or share campus errand pickups.
             </p>
           </div>
           <button
             type="button"
             onClick={() => handleOpenCreate('ride')}
-            className="min-h-[42px] px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer transition-colors"
+            className="min-h-[42px] px-4 rounded-2xl bg-brand hover:bg-brand-strong text-on-brand text-xs font-semibold inline-flex items-center justify-center gap-1.5 shrink-0 cursor-pointer transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>Post Ride / Errand</span>
@@ -293,7 +293,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
 
         {/* Scope Tabs + Search */}
         <div className="flex flex-col lg:flex-row lg:items-center gap-3">
-          <div className="inline-flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl overflow-x-auto">
+          <div className="inline-flex items-center gap-1 p-1 bg-sunken rounded-2xl overflow-x-auto">
             {(
               [
                 { id: 'open', label: `All Open (${openCount})` },
@@ -308,8 +308,8 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 onClick={() => setScopeTab(tab.id)}
                 className={`min-h-[36px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   scopeTab === tab.id
-                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
                 {tab.label}
@@ -318,21 +318,21 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
           </div>
 
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search Off-Campus (Tumfure), Main Gate, time, or poster..."
               aria-label="Search rides and errands"
-              className="w-full min-h-[42px] pl-10 pr-10 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600"
+              className="w-full min-h-[42px] pl-10 pr-10 rounded-2xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand"
             />
             {search && (
               <button
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Clear ride search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -351,8 +351,8 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 onClick={() => setRouteFilter(loc)}
                 className={`min-h-[32px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                   active
-                    ? 'bg-emerald-700 border-emerald-700 text-white'
-                    : 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-500/60'
+                    ? 'bg-brand border-brand text-white'
+                    : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                 }`}
               >
                 {loc === 'All' ? 'All Routes' : loc}
@@ -378,12 +378,12 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
 
       {/* Posts Feed */}
       {filteredPosts.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2">
           <Car className="w-9 h-9 text-slate-300 dark:text-slate-600 mx-auto" />
-          <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-base font-bold text-ink">
             No matching rides or errands
           </h3>
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+          <p className="text-sm text-ink-muted max-w-md mx-auto">
             Heading between Off-Campus (Tumfure) and Main Campus soon? Post a ride split or errand request so fellow students can join.
           </p>
         </div>
@@ -398,10 +398,10 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
             return (
               <article
                 key={post.id}
-                className={`bg-white dark:bg-slate-900 rounded-3xl border p-4 sm:p-5 flex flex-col justify-between gap-4 transition-colors ${
+                className={`bg-white dark:bg-surface rounded-3xl border p-4 sm:p-5 flex flex-col justify-between gap-4 transition-colors ${
                   isFulfilled
-                    ? 'border-slate-200/60 dark:border-slate-800/60 opacity-75'
-                    : 'border-slate-200/80 dark:border-slate-800'
+                    ? 'border-line/60 dark:border-line/60 opacity-75'
+                    : 'border-line/80 dark:border-line'
                 }`}
               >
                 <div className="space-y-3">
@@ -411,7 +411,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold ${
                           post.postType === 'ride'
-                            ? 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300'
+                            ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/70 dark:text-brand'
                             : 'bg-sky-50 text-sky-800 dark:bg-sky-950/70 dark:text-sky-300'
                         }`}
                       >
@@ -426,7 +426,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-xl text-[11px] font-semibold ${
                           isFulfilled
-                            ? 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                            ? 'bg-sunken text-ink-body dark:bg-sunken dark:text-ink-muted'
                             : 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
                         }`}
                       >
@@ -434,7 +434,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       </span>
                     </div>
 
-                    <span className="text-xs font-extrabold text-emerald-800 dark:text-emerald-300 tabular-nums">
+                    <span className="text-xs font-extrabold text-brand tabular-nums">
                       {post.costSplitNaira > 0
                         ? `${formatNaira(post.costSplitNaira)} split`
                         : 'Free / Shared'}
@@ -443,25 +443,25 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
 
                   {/* Title & Route */}
                   <div className="space-y-1.5">
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-snug">
+                    <h3 className="text-sm font-bold text-ink leading-snug">
                       {post.title}
                     </h3>
-                    <div className="flex items-center gap-1.5 flex-wrap text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/70 rounded-2xl px-3 py-2">
-                      <MapPin className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                    <div className="flex items-center gap-1.5 flex-wrap text-xs font-semibold text-ink-soft bg-sunken dark:bg-sunken/70 rounded-2xl px-3 py-2">
+                      <MapPin className="w-3.5 h-3.5 text-brand shrink-0" />
                       <span>{post.origin}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <ArrowRight className="w-3.5 h-3.5 text-ink-muted shrink-0" />
                       <span>{post.destination}</span>
                     </div>
                   </div>
 
                   {/* Metadata */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-ink-body dark:text-ink-soft">
                     <span className="inline-flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-ink-muted shrink-0" />
                       <span>{post.departureTime}</span>
                     </span>
                     <span className="inline-flex items-center gap-1.5 tabular-nums">
-                      <Users className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                      <Users className="w-3.5 h-3.5 text-ink-muted shrink-0" />
                       <span>
                         {post.seatsOrSlots}{' '}
                         {post.postType === 'ride'
@@ -479,7 +479,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                             disabled={updatingStatusId === post.id || post.seatsOrSlots <= 1}
                             onClick={() => handleAdjustSeats(post, -1)}
                             aria-label="Decrease seats or slots"
-                            className="w-5 h-5 rounded-md border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-35 inline-flex items-center justify-center cursor-pointer"
+                            className="w-5 h-5 rounded-md border border-line hover:bg-sunken disabled:opacity-35 inline-flex items-center justify-center cursor-pointer"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
@@ -488,7 +488,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                             disabled={updatingStatusId === post.id || post.seatsOrSlots >= 20}
                             onClick={() => handleAdjustSeats(post, 1)}
                             aria-label="Increase seats or slots"
-                            className="w-5 h-5 rounded-md border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-35 inline-flex items-center justify-center cursor-pointer"
+                            className="w-5 h-5 rounded-md border border-line hover:bg-sunken disabled:opacity-35 inline-flex items-center justify-center cursor-pointer"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -498,14 +498,14 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   </div>
 
                   {post.details && (
-                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap break-words">
+                    <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed whitespace-pre-wrap break-words">
                       {post.details}
                     </p>
                   )}
                 </div>
 
                 {/* Footer: Poster & Actions */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2.5">
+                <div className="pt-3 border-t border-line flex flex-wrap items-center justify-between gap-2.5">
                   <div className="flex items-center gap-2.5 min-w-0">
                     <UserAvatar
                       name={poster?.fullName || post.authorName}
@@ -513,16 +513,16 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       avatarId={poster?.avatarId}
                       size="sm"
                       roundedClass="rounded-xl"
-                      fallbackClassName="bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300"
+                      fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        <span className="text-xs font-semibold text-ink truncate">
                           {poster?.fullName || post.authorName}
                         </span>
                         <RoleBadge role={post.authorRole} />
                       </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
+                      <p className="text-[11px] text-ink-muted truncate">
                         {post.authorDepartment} ·{' '}
                         {formatCompactLevelLabel(post.authorLevel, poster?.is_alumni)} ·{' '}
                         {formatShortTime(post.createdAt)}
@@ -536,7 +536,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                         type="button"
                         disabled={openingDmPostId === post.id}
                         onClick={() => handleChatPoster(post)}
-                        className="min-h-[38px] px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors"
+                        className="min-h-[38px] px-3 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer transition-colors"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
                         <span>{openingDmPostId === post.id ? 'Opening...' : 'Chat Poster'}</span>
@@ -550,7 +550,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                           onClick={() => handleOpenEdit(post)}
                           aria-label="Edit post"
                           title="Edit post"
-                          className="min-w-[38px] min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-500 hover:text-emerald-700 dark:hover:text-emerald-400 flex items-center justify-center cursor-pointer"
+                          className="min-w-[38px] min-h-[38px] rounded-xl border border-line hover:bg-sunken text-ink-muted hover:text-brand flex items-center justify-center cursor-pointer"
                         >
                           <Pencil className="w-3.5 h-3.5" />
                         </button>
@@ -559,7 +559,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                           type="button"
                           disabled={updatingStatusId === post.id}
                           onClick={() => handleToggleStatus(post)}
-                          className="min-h-[38px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1 cursor-pointer"
+                          className="min-h-[38px] px-2.5 rounded-xl border border-line hover:bg-sunken text-xs font-semibold text-ink-soft inline-flex items-center gap-1 cursor-pointer"
                         >
                           {isFulfilled ? (
                             <>
@@ -568,7 +568,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                             </>
                           ) : (
                             <>
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                              <CheckCircle2 className="w-3.5 h-3.5 text-brand" />
                               <span>Fulfilled</span>
                             </>
                           )}
@@ -587,7 +587,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                             <button
                               type="button"
                               onClick={() => setConfirmDeleteId(null)}
-                              className="min-h-[38px] px-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs text-slate-500 cursor-pointer"
+                              className="min-h-[38px] px-2 rounded-xl border border-line text-xs text-ink-muted cursor-pointer"
                             >
                               Cancel
                             </button>
@@ -597,7 +597,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                             type="button"
                             onClick={() => setConfirmDeleteId(post.id)}
                             aria-label="Delete post"
-                            className="min-w-[38px] min-h-[38px] rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-500 hover:text-rose-600 flex items-center justify-center cursor-pointer"
+                            className="min-w-[38px] min-h-[38px] rounded-xl border border-line hover:bg-rose-50 dark:hover:bg-rose-950/40 text-ink-muted hover:text-rose-600 flex items-center justify-center cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -618,7 +618,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
             type="button"
             disabled={loadingMore}
             onClick={onLoadMore}
-            className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+            className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
           >
             {loadingMore ? 'Loading more...' : 'Load more rides & errands'}
           </button>
@@ -632,19 +632,19 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
           aria-modal="true"
           aria-label={editingPost ? 'Edit Ride or Errand' : 'Post Ride or Errand'}
           onClick={() => !submitting && (setCreateOpen(false), setEditingPost(null))}
-          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+          className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
           <form
             onSubmit={handleCreateSubmit}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 className="text-base font-bold text-ink">
                   {editingPost ? 'Edit Ride or Errand' : 'Post Ride or Errand Share'}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-ink-muted">
                   Split transport costs or coordinate campus pickups safely
                 </p>
               </div>
@@ -655,21 +655,21 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   setEditingPost(null);
                 }}
                 aria-label="Close modal"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {!editingPost && (
-              <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+              <div className="grid grid-cols-2 gap-2 p-1 bg-sunken rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setPostType('ride')}
                   className={`min-h-[40px] rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
                     postType === 'ride'
-                      ? 'bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-300 shadow-2xs'
-                      : 'text-slate-600 dark:text-slate-400'
+                      ? 'bg-white dark:bg-surface text-brand dark:text-brand shadow-2xs'
+                      : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
                   <Car className="w-4 h-4" />
@@ -680,8 +680,8 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   onClick={() => setPostType('errand')}
                   className={`min-h-[40px] rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
                     postType === 'errand'
-                      ? 'bg-white dark:bg-slate-900 text-sky-800 dark:text-sky-300 shadow-2xs'
-                      : 'text-slate-600 dark:text-slate-400'
+                      ? 'bg-white dark:bg-surface text-sky-800 dark:text-sky-300 shadow-2xs'
+                      : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
                   <Package className="w-4 h-4" />
@@ -691,7 +691,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+              <label className="block text-xs font-semibold text-ink-soft mb-1">
                 Title
               </label>
               <input
@@ -706,13 +706,13 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                     ? 'e.g., Sharing Keke from Off-Campus (Tumfure) to Science Complex'
                     : 'e.g., Going to Town — can pick up printouts or food'
                 }
-                className="w-full min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                className="w-full min-h-[42px] px-3.5 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
               />
             </div>
 
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">
+                <span className="text-xs font-semibold text-ink-soft">
                   Route
                 </span>
                 <button
@@ -722,7 +722,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                     setOrigin(destination);
                     setDestination(prevOrigin);
                   }}
-                  className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] font-semibold text-brand hover:underline inline-flex items-center gap-1 cursor-pointer"
                 >
                   <ArrowLeftRight className="w-3 h-3" />
                   <span>Swap Origin ↔ Destination</span>
@@ -730,7 +730,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-[11px] font-medium text-ink-muted mb-1">
                     Origin / Pickup Point
                   </label>
                   <input
@@ -741,12 +741,12 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                     value={origin}
                     onChange={(e) => setOrigin(e.target.value)}
                     placeholder="Off-Campus (Tumfure)"
-                    className="w-full min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[42px] px-3.5 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-medium text-slate-500 dark:text-slate-400 mb-1">
+                  <label className="block text-[11px] font-medium text-ink-muted mb-1">
                     Destination
                   </label>
                   <input
@@ -757,7 +757,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                     value={destination}
                     onChange={(e) => setDestination(e.target.value)}
                     placeholder="Main Campus"
-                    className="w-full min-h-[42px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[42px] px-3.5 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   />
                 </div>
               </div>
@@ -771,7 +771,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                <label className="block text-xs font-semibold text-ink-soft mb-1">
                   Departure / Time
                 </label>
                 <input
@@ -781,11 +781,11 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   value={departureTime}
                   onChange={(e) => setDepartureTime(e.target.value)}
                   placeholder="e.g., Today 4:30 PM"
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                <label className="block text-xs font-semibold text-ink-soft mb-1">
                   {postType === 'ride' ? 'Seats Left' : 'Errand Slots'}
                 </label>
                 <input
@@ -795,11 +795,11 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   required
                   value={seatsOrSlots}
                   onChange={(e) => setSeatsOrSlots(e.target.value)}
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink tabular-nums focus:outline-none focus:border-brand"
                 />
               </div>
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+                <label className="block text-xs font-semibold text-ink-soft mb-1">
                   Cost Split (₦)
                 </label>
                 <input
@@ -809,13 +809,13 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   value={costSplitNaira}
                   onChange={(e) => setCostSplitNaira(e.target.value)}
                   placeholder="0 for free"
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 tabular-nums focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-sunken text-sm text-ink tabular-nums focus:outline-none focus:border-brand"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-200 mb-1">
+              <label className="block text-xs font-semibold text-ink-soft mb-1">
                 Additional Notes (optional)
               </label>
               <textarea
@@ -824,7 +824,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="Exact junction/landmark in Off-Campus (Tumfure) or drop-off details..."
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600 resize-none"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-line bg-sunken text-sm text-ink focus:outline-none focus:border-brand resize-none"
               />
             </div>
 
@@ -842,14 +842,14 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   setCreateOpen(false);
                   setEditingPost(null);
                 }}
-                className="min-h-[42px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
+                className="min-h-[42px] px-4 rounded-xl border border-line text-xs font-semibold text-ink-soft cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="min-h-[42px] px-5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold cursor-pointer"
+                className="min-h-[42px] px-5 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold cursor-pointer"
               >
                 {submitting
                   ? editingPost

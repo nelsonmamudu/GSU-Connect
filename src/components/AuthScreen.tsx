@@ -101,7 +101,7 @@ function ModeSwitch({
   onChange: (mode: 'login' | 'signup') => void;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6">
+    <div className="grid grid-cols-2 gap-1.5 p-1 bg-sunken rounded-2xl mb-6">
       {(['login', 'signup'] as const).map((key) => (
         <Button
           key={key}
@@ -112,8 +112,8 @@ function ModeSwitch({
           onClick={() => onChange(key)}
           className={
             mode === key
-              ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
-              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+              ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-xs'
+              : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
           }
         >
           {key === 'login' ? 'Sign In' : 'Create Account'}
@@ -554,12 +554,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const renderProofSection = () => (
     <div className="space-y-4">
       <div>
-        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{stepHeading?.heading}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{stepHeading?.hint}</p>
+        <h3 className="text-base font-bold text-ink">{stepHeading?.heading}</h3>
+        <p className="text-xs text-ink-muted mt-1 leading-relaxed">{stepHeading?.hint}</p>
       </div>
 
       <div>
-        <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">I am a:</span>
+        <span className="block text-xs font-semibold text-ink-soft mb-1.5">I am a:</span>
         <div className="grid grid-cols-2 gap-2">
           {(['student', 'staff'] as const).map((type) => (
             <Button
@@ -575,8 +575,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               }}
               className={
                 accountType === type
-                  ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-600 text-emerald-900 dark:text-emerald-200'
-                  : 'bg-white dark:bg-slate-800/70'
+                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand dark:text-brand'
+                  : 'bg-white dark:bg-sunken/70'
               }
             >
               {type === 'student' ? 'Student' : 'Lecturer or Staff'}
@@ -613,12 +613,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           note={ocrHint || 'Only you and authorized reviewers can access your proof.'}
         />
       ) : (
-        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 text-left space-y-1">
+        <div className="rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 p-3.5 text-left space-y-1">
           <div className="flex items-start gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Verify after sign-in</p>
+            <ShieldCheck className="w-4 h-4 text-brand shrink-0 mt-0.5" />
+            <p className="text-xs font-semibold text-ink">Verify after sign-in</p>
           </div>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-[11px] text-ink-muted leading-relaxed">
             {staffPath === 'email'
               ? 'We’ll email a confirmation link to your @gsu.edu.ng inbox after you create your account.'
               : 'After sign-in, ask a verified staff member in your department to confirm your affiliation.'}
@@ -631,8 +631,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const renderDetailsSection = () => (
     <div className="space-y-4">
       <div>
-        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{stepHeading?.heading}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{stepHeading?.hint}</p>
+        <h3 className="text-base font-bold text-ink">{stepHeading?.heading}</h3>
+        <p className="text-xs text-ink-muted mt-1 leading-relaxed">{stepHeading?.hint}</p>
       </div>
 
       <Field label="Full Name" htmlFor="fullName" error={fieldErrors.fullName}>
@@ -708,7 +708,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               <legend className="text-xs font-semibold mb-2">Student level</legend>
               <div className="grid grid-cols-3 gap-2">
                 {[...availableLevels, 'graduate' as const].map(value => (
-                  <label key={value} className={`flex items-center gap-2 rounded-xl border px-2 py-2 text-sm ${value==='graduate'?'col-span-full':''} ${level===value?'border-emerald-600':'border-slate-200'}`}>
+                  <label key={value} className={`flex items-center gap-2 rounded-xl border px-2 py-2 text-sm ${value==='graduate'?'col-span-full':''} ${level===value?'border-brand':'border-line'}`}>
                     <input type="radio" name="student-level" value={value} checked={level===value} onChange={()=>{setLevel(value);touchField('level');}} />
                     {value==='graduate' ? `Graduate — ${graduationLevelLabel()} only` : `${value} Level`}
                   </label>
@@ -718,7 +718,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
             {fieldErrors.level && (
               <p id="level-error" className={errorTextClass}>{fieldErrors.level}</p>
             )}
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+            <p className="text-[11px] text-ink-muted mt-1.5 leading-relaxed">
               Select your actual level{sessionLabel ? ` for ${sessionLabel}` : ''}, not the level on an older document.
             </p>
           </div>
@@ -730,8 +730,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const renderAccountSection = () => (
     <div className="space-y-4">
       <div>
-        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{stepHeading?.heading}</h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{stepHeading?.hint}</p>
+        <h3 className="text-base font-bold text-ink">{stepHeading?.heading}</h3>
+        <p className="text-xs text-ink-muted mt-1 leading-relaxed">{stepHeading?.hint}</p>
       </div>
 
       <Field
@@ -794,7 +794,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className="min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
             >
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -824,43 +824,43 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-canvas flex flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
       <div className="w-full max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
         {/* Left campus introduction panel */}
         <div className="lg:col-span-5 space-y-5 text-center lg:text-left px-2">
           <div className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-brand text-on-brand flex items-center justify-center shadow-sm">
               <GraduationCap className="w-6 h-6" />
             </div>
             <div className="text-left">
-              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-ink">
                 GSU Connect
               </h1>
-              <p className="text-sm text-emerald-800 dark:text-emerald-400 font-medium">
+              <p className="text-sm text-brand font-medium">
                 Gombe State University
               </p>
             </div>
           </div>
 
-          <p className="text-slate-600 dark:text-slate-300 text-base leading-relaxed max-w-md mx-auto lg:mx-0">
+          <p className="text-ink-body dark:text-ink-soft text-base leading-relaxed max-w-md mx-auto lg:mx-0">
             Campus messaging built for verified GSU students, class reps, departmental helpers, and lecturers.
           </p>
 
-          <div className="hidden lg:grid grid-cols-1 gap-3 pt-2 text-sm text-slate-600 dark:text-slate-300">
-            <div className="flex items-start gap-3 bg-white/80 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5">
-              <UserCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+          <div className="hidden lg:grid grid-cols-1 gap-3 pt-2 text-sm text-ink-body dark:text-ink-soft">
+            <div className="flex items-start gap-3 bg-white/80 dark:bg-surface/90 border border-line/80 dark:border-line rounded-2xl p-3.5">
+              <UserCheck className="w-5 h-5 text-brand shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">Department &amp; Level Groups</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="font-semibold text-ink">Department &amp; Level Groups</p>
+                <p className="text-xs text-ink-muted mt-0.5">
                   Automatically placed into GSU General and your department cohort upon approval.
                 </p>
               </div>
             </div>
-            <div className="flex items-start gap-3 bg-white/80 dark:bg-slate-900/90 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-3.5">
-              <ShieldCheck className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <div className="flex items-start gap-3 bg-white/80 dark:bg-surface/90 border border-line/80 dark:border-line rounded-2xl p-3.5">
+              <ShieldCheck className="w-5 h-5 text-brand shrink-0 mt-0.5" />
               <div>
-                <p className="font-semibold text-slate-900 dark:text-slate-100">Verified Campus Access</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <p className="font-semibold text-ink">Verified Campus Access</p>
+                <p className="text-xs text-ink-muted mt-0.5">
                   Staff accounts are reviewed by an admin. Student accounts are reviewed by an authorized reviewer in their department or by an admin.
                 </p>
               </div>
@@ -869,7 +869,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         </div>
 
         {/* Right authentication card */}
-        <div className="lg:col-span-7 w-full max-w-md mx-auto lg:max-w-none bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 sm:p-8">
+        <div className="lg:col-span-7 w-full max-w-md mx-auto lg:max-w-none bg-surface rounded-3xl border border-line/80 dark:border-line shadow-sm p-6 sm:p-8">
           {mode !== 'forgot' ? (
             <>
               <ModeSwitch mode={mode === 'signup' ? 'signup' : 'login'} onChange={(next) => switchMode(next)} />
@@ -967,7 +967,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                             type="button"
                             onClick={() => setShowPassword((prev) => !prev)}
                             aria-label={showPassword ? 'Hide password' : 'Show password'}
-                            className="min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                            className="min-w-[40px] min-h-[40px] flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
                           >
                             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                           </button>
@@ -987,7 +987,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                         <button
                           type="button"
                           onClick={() => switchMode('forgot')}
-                          className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer inline-flex items-center gap-1.5"
+                          className="text-xs font-semibold text-brand hover:underline cursor-pointer inline-flex items-center gap-1.5"
                         >
                           <KeyRound className="w-3.5 h-3.5" />
                           Forgot your password?
@@ -1004,25 +1004,25 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               <button
                 type="button"
                 onClick={() => switchMode('login')}
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:text-emerald-700 dark:hover:text-emerald-400 cursor-pointer"
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-body dark:text-ink-soft hover:text-brand cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back to Sign In
               </button>
 
               <div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                <h2 className="text-lg font-bold text-ink">
                   Reset your password
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
+                <p className="text-sm text-ink-muted mt-1 leading-relaxed">
                   Enter an account identifier below, not the inbox where you receive reset links.
                 </p>
               </div>
 
               {forgotSent ? (
-                <div className="rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800/70 px-4 py-4 flex items-start gap-3">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                  <div className="text-sm text-emerald-900 dark:text-emerald-200 leading-relaxed">
+                <div className="rounded-2xl bg-brand-subtle dark:bg-brand-subtle/50 border border-success-line dark:border-success-line/70 px-4 py-4 flex items-start gap-3">
+                  <CheckCircle2 className="w-5 h-5 text-brand shrink-0 mt-0.5" />
+                  <div className="text-sm text-brand leading-relaxed">
                     <p className="font-semibold">Check your inbox</p>
                     <p className="text-xs mt-1">
                       If an account exists for that ID, a password reset link has been sent
@@ -1155,17 +1155,17 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 sm:p-8">
+    <div className="min-h-screen bg-canvas flex flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
+      <div className="w-full max-w-md mx-auto bg-surface rounded-3xl border border-line/80 dark:border-line shadow-sm p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-700 text-white flex items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-brand text-on-brand flex items-center justify-center shadow-sm">
             <KeyRound className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            <h1 className="text-xl font-bold tracking-tight text-ink">
               Set a New Password
             </h1>
-            <p className="text-sm text-emerald-800 dark:text-emerald-400 font-medium">
+            <p className="text-sm text-brand font-medium">
               GSU Connect
             </p>
           </div>
@@ -1188,7 +1188,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
                   type="button"
                   onClick={() => setShowPassword((prev) => !prev)}
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  className="min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                  className="min-w-[40px] min-h-[40px] flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>

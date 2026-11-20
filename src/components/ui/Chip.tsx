@@ -34,8 +34,8 @@ export function Chip({
       onClick={onClick}
       className={`min-h-[40px] px-3 rounded-lg border text-xs font-semibold whitespace-nowrap shrink-0 inline-flex items-center gap-1 transition-colors cursor-pointer ${focusRing} ${
         active
-          ? 'bg-emerald-700 border-emerald-700 text-white'
-          : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600 hover:text-slate-900 dark:hover:text-slate-100'
+          ? 'bg-brand border-brand text-on-brand'
+          : 'bg-surface border-line text-ink-soft hover:border-line-strong hover:text-ink'
       } ${className}`}
     >
       <span>{children}</span>
@@ -46,19 +46,12 @@ export function Chip({
 
 export interface ChipRowProps {
   label: string;
-  /** Fade gradient stops; defaults match a white/slate-900 surface. */
-  fadeClassName?: string;
   className?: string;
   children: React.ReactNode;
 }
 
 /** One scrolling row of chips with an edge fade, instead of a wrapping grid. */
-export function ChipRow({
-  label,
-  fadeClassName = 'from-white dark:from-slate-900',
-  className = '',
-  children,
-}: ChipRowProps) {
+export function ChipRow({ label, className = '', children }: ChipRowProps) {
   return (
     <div className={`relative ${className}`}>
       <div
@@ -70,7 +63,7 @@ export function ChipRow({
       </div>
       <div
         aria-hidden="true"
-        className={`pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l ${fadeClassName} to-transparent`}
+        className="pointer-events-none absolute inset-y-0 right-0 w-7 bg-gradient-to-l from-surface to-transparent"
       />
     </div>
   );

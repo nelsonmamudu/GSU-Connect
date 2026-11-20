@@ -83,7 +83,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   avatarId,
   size = 'md',
   roundedClass = 'rounded-full',
-  fallbackClassName = 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-200',
+  fallbackClassName = 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand',
   className = '',
 }) => {
   const [imgError, setImgError] = useState(false);
@@ -100,7 +100,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   if (cleanPhoto && !imgError) {
     return (
       <div
-        className={`relative overflow-hidden shrink-0 ${sizeClass} ${roundedClass} bg-slate-200 dark:bg-slate-800 ${className}`}
+        className={`relative overflow-hidden shrink-0 ${sizeClass} ${roundedClass} bg-sunken dark:bg-sunken ${className}`}
       >
         <img
           src={cleanPhoto}

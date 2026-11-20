@@ -81,11 +81,11 @@ function SectionTitle({
     <div className="flex items-end justify-between gap-4">
       <div>
         {eyebrow && (
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-800/70 dark:text-emerald-300/80">
+          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand/70 dark:text-brand/80">
             {eyebrow}
           </p>
         )}
-        <h2 className="mt-1 font-display text-lg font-bold tracking-tight text-slate-950 dark:text-white sm:text-xl">
+        <h2 className="mt-1 font-display text-lg font-bold tracking-tight text-ink dark:text-white sm:text-xl">
           {title}
         </h2>
       </div>
@@ -93,7 +93,7 @@ function SectionTitle({
         <button
           type="button"
           onClick={action.onClick}
-          className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-2 text-sm font-semibold text-emerald-800 transition-colors hover:bg-emerald-50 dark:text-emerald-300 dark:hover:bg-emerald-950/60"
+          className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-2 text-sm font-semibold text-brand transition-colors hover:bg-brand-subtle dark:hover:bg-brand-subtle/60"
         >
           {action.label}
           <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
@@ -115,15 +115,15 @@ function CountCard({
   hint: string;
 }) {
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+    <div className="rounded-2xl border border-line/80 bg-surface p-4 dark:border-line">
       <div className="flex items-center justify-between gap-3">
-        <span className="grid h-9 w-9 place-items-center rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300">
+        <span className="grid h-9 w-9 place-items-center rounded-xl bg-brand-subtle text-brand dark:bg-brand-subtle/70">
           <Icon className="h-[18px] w-[18px]" aria-hidden="true" />
         </span>
-        <span className="font-display text-2xl font-bold tabular-nums text-slate-950 dark:text-white">{value}</span>
+        <span className="font-display text-2xl font-bold tabular-nums text-ink dark:text-white">{value}</span>
       </div>
-      <p className="mt-3 text-sm font-semibold text-slate-800 dark:text-slate-100">{label}</p>
-      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{hint}</p>
+      <p className="mt-3 text-sm font-semibold text-ink">{label}</p>
+      <p className="mt-0.5 text-xs text-ink-muted">{hint}</p>
     </div>
   );
 }
@@ -143,16 +143,16 @@ function ShortcutCard({
     <button
       type="button"
       onClick={onClick}
-      className="group flex min-h-[92px] w-full items-center gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 text-left transition-colors hover:border-emerald-300 hover:bg-emerald-50/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-800 dark:hover:bg-emerald-950/30 dark:focus-visible:ring-offset-slate-950"
+      className="group flex min-h-[92px] w-full items-center gap-3 rounded-2xl border border-line/80 bg-surface p-4 text-left transition-colors hover:border-success-line hover:bg-brand-subtle/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 dark:border-line dark:hover:bg-brand-subtle/30 dark:focus-visible:ring-offset-slate-950"
     >
-      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-slate-100 text-slate-700 transition-colors group-hover:bg-emerald-100 group-hover:text-emerald-900 dark:bg-slate-800 dark:text-slate-300 dark:group-hover:bg-emerald-950 dark:group-hover:text-emerald-200">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-sunken text-ink-soft transition-colors group-hover:bg-brand-subtle group-hover:text-brand">
         <Icon className="h-5 w-5" aria-hidden="true" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-bold text-slate-900 dark:text-slate-100">{label}</span>
-        <span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">{detail}</span>
+        <span className="block text-sm font-bold text-ink">{label}</span>
+        <span className="mt-1 block text-xs leading-relaxed text-ink-muted">{detail}</span>
       </span>
-      <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-800 dark:group-hover:text-emerald-300" aria-hidden="true" />
+      <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-brand" aria-hidden="true" />
     </button>
   );
 }
@@ -203,7 +203,7 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
             <button
               type="button"
               onClick={() => onNavigate('calendar')}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white px-4 text-sm font-bold text-[#0B3F35] transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B3F35]"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-surface px-4 text-sm font-bold text-[#0B3F35] transition-colors hover:bg-brand-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#0B3F35]"
             >
               <CalendarDays className="h-4 w-4" aria-hidden="true" />
               Open timetable
@@ -230,30 +230,30 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
         <section className="space-y-4">
           <SectionTitle eyebrow="Your schedule" title="Coming up" action={{ label: 'Full timetable', onClick: () => onNavigate('calendar') }} />
           {upcomingEvents.length ? (
-            <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900">
+            <div className="overflow-hidden rounded-2xl border border-line/80 bg-surface dark:border-line">
               {upcomingEvents.map((event, index) => (
-                <div key={event.id} className={`flex gap-4 p-4 sm:p-5 ${index ? 'border-t border-slate-100 dark:border-slate-800' : ''}`}>
+                <div key={event.id} className={`flex gap-4 p-4 sm:p-5 ${index ? 'border-t border-line dark:border-line' : ''}`}>
                   <div className="w-14 shrink-0 text-center">
-                    <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">{event.date === todayKey ? 'Today' : formatEventDate(event.date).split(',')[0]}</span>
-                    <span className="mt-1 block font-display text-xl font-bold text-slate-900 dark:text-white">{event.date === todayKey ? '•' : new Date(`${event.date}T12:00:00`).getDate()}</span>
-                    <span className="block text-[10px] text-slate-500 dark:text-slate-400">{new Date(`${event.date}T12:00:00`).toLocaleDateString('en-NG', { month: 'short' })}</span>
+                    <span className="block text-[10px] font-bold uppercase tracking-wider text-brand">{event.date === todayKey ? 'Today' : formatEventDate(event.date).split(',')[0]}</span>
+                    <span className="mt-1 block font-display text-xl font-bold text-ink dark:text-white">{event.date === todayKey ? '•' : new Date(`${event.date}T12:00:00`).getDate()}</span>
+                    <span className="block text-[10px] text-ink-muted">{new Date(`${event.date}T12:00:00`).toLocaleDateString('en-NG', { month: 'short' })}</span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100">{event.title}</p>
-                    <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-sm font-bold text-ink">{event.title}</p>
+                    <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-muted">
                       <span className="inline-flex items-center gap-1"><Clock3 className="h-3.5 w-3.5" aria-hidden="true" />{event.startTime}{event.endTime ? `–${event.endTime}` : ''}</span>
                       {event.venue && <span>{event.venue}</span>}
                     </p>
-                    {event.courseCode && <span className="mt-2 inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-600 dark:bg-slate-800 dark:text-slate-300">{event.courseCode}</span>}
+                    {event.courseCode && <span className="mt-2 inline-flex rounded-md bg-sunken px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-ink-body dark:text-ink-soft">{event.courseCode}</span>}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-6 dark:border-slate-700 dark:bg-slate-900/60">
-              <CalendarDays className="h-5 w-5 text-emerald-700 dark:text-emerald-300" aria-hidden="true" />
-              <p className="mt-3 text-sm font-bold text-slate-900 dark:text-slate-100">Your calendar is clear</p>
-              <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">When classes, exams, or campus events are added, you will find them here.</p>
+            <div className="rounded-2xl border border-dashed border-line bg-white/70 p-6 dark:bg-surface/60">
+              <CalendarDays className="h-5 w-5 text-brand" aria-hidden="true" />
+              <p className="mt-3 text-sm font-bold text-ink">Your calendar is clear</p>
+              <p className="mt-1 text-sm leading-6 text-ink-muted">When classes, exams, or campus events are added, you will find them here.</p>
             </div>
           )}
         </section>
@@ -264,21 +264,21 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
             <button
               type="button"
               onClick={() => onNavigate('announcements')}
-              className="w-full rounded-2xl border border-slate-200/80 bg-white p-5 text-left transition-colors hover:border-emerald-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-800"
+              className="w-full rounded-2xl border border-line/80 bg-surface p-5 text-left transition-colors hover:border-success-line dark:border-line"
             >
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-900 dark:bg-emerald-950/70 dark:text-emerald-200"><Megaphone className="h-3.5 w-3.5" aria-hidden="true" />{latestAnnouncement.scope || 'University notice'}</span>
-              <span className="mt-4 block text-base font-bold leading-snug text-slate-900 dark:text-slate-100">{latestAnnouncement.title}</span>
-              <span className="mt-2 line-clamp-3 block text-sm leading-6 text-slate-600 dark:text-slate-300">{latestAnnouncement.body}</span>
-              <span className="mt-4 flex items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-subtle px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-wide text-brand dark:bg-brand-subtle/70"><Megaphone className="h-3.5 w-3.5" aria-hidden="true" />{latestAnnouncement.scope || 'University notice'}</span>
+              <span className="mt-4 block text-base font-bold leading-snug text-ink">{latestAnnouncement.title}</span>
+              <span className="mt-2 line-clamp-3 block text-sm leading-6 text-ink-body dark:text-ink-soft">{latestAnnouncement.body}</span>
+              <span className="mt-4 flex items-center justify-between gap-3 text-xs text-ink-muted">
                 <span>{latestAnnouncement.authorName}</span>
                 <span>{formatCreatedDate(latestAnnouncement.createdAt)}</span>
               </span>
             </button>
           ) : (
-            <div className="rounded-2xl border border-dashed border-slate-300 bg-white/70 p-6 dark:border-slate-700 dark:bg-slate-900/60">
-              <Bell className="h-5 w-5 text-emerald-700 dark:text-emerald-300" aria-hidden="true" />
-              <p className="mt-3 text-sm font-bold text-slate-900 dark:text-slate-100">No new notices</p>
-              <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">Official announcements will appear here when they are posted.</p>
+            <div className="rounded-2xl border border-dashed border-line bg-white/70 p-6 dark:bg-surface/60">
+              <Bell className="h-5 w-5 text-brand" aria-hidden="true" />
+              <p className="mt-3 text-sm font-bold text-ink">No new notices</p>
+              <p className="mt-1 text-sm leading-6 text-ink-muted">Official announcements will appear here when they are posted.</p>
             </div>
           )}
         </section>
@@ -302,9 +302,9 @@ export function StudyHubView({ currentUser, calendarEvents, resources, onNavigat
   return (
     <div className="space-y-7 sm:space-y-9">
       <header className="max-w-2xl">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-800/70 dark:text-emerald-300/80">Study</p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-slate-950 dark:text-white">Your academic toolkit</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">Course materials and your timetable, organized for {currentUser.department || 'your department'}.</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand/70 dark:text-brand/80">Study</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-ink dark:text-white">Your academic toolkit</h1>
+        <p className="mt-3 text-sm leading-6 text-ink-body dark:text-ink-soft">Course materials and your timetable, organized for {currentUser.department || 'your department'}.</p>
       </header>
       <div className="grid gap-3 sm:grid-cols-2">
         <CountCard icon={BookOpen} label="Repository materials" value={String(resources.length)} hint="Past questions, notes, and guides" />
@@ -326,9 +326,9 @@ export function CampusHubView({ statuses, announcements, marketplaceListings, ri
   return (
     <div className="space-y-7 sm:space-y-9">
       <header className="max-w-2xl">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-emerald-800/70 dark:text-emerald-300/80">Campus</p>
-        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-slate-950 dark:text-white">Life at GSU</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">Stay in the loop, find your people, and make campus life a little easier.</p>
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-brand/70 dark:text-brand/80">Campus</p>
+        <h1 className="mt-2 font-display text-3xl font-bold tracking-tight text-ink dark:text-white">Life at GSU</h1>
+        <p className="mt-3 text-sm leading-6 text-ink-body dark:text-ink-soft">Stay in the loop, find your people, and make campus life a little easier.</p>
       </header>
       <div className="grid gap-3 sm:grid-cols-3">
         <CountCard icon={Megaphone} label="Official notices" value={String(announcements.length)} hint="From campus and departments" />
@@ -366,13 +366,13 @@ function HubFeature({
     <button
       type="button"
       onClick={onClick}
-      className="group flex min-h-[184px] flex-col rounded-2xl border border-slate-200/80 bg-white p-5 text-left transition-all hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-lg hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-700 focus-visible:ring-offset-2 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-800 dark:focus-visible:ring-offset-slate-950"
+      className="group flex min-h-[184px] flex-col rounded-2xl border border-line/80 bg-surface p-5 text-left transition-all hover:-translate-y-0.5 hover:border-success-line hover:shadow-lg hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 dark:border-line dark:focus-visible:ring-offset-slate-950"
     >
-      <span className="grid h-10 w-10 place-items-center rounded-xl bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300"><Icon className="h-5 w-5" aria-hidden="true" /></span>
-      <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-800/70 dark:text-emerald-300/80">{eyebrow}</span>
-      <span className="mt-1 font-display text-lg font-bold text-slate-900 dark:text-slate-100">{title}</span>
-      <span className="mt-1 flex-1 text-sm leading-6 text-slate-600 dark:text-slate-300">{detail}</span>
-      <span className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-emerald-800 dark:text-emerald-300">{actionLabel}<ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" /></span>
+      <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-subtle text-brand dark:bg-brand-subtle/70"><Icon className="h-5 w-5" aria-hidden="true" /></span>
+      <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.14em] text-brand/70 dark:text-brand/80">{eyebrow}</span>
+      <span className="mt-1 font-display text-lg font-bold text-ink">{title}</span>
+      <span className="mt-1 flex-1 text-sm leading-6 text-ink-body dark:text-ink-soft">{detail}</span>
+      <span className="mt-4 inline-flex min-h-10 items-center gap-2 text-sm font-bold text-brand">{actionLabel}<ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" /></span>
     </button>
   );
 }

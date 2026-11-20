@@ -41,10 +41,10 @@ export function Stepper({ steps, current, onSelect, label, className = '' }: Ste
                   <span
                     className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold tabular-nums border shrink-0 ${
                       done
-                        ? 'bg-emerald-700 border-emerald-700 text-white'
+                        ? 'bg-brand border-brand text-on-brand'
                         : active
-                          ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
-                          : 'border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400'
+                          ? 'border-brand text-brand'
+                          : 'border-line text-ink-muted'
                     }`}
                   >
                     {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : i + 1}
@@ -52,10 +52,10 @@ export function Stepper({ steps, current, onSelect, label, className = '' }: Ste
                   <span
                     className={`text-xs font-semibold whitespace-nowrap ${
                       active
-                        ? 'text-slate-900 dark:text-slate-100'
+                        ? 'text-ink'
                         : done
-                          ? 'text-emerald-700 dark:text-emerald-400'
-                          : 'text-slate-500 dark:text-slate-400'
+                          ? 'text-brand'
+                          : 'text-ink-muted'
                     }`}
                   >
                     {step.label}
@@ -63,7 +63,7 @@ export function Stepper({ steps, current, onSelect, label, className = '' }: Ste
                 </button>
               </li>
               {i < steps.length - 1 && (
-                <li className="h-px flex-1 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+                <li className="h-px flex-1 bg-line" aria-hidden="true" />
               )}
             </React.Fragment>
           );
