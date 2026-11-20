@@ -249,7 +249,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </h3>
                 <RoleBadge role={roleValue} showStudent />
                 {statusValue === 'suspended' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-danger-line dark:bg-danger-bg/70 text-danger">
                     Suspended
                   </span>
                 )}
@@ -291,7 +291,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 type="button"
                 disabled={callingBusy || anyBlocked || statusValue === 'suspended'}
                 onClick={handleCallClick}
-                className="min-h-[60px] px-2 py-2.5 rounded-2xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-100 dark:hover:bg-sky-900/60 border border-sky-200/70 dark:border-sky-800/70 text-sky-800 dark:text-sky-300 flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-[60px] px-2 py-2.5 rounded-2xl bg-info-bg dark:bg-info-bg/50 hover:bg-info-line hover:bg-info/60 border border-info-line/70 dark:border-info/70 text-info flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Phone className="w-4 h-4" />
                 <span>{callingBusy ? 'Calling...' : 'Voice Call'}</span>
@@ -304,7 +304,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 className={`min-h-[60px] px-2 py-2.5 rounded-2xl border flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-60 ${
                   iBlocked
                     ? 'bg-brand hover:bg-brand-strong border-brand text-on-brand'
-                    : 'bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/70 border-red-200/70 dark:border-red-900/70 text-red-700 dark:text-red-300'
+                    : 'bg-danger-bg dark:bg-danger-bg/40 hover:bg-danger-line hover:bg-danger-bg/70 border-danger-line/70 dark:border-danger/70 text-danger'
                 }`}
               >
                 {iBlocked ? <UserCheck className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
@@ -314,8 +314,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           )}
 
           {anyBlocked && !isSelf && (
-            <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/70 px-3.5 py-2.5 text-xs text-amber-900 dark:text-amber-200 flex items-center gap-2">
-              <Ban className="w-4 h-4 shrink-0 text-amber-700 dark:text-amber-400" />
+            <div className="rounded-2xl bg-warn-bg dark:bg-warn-bg/40 border border-warn-line/80 dark:border-warn/70 px-3.5 py-2.5 text-xs text-warn dark:text-warn-line flex items-center gap-2">
+              <Ban className="w-4 h-4 shrink-0 text-warn" />
               <span>
                 {iBlocked
                   ? 'You blocked this member. Unblock them to resume messaging and voice calls.'
@@ -334,7 +334,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           )}
 
           {errorMsg && (
-            <div className="rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/70 px-3 py-2 text-xs text-red-800 dark:text-red-200">
+            <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
               {errorMsg}
             </div>
           )}
@@ -421,7 +421,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 className={`w-full min-h-[42px] px-3.5 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-60 ${
                   statusValue === 'suspended'
                     ? 'bg-brand hover:bg-brand-strong text-on-brand'
-                    : 'bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-950/80 border border-red-200 dark:border-red-900/70 text-red-700 dark:text-red-300'
+                    : 'bg-danger-bg dark:bg-danger-bg/50 hover:bg-danger-line hover:bg-danger-bg/80 border border-danger-line dark:border-danger/70 text-danger'
                 }`}
               >
                 {statusValue === 'suspended' ? (

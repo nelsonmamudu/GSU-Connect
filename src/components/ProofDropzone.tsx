@@ -97,7 +97,7 @@ export function ProofDropzone({
       onPaste={handlePaste}
       className={`rounded-2xl border bg-sunken/70 dark:bg-sunken/60 p-3.5 space-y-3 text-left transition-colors ${
         dragOver
-          ? 'border-brand ring-2 ring-emerald-600/20'
+          ? 'border-brand ring-2 ring-success/20'
           : 'border-line/80 dark:border-line'
       }`}
     >
@@ -150,7 +150,7 @@ export function ProofDropzone({
               variant="ghost"
               size="sm"
               onClick={remove}
-              className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 hover:text-red-700 dark:hover:text-red-300 px-2"
+              className="text-danger hover:bg-danger-bg hover:bg-danger-bg/40 hover:text-danger hover:text-danger px-2"
             >
               <X className="w-3.5 h-3.5" />
               <span>Remove</span>
@@ -186,7 +186,7 @@ export function ProofDropzone({
         <p className="text-[11px] text-ink-muted leading-relaxed">{note}</p>
       )}
       {error && (
-        <p id="proof-error" className="text-xs font-medium text-red-600 dark:text-red-400">
+        <p id="proof-error" className="text-xs font-medium text-danger">
           {error}
         </p>
       )}

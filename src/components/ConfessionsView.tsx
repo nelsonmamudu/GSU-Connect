@@ -300,7 +300,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               >
                 <span>Moderation Queue</span>
                 {pendingQueue.length > 0 && (
-                  <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-amber-600 text-white text-[10px] font-bold tabular-nums flex items-center justify-center">
+                  <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-warn text-white text-[10px] font-bold tabular-nums flex items-center justify-center">
                     {pendingQueue.length}
                   </span>
                 )}
@@ -394,13 +394,13 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
       </div>
 
       {bannerError && (
-        <div className="rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 px-4 py-3 text-xs text-rose-800 dark:text-rose-200 flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger dark:text-danger-line flex items-center justify-between gap-2">
           <span>{bannerError}</span>
           <button
             type="button"
             onClick={() => setBannerError(null)}
             aria-label="Dismiss error"
-            className="text-rose-600 hover:text-rose-800 cursor-pointer"
+            className="text-danger hover:text-danger cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -469,8 +469,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                             post.status === 'approved'
                               ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/80'
                               : post.status === 'rejected'
-                                ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
-                                : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
+                                ? 'bg-danger-line text-danger dark:bg-danger-bg/80'
+                                : 'bg-warn-line text-warn dark:bg-warn-bg/80'
                           }`}
                         >
                           {post.status}
@@ -501,7 +501,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                     </button>
                   ) : (
                     <span className="text-[11px] text-ink-muted inline-flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5 text-amber-600" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-warn" />
                       <span>
                         {post.status === 'pending'
                           ? 'Awaiting moderator approval'
@@ -526,7 +526,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                           type="button"
                           disabled={moderatingId === post.id}
                           onClick={() => handleModerate(post.id, 'rejected')}
-                          className="min-h-[36px] px-3 rounded-xl border border-rose-200 dark:border-rose-900/70 text-rose-700 dark:text-rose-300 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                          className="min-h-[36px] px-3 rounded-xl border border-danger-line dark:border-danger/70 text-danger hover:bg-danger-bg hover:bg-danger-bg/40 text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
                         >
                           <X className="w-3.5 h-3.5" />
                           <span>Reject</span>
@@ -560,7 +560,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                             type="button"
                             disabled={deletingId === post.id}
                             onClick={() => handleDelete(post.id)}
-                            className="min-h-[36px] px-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer"
+                            className="min-h-[36px] px-2.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
                           >
                             {deletingId === post.id ? '...' : 'Confirm'}
                           </button>
@@ -577,7 +577,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                           type="button"
                           onClick={() => setConfirmDeleteId(post.id)}
                           aria-label="Delete confession"
-                          className="min-w-[36px] min-h-[36px] rounded-xl border border-line hover:bg-rose-50 dark:hover:bg-rose-950/40 text-ink-muted hover:text-rose-600 flex items-center justify-center cursor-pointer"
+                          className="min-w-[36px] min-h-[36px] rounded-xl border border-line hover:bg-danger-bg hover:bg-danger-bg/40 text-ink-muted hover:text-danger flex items-center justify-center cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -698,7 +698,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
             </p>
 
             {formError && (
-              <div className="rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/70 px-3 py-2 text-xs text-rose-800 dark:text-rose-200">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
                 {formError}
               </div>
             )}

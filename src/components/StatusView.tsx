@@ -509,7 +509,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               roundedClass="rounded-full"
               className={`w-12 h-12 ${
                 myStatuses.length > 0
-                  ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900'
+                  ? 'ring-2 ring-success ring-offset-2 ring-offset-white dark:ring-offset-slate-900'
                   : ''
               }`}
               fallbackClassName={
@@ -624,7 +624,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     avatarId={userMap.get(group.authorId)?.avatarId}
                     size="lg"
                     roundedClass="rounded-full"
-                    className="ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
+                    className="ring-2 ring-success ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
                     fallbackClassName="bg-brand text-on-brand"
                   />
                   <div className="flex-1 min-w-0">
@@ -772,7 +772,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
             </div>
 
             {composeError && (
-              <div className="p-3 rounded-2xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900 text-xs text-red-700 dark:text-red-300">
+              <div className="p-3 rounded-2xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger text-xs text-danger">
                 {composeError}
               </div>
             )}
@@ -808,7 +808,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                           title={swatch.label}
                           className={`w-7 h-7 rounded-full transition-transform cursor-pointer ${
                             bgColor === swatch.hex
-                              ? 'ring-2 ring-offset-2 ring-emerald-600 dark:ring-offset-slate-900 scale-110'
+                              ? 'ring-2 ring-offset-2 ring-success dark:ring-offset-slate-900 scale-110'
                               : 'hover:scale-105'
                           }`}
                           style={{ backgroundColor: swatch.hex }}
@@ -937,7 +937,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                         type="button"
                         disabled={deletingBusy}
                         onClick={handleDeleteActiveSlide}
-                        className="min-h-[34px] px-2.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer"
+                        className="min-h-[34px] px-2.5 rounded-full bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
                       >
                         {deletingBusy ? '...' : 'Confirm'}
                       </button>
@@ -955,7 +955,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                       disabled={deletingBusy}
                       onClick={() => setConfirmDeleteSlide(true)}
                       aria-label="Delete status update"
-                      className="min-w-[38px] min-h-[38px] rounded-full hover:bg-red-500/20 text-red-300 flex items-center justify-center cursor-pointer"
+                      className="min-w-[38px] min-h-[38px] rounded-full hover:bg-danger/20 text-danger flex items-center justify-center cursor-pointer"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -975,7 +975,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               </div>
             </div>
             {viewerError && (
-              <div className="rounded-xl bg-rose-950/90 border border-rose-700/80 px-3 py-2 text-xs text-rose-100 text-center">
+              <div className="rounded-xl bg-danger-bg/90 border border-danger/80 px-3 py-2 text-xs text-danger-line text-center">
                 {viewerError}
               </div>
             )}
@@ -1046,7 +1046,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 onClick={() => setViewersDrawerOpen((prev) => !prev)}
                 className="min-h-[40px] px-4 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors cursor-pointer"
               >
-                <Eye className="w-4 h-4 text-emerald-400" />
+                <Eye className="w-4 h-4 text-success" />
                 <span>
                   {activeSlideViewers.length}{' '}
                   {activeSlideViewers.length === 1 ? 'view' : 'views'}

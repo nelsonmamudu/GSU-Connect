@@ -61,13 +61,13 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
       case 'poll':
         return <BarChart3 className="w-3.5 h-3.5 text-brand shrink-0" />;
       case 'image':
-        return <ImageIcon className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400 shrink-0" />;
+        return <ImageIcon className="w-3.5 h-3.5 text-info shrink-0" />;
       case 'document':
-        return <FileText className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 shrink-0" />;
+        return <FileText className="w-3.5 h-3.5 text-info shrink-0" />;
       case 'event':
-        return <CalendarDays className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />;
+        return <CalendarDays className="w-3.5 h-3.5 text-warn shrink-0" />;
       case 'contact':
-        return <Contact className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400 shrink-0" />;
+        return <Contact className="w-3.5 h-3.5 text-info shrink-0" />;
       default:
         return null;
     }
@@ -83,7 +83,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
       <div className="w-full sm:max-w-lg max-h-[88dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
         <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-9 h-9 rounded-2xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <div className="w-9 h-9 rounded-2xl bg-warn-bg dark:bg-warn-bg/60 text-warn flex items-center justify-center shrink-0">
               <Star className="w-4 h-4 fill-current" />
             </div>
             <div className="min-w-0">
@@ -174,7 +174,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
                     onClick={() => handleUnstar(item.messageId)}
                     title="Remove from Starred Messages"
                     aria-label="Remove star"
-                    className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-950/50 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+                    className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-warn hover:bg-warn-bg hover:bg-warn-bg/50 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
                   >
                     <Star className="w-4 h-4 fill-current" />
                   </button>

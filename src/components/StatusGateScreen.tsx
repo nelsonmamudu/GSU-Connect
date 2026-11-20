@@ -479,8 +479,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
       : Clock;
   const iconTone =
     isSuspended || isRejected
-      ? 'bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300'
-      : 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300';
+      ? 'bg-danger-bg dark:bg-danger-bg/60 text-danger dark:text-danger'
+      : 'bg-warn-bg dark:bg-warn-bg/60 text-warn dark:text-warn';
 
   const title = isSuspended
     ? 'Account Suspended'
@@ -522,7 +522,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         </div>
 
         {isPending && !isLecturerRequest && hasIdCard === false && (
-          <p role="status" className="rounded-xl bg-amber-50 p-3 font-semibold text-amber-900">Upload proof to enter the review queue.</p>
+          <p role="status" className="rounded-xl bg-warn-bg p-3 font-semibold text-warn">Upload proof to enter the review queue.</p>
         )}
         {isPending && (
           <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line px-4 py-3.5 text-left space-y-3">

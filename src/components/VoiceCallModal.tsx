@@ -686,7 +686,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
 
       <div className="w-full max-w-sm rounded-3xl bg-slate-900 border border-slate-800 p-7 text-center text-white shadow-2xl space-y-6">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-emerald-400">
+          <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-success">
             <PhoneIncoming className="w-3.5 h-3.5" />
             <span>GSU Connect Voice</span>
           </div>
@@ -697,9 +697,9 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
           <div
             className={`relative rounded-full p-1.5 ${
               liveCall.status === 'ringing'
-                ? 'ring-4 ring-emerald-500/40 animate-pulse'
+                ? 'ring-4 ring-success/40 animate-pulse'
                 : liveCall.status === 'accepted'
-                  ? 'ring-4 ring-emerald-500/60'
+                  ? 'ring-4 ring-success/60'
                   : 'ring-2 ring-slate-700'
             }`}
           >
@@ -730,7 +730,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               </p>
             )}
             <div className="pt-1.5 space-y-0.5">
-              <p className="text-sm font-semibold text-emerald-400">
+              <p className="text-sm font-semibold text-success">
                 {connectionLabel}
               </p>
               {liveCall.status === 'accepted' && (
@@ -739,7 +739,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 </p>
               )}
               {liveCall.status === 'accepted' && muted && (
-                <p className="text-[11px] font-semibold text-amber-300">
+                <p className="text-[11px] font-semibold text-warn">
                   Microphone muted
                 </p>
               )}
@@ -753,19 +753,19 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
         </div>
 
         {ringtoneNeedsTap && !isCaller && liveCall.status === 'ringing' && (
-          <p className="text-[11px] text-emerald-300/90 bg-emerald-950/60 border border-brand/60 rounded-xl px-3 py-1.5">
+          <p className="text-[11px] text-success/90 bg-success-bg/60 border border-brand/60 rounded-xl px-3 py-1.5">
             Tap anywhere to hear incoming ringtone
           </p>
         )}
 
         {micWarning && (
-          <p className="text-[11px] text-amber-300 bg-amber-950/60 border border-amber-800/60 rounded-xl px-3 py-2">
+          <p className="text-[11px] text-warn bg-warn-bg/60 border border-warn/60 rounded-xl px-3 py-2">
             {micWarning}
           </p>
         )}
 
         {rtcConnectionState === 'failed' && (
-          <p className="text-[11px] text-rose-200 bg-rose-950/60 border border-rose-800/60 rounded-xl px-3 py-2">
+          <p className="text-[11px] text-danger-line bg-danger-bg/60 border border-danger/60 rounded-xl px-3 py-2">
             Audio connection failed. One of the networks may be blocking direct peer-to-peer calls.
           </p>
         )}
@@ -778,7 +778,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 disabled={accepting}
                 onClick={handleDeclineCall}
                 aria-label="Decline call"
-                className="w-15 h-15 rounded-full bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="w-15 h-15 rounded-full bg-danger hover:bg-danger disabled:opacity-60 text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
               >
                 <PhoneOff className="w-6 h-6" />
               </button>
@@ -795,7 +795,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               >
                 <Phone className="w-6 h-6" />
               </button>
-              <span className="text-xs font-medium text-emerald-300">
+              <span className="text-xs font-medium text-success">
                 {accepting ? 'Connecting...' : 'Accept'}
               </span>
             </div>
@@ -826,11 +826,11 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 type="button"
                 onClick={handleEndCall}
                 aria-label="End voice call"
-                className="w-14 h-14 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="w-14 h-14 rounded-full bg-danger hover:bg-danger text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
               >
                 <PhoneOff className="w-6 h-6" />
               </button>
-              <span className="text-[11px] font-medium text-red-300">End</span>
+              <span className="text-[11px] font-medium text-danger">End</span>
             </div>
 
             <div className="flex flex-col items-center gap-1.5">

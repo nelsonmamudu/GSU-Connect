@@ -22,15 +22,15 @@ export function PasswordStrengthMeter({
     !filled
       ? 'bg-sunken'
       : strength.score <= 1
-        ? 'bg-red-500'
+        ? 'bg-danger'
         : strength.score === 2
-          ? 'bg-amber-500'
+          ? 'bg-warn'
           : 'bg-brand';
   const labelTone =
     strength.score <= 1
-      ? 'text-red-600 dark:text-red-400'
+      ? 'text-danger'
       : strength.score === 2
-        ? 'text-amber-600 dark:text-amber-400'
+        ? 'text-warn'
         : 'text-brand';
 
   return (

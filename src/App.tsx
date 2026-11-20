@@ -900,7 +900,7 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line p-7 sm:p-8 space-y-6 text-center shadow-xs">
-          <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-400">
+          <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-danger-bg dark:bg-danger-bg/60 text-danger">
             <AlertTriangle className="w-8 h-8" />
           </div>
 
@@ -959,7 +959,7 @@ function MainApp() {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line p-7 sm:p-8 space-y-5 text-center shadow-xs">
-          <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400">
+          <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-warn-bg dark:bg-warn-bg/60 text-warn">
             <WifiOff className="w-8 h-8" />
           </div>
           <div className="space-y-2">
@@ -1213,7 +1213,7 @@ function MainApp() {
             className="w-9 h-9 rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken/70 dark:hover:bg-sunken hover:text-ink transition-colors shrink-0 cursor-pointer"
           >
             {theme === 'dark' ? (
-              <Sun className="w-4 h-4 text-amber-400" />
+              <Sun className="w-4 h-4 text-warn" />
             ) : (
               <Moon className="w-4 h-4" />
             )}
@@ -1263,9 +1263,9 @@ function MainApp() {
         {!isOnline && (
           <div
             role="status"
-            className="bg-amber-50 dark:bg-amber-950/60 border-b border-amber-200/80 dark:border-amber-900/70 text-amber-900 dark:text-amber-200 px-4 py-1.5 text-xs font-medium flex items-center justify-center gap-2"
+            className="bg-warn-bg dark:bg-warn-bg/60 border-b border-warn-line/80 dark:border-warn/70 text-warn dark:text-warn-line px-4 py-1.5 text-xs font-medium flex items-center justify-center gap-2"
           >
-            <WifiOff className="w-3.5 h-3.5 text-amber-700 dark:text-amber-400 shrink-0" />
+            <WifiOff className="w-3.5 h-3.5 text-warn shrink-0" />
             <span>Offline · Showing cached chats. Messages will send when you reconnect.</span>
           </div>
         )}
@@ -1280,17 +1280,17 @@ function MainApp() {
           return (
             <div
               role="status"
-              className="bg-amber-50 dark:bg-amber-950/70 border-b border-amber-200 dark:border-amber-800/80 text-amber-950 dark:text-amber-100 px-4 py-2.5 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5"
+              className="bg-warn-bg dark:bg-warn-bg/70 border-b border-warn-line dark:border-warn/80 text-warn-bg dark:text-warn-line px-4 py-2.5 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5"
             >
               <div className="flex items-start sm:items-center gap-2 min-w-0">
-                <AlertTriangle className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5 sm:mt-0" />
+                <AlertTriangle className="w-4 h-4 text-warn shrink-0 mt-0.5 sm:mt-0" />
                 <div className="space-y-0.5 min-w-0">
                   <p className="font-semibold leading-snug">
                     Your Alumni account needs verification. Verify within {daysRemaining}{' '}
                     {daysRemaining === 1 ? 'day' : 'days'} to keep access.
                   </p>
                   {verifyAlumniError && (
-                    <p className="text-[11px] text-rose-700 dark:text-rose-300 font-medium">
+                    <p className="text-[11px] text-danger font-medium">
                       {verifyAlumniError}
                     </p>
                   )}
@@ -1320,7 +1320,7 @@ function MainApp() {
                 <span className="font-bold">
                   {radarToast.chatName} · {radarToast.statusLabel}:
                 </span>{' '}
-                <span className="text-emerald-100">{radarToast.detail}</span>
+                <span className="text-success-line">{radarToast.detail}</span>
               </p>
             </div>
             <div className="flex items-center gap-1.5 shrink-0">
@@ -1351,7 +1351,7 @@ function MainApp() {
         {workspaceError && (
           <div
             role="alert"
-            className="bg-red-50 dark:bg-red-950/60 border-b border-red-200/80 dark:border-red-900/70 text-red-800 dark:text-red-200 px-4 py-2 text-xs font-medium flex items-center justify-between gap-3"
+            className="bg-danger-bg dark:bg-danger-bg/60 border-b border-danger-line/80 dark:border-danger/70 text-danger dark:text-danger-line px-4 py-2 text-xs font-medium flex items-center justify-between gap-3"
           >
             <span className="truncate">{workspaceError}</span>
             <div className="flex items-center gap-1.5 shrink-0">
@@ -1361,7 +1361,7 @@ function MainApp() {
                   setWorkspaceError(null);
                   workspaceHandleRef.current?.retryAll();
                 }}
-                className="min-h-[28px] px-2.5 rounded-lg bg-red-700 hover:bg-red-800 text-white font-semibold text-[11px] cursor-pointer"
+                className="min-h-[28px] px-2.5 rounded-lg bg-danger hover:bg-danger text-white font-semibold text-[11px] cursor-pointer"
               >
                 Retry
               </button>
@@ -1369,7 +1369,7 @@ function MainApp() {
                 type="button"
                 onClick={() => setWorkspaceError(null)}
                 aria-label="Dismiss workspace error"
-                className="w-7 h-7 rounded-lg hover:bg-red-200/60 dark:hover:bg-red-900/60 flex items-center justify-center cursor-pointer"
+                className="w-7 h-7 rounded-lg hover:bg-danger-line/60 hover:bg-danger/60 flex items-center justify-center cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -1921,7 +1921,7 @@ function MainApp() {
               >
                 <span className="flex items-center gap-2.5">
                   {theme === 'dark' ? (
-                    <Sun className="w-4 h-4 text-amber-400" />
+                    <Sun className="w-4 h-4 text-warn" />
                   ) : (
                     <Moon className="w-4 h-4 text-ink-muted" />
                   )}

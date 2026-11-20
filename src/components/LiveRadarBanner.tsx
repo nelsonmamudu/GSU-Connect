@@ -54,20 +54,20 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
 
     const paletteClass =
       status === 'class_cancelled'
-        ? 'border-red-200 dark:border-red-900/60 bg-red-50/90 dark:bg-red-950/40'
+        ? 'border-danger-line dark:border-danger/60 bg-danger-bg/90 dark:bg-danger-bg/40'
         : status === 'venue_changed'
-          ? 'border-amber-200 dark:border-amber-900/60 bg-amber-50/90 dark:bg-amber-950/35'
+          ? 'border-warn-line dark:border-warn/60 bg-warn-bg/90 dark:bg-warn-bg/35'
           : status === 'exam_countdown'
-            ? 'border-indigo-200 dark:border-indigo-900/60 bg-indigo-50/90 dark:bg-indigo-950/35'
+            ? 'border-info-line dark:border-info/60 bg-info-bg/90 dark:bg-info-bg/35'
             : 'border-success-line dark:border-success-line/60 bg-brand-subtle/90 dark:bg-brand-subtle/35';
 
     const badgeClass =
       status === 'class_cancelled'
-        ? 'bg-red-600 text-white'
+        ? 'bg-danger text-white'
         : status === 'venue_changed'
-          ? 'bg-amber-600 text-white'
+          ? 'bg-warn text-white'
           : status === 'exam_countdown'
-            ? 'bg-indigo-600 text-white'
+            ? 'bg-info text-white'
             : 'bg-brand text-on-brand';
 
     return (
@@ -102,7 +102,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
 
             {(chat.radarExamTitle || countdown) && (
               <div className="flex flex-wrap items-center gap-2 pt-0.5 text-xs">
-                <span className="inline-flex items-center gap-1 font-semibold text-indigo-800 dark:text-indigo-300">
+                <span className="inline-flex items-center gap-1 font-semibold text-info">
                   <Timer className="w-3.5 h-3.5 shrink-0" />
                   <span>{chat.radarExamTitle || 'Upcoming Exam'}</span>
                 </span>
@@ -110,7 +110,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
                   <span
                     className={`px-2 py-0.5 rounded-lg font-mono text-[11px] font-bold tabular-nums ${
                       countdown.expired
-                        ? 'bg-rose-600 text-white'
+                        ? 'bg-danger text-white'
                         : 'bg-slate-900 dark:bg-sunken text-white'
                     }`}
                   >
@@ -141,7 +141,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
                       await onClear();
                       setConfirmingClear(false);
                     }}
-                    className="min-h-[32px] px-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-semibold cursor-pointer"
+                    className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger text-white text-[11px] font-semibold cursor-pointer"
                   >
                     {radarSaving ? '...' : 'Clear'}
                   </button>
@@ -169,7 +169,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
                     onClick={() => setConfirmingClear(true)}
                     aria-label="Clear active radar"
                     title="Clear live radar"
-                    className="min-w-[32px] min-h-[32px] rounded-lg flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-white/80 dark:hover:bg-sunken/80 cursor-pointer"
+                    className="min-w-[32px] min-h-[32px] rounded-lg flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-white/80 dark:hover:bg-sunken/80 cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>

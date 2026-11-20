@@ -490,12 +490,12 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
       </div>
 
       {actionError && (
-        <div className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 px-4 py-3 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger flex items-center justify-between gap-2">
           <span>{actionError}</span>
           <button
             type="button"
             onClick={() => setActionError(null)}
-            className="text-red-500 hover:text-red-700 cursor-pointer"
+            className="text-danger hover:text-danger cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -695,7 +695,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                               type="button"
                               onClick={() => handleDelete(item)}
                               disabled={isBusy}
-                              className="min-h-[42px] px-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer"
+                              className="min-h-[42px] px-2.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
                             >
                               {isBusy ? '...' : 'Delete'}
                             </button>
@@ -714,7 +714,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                             disabled={isBusy}
                             aria-label={`Delete ${item.title}`}
                             title="Delete listing"
-                            className="min-w-[42px] min-h-[42px] rounded-xl border border-line text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 inline-flex items-center justify-center cursor-pointer"
+                            className="min-w-[42px] min-h-[42px] rounded-xl border border-line text-ink-muted hover:text-danger hover:text-danger hover:border-danger-line hover:border-danger inline-flex items-center justify-center cursor-pointer"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -764,7 +764,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
             </div>
 
             {formError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 p-3 text-xs text-danger">
                 {formError}
               </div>
             )}

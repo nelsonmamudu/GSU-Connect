@@ -301,14 +301,14 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
       {actionError && (
         <div
           role="alert"
-          className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-4 py-2.5 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2"
+          className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 px-4 py-2.5 text-xs text-danger flex items-center justify-between gap-2"
         >
           <span>{actionError}</span>
           <button
             type="button"
             onClick={() => setActionError(null)}
             aria-label="Dismiss error"
-            className="text-red-500 hover:text-red-700 dark:hover:text-red-200 cursor-pointer"
+            className="text-danger hover:text-danger hover:text-danger-line cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -442,7 +442,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                         setMyCourses((prev) => prev.filter((c) => c !== course))
                       }
                       aria-label={`Remove ${course}`}
-                      className="hover:text-rose-600 cursor-pointer"
+                      className="hover:text-danger cursor-pointer"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -702,7 +702,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                       );
                     })}
                     {person.studySpot && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 text-[11px] font-semibold">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-warn-bg dark:bg-warn-bg/50 text-warn text-[11px] font-semibold">
                         <MapPin className="w-3 h-3" />
                         <span>{person.studySpot}</span>
                       </span>

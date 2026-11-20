@@ -62,13 +62,13 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   if (gpa >= 3.5) {
     return {
       label: 'Second Class Upper (2:1)',
-      toneClass: 'bg-teal-100 text-teal-800 dark:bg-teal-950/80 dark:text-teal-300',
+      toneClass: 'bg-success-line text-success dark:bg-success-bg/80',
     };
   }
   if (gpa >= 2.5) {
     return {
       label: 'Second Class Lower (2:2)',
-      toneClass: 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300',
+      toneClass: 'bg-warn-line text-warn dark:bg-warn-bg/80',
     };
   }
   if (gpa >= 1.5) {
@@ -85,7 +85,7 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   }
   return {
     label: 'Below Pass',
-    toneClass: 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300',
+    toneClass: 'bg-danger-line text-danger dark:bg-danger-bg/80',
   };
 }
 
@@ -384,7 +384,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
 
           <div className="rounded-2xl bg-sunken dark:bg-sunken/70 p-3.5 border border-line flex flex-col justify-between">
             <p className="text-[11px] font-semibold uppercase tracking-wider text-ink-muted flex items-center gap-1">
-              <Award className="w-3.5 h-3.5 text-amber-500" />
+              <Award className="w-3.5 h-3.5 text-warn" />
               <span>Based on what you&apos;ve entered</span>
             </p>
             <div className="mt-2">
@@ -451,12 +451,12 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               placeholder="0.00"
               className={`w-full min-h-[40px] px-3 rounded-xl border bg-sunken dark:bg-sunken text-sm text-ink dark:text-ink tabular-nums focus:outline-none ${
                 gpaMetrics.priorCgpaInvalid
-                  ? 'border-rose-400 dark:border-rose-600 focus:border-rose-500'
+                  ? 'border-danger focus:border-danger'
                   : 'border-line focus:border-brand'
               }`}
             />
             {gpaMetrics.priorCgpaInvalid && (
-              <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">
+              <p className="text-[11px] text-danger mt-1">
                 Enter a value between 0.00 and 5.00.
               </p>
             )}
@@ -583,7 +583,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                         }
                         title={`Points: ${rowPts}`}
                         aria-label={`Remove course ${course.code || idx + 1}`}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-muted hover:text-danger hover:bg-danger-bg hover:bg-danger-bg/40 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -660,12 +660,12 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 }
                 className={`w-full min-h-[38px] px-3 rounded-xl border bg-white dark:bg-surface text-xs font-semibold text-ink dark:text-ink tabular-nums focus:outline-none ${
                   gpaMetrics.upcomingUnitsInvalid
-                    ? 'border-rose-400 dark:border-rose-600 focus:border-rose-500'
+                    ? 'border-danger focus:border-danger'
                     : 'border-line focus:border-brand'
                 }`}
               />
               {gpaMetrics.upcomingUnitsInvalid && (
-                <p className="text-[11px] text-rose-600 dark:text-rose-400 mt-1">
+                <p className="text-[11px] text-danger mt-1">
                   Must be between 1 and 200 units.
                 </p>
               )}
@@ -678,7 +678,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 </p>
               ) : gpaMetrics.requiredAvg > 5 ? (
                 <div className="space-y-0.5">
-                  <p className="text-xs font-bold text-amber-700 dark:text-amber-300">
+                  <p className="text-xs font-bold text-warn">
                     Needs {gpaMetrics.requiredAvg.toFixed(2)} GPA over next {gpaMetrics.upcomingU} units
                   </p>
                   <p className="text-[11px] text-ink-muted">

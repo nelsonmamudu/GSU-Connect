@@ -189,14 +189,14 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
         <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-white/10" />
         <div className="pointer-events-none absolute -right-2 -top-6 h-40 w-40 rounded-full border border-white/10" />
         <div className="relative max-w-2xl">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide text-emerald-100/80">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold tracking-wide text-success-line/80">
             <span className="h-1.5 w-1.5 rounded-full bg-lime-300" />
             GOMBE STATE UNIVERSITY · {dateLabel.toUpperCase()}
           </p>
           <h1 className="mt-5 font-display text-3xl font-bold tracking-tight sm:text-4xl">
             {greeting}, {currentUser.fullName.split(' ')[0]}.
           </h1>
-          <p className="mt-3 max-w-lg text-sm leading-6 text-emerald-50/80 sm:text-base">
+          <p className="mt-3 max-w-lg text-sm leading-6 text-success-bg/80 sm:text-base">
             Your campus day, at a glance. Pick up where you left off or see what is coming up.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">

@@ -232,7 +232,7 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
 
         <div
           className={`flex items-center justify-between gap-2 text-[11px] font-mono tabular-nums ${
-            inverted ? 'text-emerald-100' : 'text-ink-muted'
+            inverted ? 'text-success-line' : 'text-ink-muted'
           }`}
         >
           <span className="inline-flex items-center gap-1 truncate">

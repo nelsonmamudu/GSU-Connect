@@ -42,19 +42,19 @@ const EVENT_TYPE_STYLES: Record<
   { card: string; dot: string; label: string }
 > = {
   exam: {
-    card: 'bg-rose-50/70 dark:bg-rose-950/25 border-rose-200/90 dark:border-rose-900/70',
-    dot: 'bg-rose-600 dark:bg-rose-400',
-    label: 'text-rose-700 dark:text-rose-300',
+    card: 'bg-danger-bg/70 dark:bg-danger-bg/25 border-danger-line/90 dark:border-danger/70',
+    dot: 'bg-danger',
+    label: 'text-danger',
   },
   seminar: {
-    card: 'bg-indigo-50/60 dark:bg-indigo-950/25 border-indigo-200/90 dark:border-indigo-900/70',
-    dot: 'bg-indigo-600 dark:bg-indigo-400',
-    label: 'text-indigo-700 dark:text-indigo-300',
+    card: 'bg-info-bg/60 dark:bg-info-bg/25 border-info-line/90 dark:border-info/70',
+    dot: 'bg-info',
+    label: 'text-info',
   },
   deadline: {
-    card: 'bg-amber-50/70 dark:bg-amber-950/25 border-amber-200/90 dark:border-amber-900/70',
-    dot: 'bg-amber-600 dark:bg-amber-400',
-    label: 'text-amber-700 dark:text-amber-300',
+    card: 'bg-warn-bg/70 dark:bg-warn-bg/25 border-warn-line/90 dark:border-warn/70',
+    dot: 'bg-warn',
+    label: 'text-warn',
   },
   campus_event: {
     card: 'bg-brand-subtle/60 dark:bg-brand-subtle/25 border-success-line/90 dark:border-success-line/70',
@@ -317,7 +317,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('exams')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'exams'
-                  ? 'bg-white dark:bg-surface text-rose-700 dark:text-rose-300 shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-danger shadow-2xs'
                   : 'text-ink-body dark:text-ink-soft'
               }`}
             >
@@ -391,12 +391,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       </div>
 
       {bannerError && (
-        <div className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 px-4 py-3 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger flex items-center justify-between gap-2">
           <span>{bannerError}</span>
           <button
             type="button"
             onClick={() => setBannerError(null)}
-            className="text-red-500 hover:text-red-700 cursor-pointer"
+            className="text-danger hover:text-danger cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -434,7 +434,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                           relTag === 'Today'
                             ? 'font-bold text-brand'
                             : relTag === 'Tomorrow'
-                              ? 'font-semibold text-indigo-700 dark:text-indigo-300'
+                              ? 'font-semibold text-info'
                               : relTag === 'Past'
                                 ? 'font-medium text-ink-muted'
                                 : 'font-medium text-ink-muted'
@@ -523,7 +523,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                       type="button"
                                       onClick={() => handleDelete(ev)}
                                       disabled={busyId === ev.id}
-                                      className="min-h-[32px] px-2 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-semibold cursor-pointer"
+                                      className="min-h-[32px] px-2 rounded-lg bg-danger hover:bg-danger text-white text-[11px] font-semibold cursor-pointer"
                                     >
                                       {busyId === ev.id ? '...' : 'Confirm'}
                                     </button>
@@ -542,7 +542,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                     disabled={busyId === ev.id}
                                     aria-label={`Delete ${ev.title}`}
                                     title="Delete entry"
-                                    className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-white/70 dark:hover:bg-sunken/70 cursor-pointer"
+                                    className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-white/70 dark:hover:bg-sunken/70 cursor-pointer"
                                   >
                                     <Trash2 className="w-4 h-4" />
                                   </button>
@@ -624,7 +624,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
             </div>
 
             {formError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 p-3 text-xs text-danger">
                 {formError}
               </div>
             )}

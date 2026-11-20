@@ -853,14 +853,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {adminError && (
         <div
           role="alert"
-          className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-4 py-2.5 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2"
+          className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 px-4 py-2.5 text-xs text-danger flex items-center justify-between gap-2"
         >
           <span>{adminError}</span>
           <button
             type="button"
             onClick={() => setAdminError(null)}
             aria-label="Dismiss admin error"
-            className="text-red-500 hover:text-red-700 dark:hover:text-red-200 cursor-pointer"
+            className="text-danger hover:text-danger hover:text-danger-line cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -998,8 +998,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         roundedClass="rounded-2xl"
                         fallbackClassName={
                           isLecturerReq
-                            ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300'
-                            : 'bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300'
+                            ? 'bg-info-bg dark:bg-info-bg/60 text-info'
+                            : 'bg-warn-bg dark:bg-warn-bg/60 text-warn'
                         }
                       />
                       <div className="min-w-0 flex-1 space-y-1">
@@ -1100,7 +1100,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     {confirmId === user.uid ? (
                       <div className="rounded-xl border border-success-line dark:border-success-line/70 p-3 space-y-2">
                         {!isLecturerReq && levelDifference(user.level,selectedLevel(user)) && (
-                          <p className="text-sm font-medium text-amber-700">
+                          <p className="text-sm font-medium text-warn">
                             {levelDifference(user.level,selectedLevel(user))}
                           </p>
                         )}
@@ -1223,7 +1223,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       <span
                         className={`text-xs font-semibold capitalize shrink-0 ${
                           isOpen
-                            ? 'text-amber-700 dark:text-amber-400'
+                            ? 'text-warn'
                             : report.status === 'resolved'
                               ? 'text-brand'
                               : 'text-ink-muted'
@@ -1249,7 +1249,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           type="button"
                           disabled={busyId === report.id}
                           onClick={() => handleDeleteReportedMessage(report)}
-                          className="min-h-[42px] px-3.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 dark:hover:bg-amber-900/60 text-amber-900 dark:text-amber-200 text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                          className="min-h-[42px] px-3.5 rounded-xl bg-warn-bg dark:bg-warn-bg/60 hover:bg-warn-line hover:bg-warn/60 text-warn dark:text-warn-line text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                           <span>Delete Message</span>
@@ -1259,7 +1259,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             type="button"
                             disabled={busyId === report.id}
                             onClick={() => handleSuspendReportedUser(report)}
-                            className="min-h-[42px] px-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                            className="min-h-[42px] px-3.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                           >
                             <Ban className="w-4 h-4" />
                             <span>Suspend User</span>
@@ -1335,14 +1335,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
           {userError && (
             <div
               role="alert"
-              className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-4 py-2.5 text-xs text-red-700 dark:text-red-300 font-medium flex items-center justify-between gap-2"
+              className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 px-4 py-2.5 text-xs text-danger font-medium flex items-center justify-between gap-2"
             >
               <span>{userError}</span>
               <button
                 type="button"
                 onClick={() => setUserError(null)}
                 aria-label="Dismiss user error"
-                className="text-red-500 hover:text-red-700 dark:hover:text-red-200 cursor-pointer shrink-0"
+                className="text-danger hover:text-danger hover:text-danger-line cursor-pointer shrink-0"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -1390,7 +1390,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         </span>
                         <RoleBadge role={user.role} showStudent />
                         {user.is_alumni && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200/70 dark:border-indigo-800/70">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-info-bg dark:bg-info-bg/60 text-info border border-info-line/70 dark:border-info/70">
                             <Award className="w-3 h-3" />
                             <span>Alumni</span>
                           </span>
@@ -1401,17 +1401,17 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           </span>
                         )}
                         {verifyPending && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200/70 dark:border-amber-800/70">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-warn-bg dark:bg-warn-bg/60 text-warn border border-warn-line/70 dark:border-warn/70">
                             Verify pending
                           </span>
                         )}
                         {expired && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200/70 dark:border-rose-800/70">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[11px] font-semibold bg-danger-bg dark:bg-danger-bg/60 text-danger border border-danger-line/70 dark:border-danger/70">
                             Expired
                           </span>
                         )}
                         {isSuspended && (
-                          <span className="text-xs font-semibold text-red-700 dark:text-red-400">
+                          <span className="text-xs font-semibold text-danger">
                             Suspended
                           </span>
                         )}
@@ -1473,7 +1473,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           className={`min-h-[42px] px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
                             isSuspended
                               ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
-                              : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/60'
+                              : 'bg-danger-bg dark:bg-danger-bg/50 text-danger hover:bg-danger-line hover:bg-danger/60'
                           }`}
                         >
                           {isSuspended ? (
@@ -1522,7 +1522,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           type="button"
                           disabled={busyId === user.uid}
                           onClick={() => setExpireTarget(user)}
-                          className="min-h-[36px] px-3 rounded-xl border border-rose-200 dark:border-rose-900/70 bg-rose-50/70 dark:bg-rose-950/40 hover:bg-rose-100 dark:hover:bg-rose-900/50 text-rose-700 dark:text-rose-300 text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
+                          className="min-h-[36px] px-3 rounded-xl border border-danger-line dark:border-danger/70 bg-danger-bg/70 dark:bg-danger-bg/40 hover:bg-danger-line hover:bg-danger/50 text-danger text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60"
                         >
                           <Clock className="w-3.5 h-3.5" />
                           <span>Expire account</span>
@@ -1657,18 +1657,18 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           disabled={busyId === group.id}
                           onClick={() => setConfirmDeleteGroupId(group.id)}
                           aria-label={`Delete ${group.name}`}
-                          className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                          className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-danger-bg hover:bg-danger-bg/40 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       )}
                       {group.type === 'custom' && confirmDeleteGroupId === group.id && (
-                        <div className="inline-flex items-center gap-1 bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-800/70 rounded-xl p-1">
+                        <div className="inline-flex items-center gap-1 bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 rounded-xl p-1">
                           <button
                             type="button"
                             disabled={busyId === group.id}
                             onClick={() => handleDeleteGroup(group)}
-                            className="min-h-[30px] px-2.5 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[30px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
                           >
                             {busyId === group.id ? 'Deleting...' : 'Confirm'}
                           </button>
@@ -1737,14 +1737,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
           {deptError && (
             <div
               role="alert"
-              className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-4 py-2.5 text-xs text-red-700 dark:text-red-300 font-medium flex items-center justify-between gap-2"
+              className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 px-4 py-2.5 text-xs text-danger font-medium flex items-center justify-between gap-2"
             >
               <span>{deptError}</span>
               <button
                 type="button"
                 onClick={() => setDeptError(null)}
                 aria-label="Dismiss department error"
-                className="text-red-500 hover:text-red-700 dark:hover:text-red-200 cursor-pointer shrink-0"
+                className="text-danger hover:text-danger hover:text-danger-line cursor-pointer shrink-0"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -1799,7 +1799,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         disabled={busyId === dept.id}
                         onClick={() => handleRequestDeleteDepartment(dept)}
                         aria-label={`Delete ${dept.name}`}
-                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-60"
+                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-danger-bg hover:bg-danger-bg/40 transition-colors cursor-pointer disabled:opacity-60"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -1862,7 +1862,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 className={`rounded-2xl px-3.5 py-2.5 text-xs font-medium ${
                   domainMessage.type === 'ok'
                     ? 'bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 text-brand'
-                    : 'bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 text-red-800 dark:text-red-300'
+                    : 'bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 text-danger'
                 }`}
               >
                 {domainMessage.text}
@@ -2038,7 +2038,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === rejectTarget.uid || !rejectionReasonInput.trim()}
                 onClick={() => handleDecision(rejectTarget, 'rejected', rejectionReasonInput)}
-                className="flex-1 min-h-[44px] rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
               >
                 {busyId === rejectTarget.uid ? 'Rejecting...' : 'Confirm Reject'}
               </button>
@@ -2086,7 +2086,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   Loading private verification file...
                 </p>
               ) : idCardModal.error ? (
-                <p className="text-xs text-red-600 dark:text-red-400 text-center">
+                <p className="text-xs text-danger text-center">
                   {idCardModal.error}
                 </p>
               ) : idCardModal.url ? (
@@ -2154,7 +2154,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === expireTarget.uid}
                 onClick={handleConfirmExpireUser}
-                className="flex-1 min-h-[44px] rounded-xl bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
               >
                 {busyId === expireTarget.uid ? 'Expiring...' : 'Expire Account'}
               </button>
@@ -2294,7 +2294,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === deleteDeptTarget.id}
                 onClick={handleConfirmDeleteDepartment}
-                className="flex-1 min-h-[44px] rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
               >
                 {busyId === deleteDeptTarget.id ? 'Removing...' : 'Delete Department'}
               </button>

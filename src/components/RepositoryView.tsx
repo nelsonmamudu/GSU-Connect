@@ -474,12 +474,12 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
       </div>
 
       {bannerError && (
-        <div className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 px-4 py-3 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger flex items-center justify-between gap-2">
           <span>{bannerError}</span>
           <button
             type="button"
             onClick={() => setBannerError(null)}
-            className="text-red-500 hover:text-red-700 cursor-pointer"
+            className="text-danger hover:text-danger cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -561,7 +561,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                             type="button"
                             onClick={() => handleDelete(item)}
                             disabled={deletingId === item.id}
-                            className="min-h-[32px] px-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
                           >
                             {deletingId === item.id ? 'Deleting...' : 'Confirm'}
                           </button>
@@ -580,7 +580,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                           disabled={deletingId === item.id}
                           aria-label={`Delete ${item.title}`}
                           title="Delete material"
-                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 shrink-0 cursor-pointer"
+                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-danger-bg hover:bg-danger-bg/40 shrink-0 cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -691,7 +691,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
             </div>
 
             {formError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 p-3 text-xs text-danger">
                 {formError}
               </div>
             )}

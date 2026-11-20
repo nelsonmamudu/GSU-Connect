@@ -363,13 +363,13 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
       </div>
 
       {bannerError && (
-        <div className="rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 px-4 py-3 text-xs text-rose-800 dark:text-rose-200 flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger dark:text-danger-line flex items-center justify-between gap-2">
           <span>{bannerError}</span>
           <button
             type="button"
             onClick={() => setBannerError(null)}
             aria-label="Dismiss error"
-            className="text-rose-600 hover:text-rose-800 cursor-pointer"
+            className="text-danger hover:text-danger cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -412,7 +412,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold ${
                           post.postType === 'ride'
                             ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/70'
-                            : 'bg-sky-50 text-sky-800 dark:bg-sky-950/70 dark:text-sky-300'
+                            : 'bg-info-bg text-info dark:bg-info-bg/70'
                         }`}
                       >
                         {post.postType === 'ride' ? (
@@ -427,7 +427,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-xl text-[11px] font-semibold ${
                           isFulfilled
                             ? 'bg-sunken text-ink-body dark:text-ink-muted'
-                            : 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
+                            : 'bg-warn-bg text-warn dark:bg-warn-bg/60'
                         }`}
                       >
                         {isFulfilled ? 'Fulfilled' : 'Open'}
@@ -580,7 +580,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                               type="button"
                               disabled={deletingId === post.id}
                               onClick={() => handleDelete(post.id)}
-                              className="min-h-[38px] px-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-semibold cursor-pointer"
+                              className="min-h-[38px] px-2.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
                             >
                               {deletingId === post.id ? '...' : 'Confirm'}
                             </button>
@@ -597,7 +597,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                             type="button"
                             onClick={() => setConfirmDeleteId(post.id)}
                             aria-label="Delete post"
-                            className="min-w-[38px] min-h-[38px] rounded-xl border border-line hover:bg-rose-50 dark:hover:bg-rose-950/40 text-ink-muted hover:text-rose-600 flex items-center justify-center cursor-pointer"
+                            className="min-w-[38px] min-h-[38px] rounded-xl border border-line hover:bg-danger-bg hover:bg-danger-bg/40 text-ink-muted hover:text-danger flex items-center justify-center cursor-pointer"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -680,7 +680,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   onClick={() => setPostType('errand')}
                   className={`min-h-[40px] rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
                     postType === 'errand'
-                      ? 'bg-white dark:bg-surface text-sky-800 dark:text-sky-300 shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-info shadow-2xs'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
@@ -829,7 +829,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
             </div>
 
             {formError && (
-              <div className="rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/70 px-3 py-2 text-xs text-rose-800 dark:text-rose-200">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
                 {formError}
               </div>
             )}

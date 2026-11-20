@@ -2153,7 +2153,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       part.toLowerCase() === trimmedInChatQuery ? (
         <mark
           key={`${keyPrefix}-${idx}`}
-          className="bg-amber-300/90 dark:bg-amber-400/40 text-ink dark:text-amber-50 rounded px-0.5 font-semibold"
+          className="bg-warn/90 dark:bg-warn/40 text-ink dark:text-warn-bg rounded px-0.5 font-semibold"
         >
           {part}
         </mark>
@@ -2306,7 +2306,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   ? 'bg-brand text-on-brand'
                   : chat.type === 'department'
                     ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
-                    : 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border border-teal-200/70 dark:border-teal-800/70'
+                    : 'bg-success-bg dark:bg-success-bg/60 text-success dark:text-success-line border border-success-line/70 dark:border-success/70'
               }`}
             >
               <Users className="w-5 h-5" />
@@ -2344,9 +2344,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   <span
                     className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide shrink-0 inline-flex items-center gap-1 ${
                       chat.radarStatus === 'class_cancelled'
-                        ? 'bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300'
+                        ? 'bg-danger-line dark:bg-danger-bg/70 text-danger'
                         : chat.radarStatus === 'venue_changed'
-                          ? 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300'
+                          ? 'bg-warn-line dark:bg-warn-bg/70 text-warn'
                           : 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
                     }`}
                   >
@@ -2518,12 +2518,12 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 onClick={() => setStarredModalOpen(true)}
                 aria-label={`Starred Messages (${starredMessages.length})`}
                 title="View Starred Messages"
-                className="min-h-[44px] px-3 rounded-2xl border border-line/80 dark:border-line bg-surface hover:border-amber-300 dark:hover:border-amber-700 text-ink-soft inline-flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                className="min-h-[44px] px-3 rounded-2xl border border-line/80 dark:border-line bg-surface hover:border-warn hover:border-warn text-ink-soft inline-flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
               >
                 <Star
                   className={`w-4 h-4 ${
                     starredMessages.length > 0
-                      ? 'text-amber-500 fill-current'
+                      ? 'text-warn fill-current'
                       : 'text-ink-muted'
                   }`}
                 />
@@ -2536,13 +2536,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             </div>
 
             {chatPinNotice && (
-              <div className="rounded-xl bg-amber-50 dark:bg-amber-950/50 border border-amber-200 dark:border-amber-800/70 px-3 py-2 text-xs text-amber-800 dark:text-amber-200 flex items-center justify-between gap-2">
+              <div className="rounded-xl bg-warn-bg dark:bg-warn-bg/50 border border-warn-line dark:border-warn/70 px-3 py-2 text-xs text-warn dark:text-warn-line flex items-center justify-between gap-2">
                 <span>{chatPinNotice}</span>
                 <button
                   type="button"
                   onClick={() => setChatPinNotice(null)}
                   aria-label="Dismiss pin notice"
-                  className="text-amber-600 dark:text-amber-400 cursor-pointer"
+                  className="text-warn cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -2668,7 +2668,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       onClick={() => onOpenAnnouncements(section.announcementScope!)}
                                       className="w-full min-h-[54px] rounded-xl bg-surface border border-line/80 dark:border-line hover:border-success-line dark:hover:border-brand px-3 py-2 flex items-center gap-3 text-left transition-colors cursor-pointer"
                                     >
-                                      <span className="w-9 h-9 rounded-xl bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
+                                      <span className="w-9 h-9 rounded-xl bg-warn-line dark:bg-warn-bg/60 text-warn flex items-center justify-center shrink-0">
                                         <Megaphone className="w-4 h-4" />
                                       </span>
                                       <div className="min-w-0 flex-1">
@@ -2887,7 +2887,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     }}
                     aria-label="Start voice call"
                     title={isDmBlocked ? 'Voice calls are disabled while blocked' : 'Voice call'}
-                    className="min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    className="min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center text-info hover:bg-info-bg hover:bg-info-bg/50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                   >
                     <Phone className="w-4 h-4" />
                   </button>
@@ -2947,7 +2947,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     className={`min-h-[40px] px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer ${
                       iBlockedDm
                         ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
-                        : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/60'
+                        : 'bg-danger-bg dark:bg-danger-bg/50 text-danger hover:bg-danger-line hover:bg-danger/60'
                     }`}
                   >
                     {iBlockedDm ? (
@@ -3066,7 +3066,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={handleUnpinBanner}
                     aria-label="Unpin group message"
                     title="Unpin message"
-                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-white/70 dark:hover:bg-sunken/70 transition-colors cursor-pointer shrink-0"
+                    className="min-w-[34px] min-h-[34px] rounded-lg flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-white/70 dark:hover:bg-sunken/70 transition-colors cursor-pointer shrink-0"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -3169,20 +3169,20 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           }}
                           className={`flex justify-center py-1 rounded-2xl transition-colors duration-500 ${
                             isCallHighlighted
-                              ? 'bg-brand/15 dark:bg-brand/20 ring-2 ring-emerald-500/40'
+                              ? 'bg-brand/15 dark:bg-brand/20 ring-2 ring-success/40'
                               : ''
                           }`}
                         >
                         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface border border-line/80 dark:border-line shadow-2xs text-xs">
                           {isMissedOrDeclined ? (
-                            <PhoneMissed className="w-3.5 h-3.5 text-red-500 dark:text-red-400 shrink-0" />
+                            <PhoneMissed className="w-3.5 h-3.5 text-danger shrink-0" />
                           ) : (
                             <PhoneCall className="w-3.5 h-3.5 text-brand shrink-0" />
                           )}
                           <span
                             className={`font-medium ${
                               isMissedOrDeclined
-                                ? 'text-red-700 dark:text-red-300'
+                                ? 'text-danger'
                                 : 'text-ink-soft'
                             }`}
                           >
@@ -3293,7 +3293,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         isMine ? 'items-end' : 'items-start'
                       } ${
                         isHighlighted
-                          ? 'bg-brand/15 dark:bg-brand/20 ring-2 ring-emerald-500/40 p-1.5 -mx-1.5'
+                          ? 'bg-brand/15 dark:bg-brand/20 ring-2 ring-success/40 p-1.5 -mx-1.5'
                           : ''
                       }`}
                     >
@@ -3362,7 +3362,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   aria-pressed={selected}
                                   className={`min-w-[36px] min-h-[36px] rounded-xl text-lg flex items-center justify-center transition-transform hover:scale-115 active:scale-95 cursor-pointer ${
                                     selected
-                                      ? 'bg-brand-subtle dark:bg-brand-subtle/70 ring-1 ring-emerald-400 dark:ring-emerald-600'
+                                      ? 'bg-brand-subtle dark:bg-brand-subtle/70 ring-1 ring-success'
                                       : 'hover:bg-sunken'
                                   }`}
                                 >
@@ -3429,7 +3429,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         >
                           <div className="flex items-center flex-wrap gap-1.5 mb-1">
                             {isMine ? (
-                              <span className="text-xs font-semibold text-emerald-50">
+                              <span className="text-xs font-semibold text-success-bg">
                                 You
                               </span>
                             ) : userMap.has(msg.senderId) ? (
@@ -3483,15 +3483,15 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 aria-label="Starred message"
                                 className={`w-3 h-3 ${
                                   isMine
-                                    ? 'text-amber-300 fill-current'
-                                    : 'text-amber-500 fill-current'
+                                    ? 'text-warn fill-current'
+                                    : 'text-warn fill-current'
                                 }`}
                               />
                             )}
                             {isMine && isMsgPending && (
                               <span
                                 title="Queued offline — will send automatically when reconnected"
-                                className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-100/90"
+                                className="inline-flex items-center gap-1 text-[10px] font-medium text-success-line/90"
                               >
                                 <Clock className="w-3 h-3" />
                                 <span>Queued</span>
@@ -3564,7 +3564,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       ? 'View-once voice message'
                                       : 'View-once photo'}
                                   </p>
-                                  <p className="text-[10px] text-emerald-100/80">
+                                  <p className="text-[10px] text-success-line/80">
                                     Recipient can open once
                                   </p>
                                 </div>
@@ -3694,7 +3694,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       className={`w-10 h-10 rounded-lg shrink-0 flex flex-col items-center justify-center font-mono text-[10px] font-bold tracking-tight ${
                                         isMine
                                           ? 'bg-on-brand/20 text-on-brand'
-                                          : 'bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300'
+                                          : 'bg-info-line dark:bg-info-bg/70 text-info'
                                       }`}
                                     >
                                       <FileText className="w-3.5 h-3.5 mb-0.5" />
@@ -3785,7 +3785,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               className={`min-w-[225px] max-w-[300px] rounded-xl p-3 space-y-2 border ${
                                 isMine
                                   ? 'bg-brand-strong/50 border-white/20'
-                                  : 'bg-amber-50/70 dark:bg-amber-950/30 border-amber-200/80 dark:border-amber-800/60'
+                                  : 'bg-warn-bg/70 dark:bg-warn-bg/30 border-warn-line/80 dark:border-warn/60'
                               }`}
                             >
                               <div className="flex items-start gap-2">
@@ -3793,7 +3793,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center ${
                                     isMine
                                       ? 'bg-on-brand/20 text-on-brand'
-                                      : 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300'
+                                      : 'bg-warn-line dark:bg-warn/60 text-warn'
                                   }`}
                                 >
                                   <CalendarDays className="w-4 h-4" />
@@ -3803,7 +3803,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[10px] font-semibold uppercase tracking-wide ${
                                       isMine
                                         ? 'text-on-brand/90'
-                                        : 'text-amber-700 dark:text-amber-400'
+                                        : 'text-warn'
                                     }`}
                                   >
                                     Campus Event
@@ -3876,7 +3876,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   fallbackClassName={
                                     isMine
                                       ? 'bg-on-brand/20 text-on-brand'
-                                      : 'bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-200'
+                                      : 'bg-info-line dark:bg-info-bg/70 text-info dark:text-info-line'
                                   }
                                 />
                                 <div className="min-w-0 flex-1">
@@ -4073,11 +4073,11 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isStarred
                                       ? isMine
-                                        ? 'text-amber-300 bg-white/10'
-                                        : 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40'
+                                        ? 'text-warn bg-white/10'
+                                        : 'text-warn bg-warn-bg dark:bg-warn-bg/40'
                                       : isMine
                                         ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
-                                        : 'text-ink-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+                                        : 'text-ink-muted hover:text-warn hover:text-warn hover:bg-warn-bg hover:bg-warn-bg/40'
                                   }`}
                                 >
                                   <Star className={`w-3 h-3 ${isStarred ? 'fill-current' : ''}`} />
@@ -4201,7 +4201,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                             setMoreMenuMsgId(null);
                                             setConfirmDeleteMsg(msg);
                                           }}
-                                          className="w-full px-3 py-2 text-left text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center gap-2 cursor-pointer"
+                                          className="w-full px-3 py-2 text-left text-xs font-medium text-danger hover:bg-danger-bg hover:bg-danger-bg/40 flex items-center gap-2 cursor-pointer"
                                         >
                                           <Trash2 className="w-3.5 h-3.5" />
                                           <span>Delete for everyone</span>
@@ -4341,13 +4341,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             </div>
 
             {sendError && (
-              <div className="mx-3 mb-2 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-3 py-2 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2">
+              <div className="mx-3 mb-2 rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger flex items-center justify-between gap-2">
                 <span>{sendError}</span>
                 <button
                   type="button"
                   onClick={() => setSendError(null)}
                   aria-label="Dismiss send error"
-                  className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-200 cursor-pointer"
+                  className="text-danger hover:text-danger hover:text-danger-line cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -4416,7 +4416,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     }}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg shadow-violet-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-fuchsia-600 text-white shadow-lg shadow-violet-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <ImageIcon className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Gallery</span>
@@ -4430,7 +4430,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     }}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-lg shadow-indigo-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-blue-600 text-white shadow-lg shadow-indigo-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <FileText className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Document</span>
@@ -4445,7 +4445,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       }}
                       className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                     >
-                      <span className="w-13 h-13 rounded-full bg-gradient-to-br from-brand to-teal-600 text-white shadow-lg shadow-emerald-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                      <span className="w-13 h-13 rounded-full bg-gradient-to-br from-brand to-success text-white shadow-lg shadow-emerald-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                         <BarChart3 className="w-5 h-5" />
                       </span>
                       <span className="text-xs font-medium text-slate-200">Poll</span>
@@ -4457,7 +4457,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={openEventCreator}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-warn to-orange-600 text-white shadow-lg shadow-amber-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <CalendarDays className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Event</span>
@@ -4468,7 +4468,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={openContactPicker}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-sky-500 to-cyan-600 text-white shadow-lg shadow-sky-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-cyan-600 text-white shadow-lg shadow-sky-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <Contact className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Contact</span>
@@ -4545,17 +4545,17 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   onClick={cancelVoiceRecording}
                   aria-label="Cancel voice recording"
                   title="Discard recording"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-red-50 dark:hover:bg-red-950/50 text-ink-body dark:text-ink-soft hover:text-red-600 dark:hover:text-red-400 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-danger-bg hover:bg-danger-bg/50 text-ink-body dark:text-ink-soft hover:text-danger hover:text-danger inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
 
-                <div className="flex-1 min-w-0 min-h-[42px] px-3 rounded-full border border-red-200 dark:border-red-900/70 bg-red-50/70 dark:bg-red-950/30 flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-700 dark:text-red-300 min-w-0">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
+                <div className="flex-1 min-w-0 min-h-[42px] px-3 rounded-full border border-danger-line dark:border-danger/70 bg-danger-bg/70 dark:bg-danger-bg/30 flex items-center justify-between gap-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-danger min-w-0">
+                    <span className="w-2 h-2 rounded-full bg-danger animate-pulse shrink-0" />
                     <span className="truncate">Recording</span>
                   </span>
-                  <span className="text-[11px] font-mono tabular-nums text-red-700 dark:text-red-300 shrink-0">
+                  <span className="text-[11px] font-mono tabular-nums text-danger shrink-0">
                     {formatAudioDuration(recordingSec)} / {formatAudioDuration(MAX_VOICE_NOTE_SECONDS)}
                   </span>
                 </div>
@@ -4604,7 +4604,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   disabled={sendingVoice}
                   aria-label="Discard voice note"
                   title="Discard voice note"
-                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-red-50 dark:hover:bg-red-950/50 text-ink-body dark:text-ink-soft hover:text-red-600 dark:hover:text-red-400 inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  className="w-10 h-10 min-w-[40px] min-h-[40px] rounded-full bg-sunken hover:bg-danger-bg hover:bg-danger-bg/50 text-ink-body dark:text-ink-soft hover:text-danger hover:text-danger inline-flex items-center justify-center transition-colors cursor-pointer shrink-0"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -4790,7 +4790,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <button
                   type="submit"
                   disabled={submittingReport}
-                  className="flex-1 min-h-[44px] rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
                 >
                   {submittingReport ? 'Submitting...' : 'Submit Report'}
                 </button>
@@ -4835,7 +4835,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             </div>
 
             {pollFormError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 p-3 text-xs text-danger">
                 {pollFormError}
               </div>
             )}
@@ -4900,7 +4900,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           setPollOptions((prev) => prev.filter((_, i) => i !== idx))
                         }
                         aria-label={`Remove option ${idx + 1}`}
-                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 cursor-pointer"
+                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-danger-bg hover:bg-danger-bg/40 cursor-pointer"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -4936,7 +4936,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <div className="w-full sm:max-w-md max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <ImageIcon className="w-5 h-5 text-violet-600 dark:text-violet-400 shrink-0" />
+                <ImageIcon className="w-5 h-5 text-info shrink-0" />
                 <h3 className="text-base font-bold text-ink truncate">
                   Send Photo
                 </h3>
@@ -5024,7 +5024,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
-                <FileText className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+                <FileText className="w-5 h-5 text-info shrink-0" />
                 <h3 className="text-base font-bold text-ink truncate">
                   Send Document
                 </h3>
@@ -5040,7 +5040,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             </div>
 
             <div className="rounded-2xl border border-line bg-sunken dark:bg-sunken/80 p-3.5 flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 flex flex-col items-center justify-center font-mono text-[10px] font-bold shrink-0">
+              <div className="w-11 h-11 rounded-xl bg-info-line dark:bg-info-bg/70 text-info flex flex-col items-center justify-center font-mono text-[10px] font-bold shrink-0">
                 <FileText className="w-4 h-4 mb-0.5" />
                 <span>{getFileTypeBadge(docDraft.fileName, docDraft.mimeType)}</span>
               </div>
@@ -5092,7 +5092,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                <CalendarDays className="w-5 h-5 text-warn" />
                 <h3 className="text-base font-bold text-ink">
                   Share Campus Event
                 </h3>
@@ -5119,7 +5119,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       type="button"
                       disabled={sendingEvent}
                       onClick={() => handleSendCalendarPresetEvent(ev)}
-                      className="w-full text-left rounded-xl border border-line bg-sunken/70 hover:border-amber-400 dark:hover:border-amber-600 px-3 py-2 transition-colors cursor-pointer disabled:opacity-50"
+                      className="w-full text-left rounded-xl border border-line bg-sunken/70 hover:border-warn hover:border-warn px-3 py-2 transition-colors cursor-pointer disabled:opacity-50"
                     >
                       <p className="text-xs font-bold text-ink truncate">
                         {ev.title}
@@ -5134,7 +5134,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             )}
 
             {eventFormError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 p-3 text-xs text-danger">
                 {eventFormError}
               </div>
             )}
@@ -5214,7 +5214,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <div className="w-full sm:max-w-md max-h-[85dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Contact className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+                <Contact className="w-5 h-5 text-info" />
                 <h3 className="text-base font-bold text-ink">
                   Share GSU Contact
                 </h3>
@@ -5252,7 +5252,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="button"
                     disabled={sendingContact}
                     onClick={() => handleShareContact(person)}
-                    className="w-full text-left rounded-2xl border border-line/80 dark:border-line hover:border-sky-400 dark:hover:border-sky-600 bg-sunken/70 dark:bg-sunken/60 px-3 py-2.5 flex items-center gap-3 transition-colors cursor-pointer disabled:opacity-50"
+                    className="w-full text-left rounded-2xl border border-line/80 dark:border-line hover:border-info hover:border-info bg-sunken/70 dark:bg-sunken/60 px-3 py-2.5 flex items-center gap-3 transition-colors cursor-pointer disabled:opacity-50"
                   >
                     <UserAvatar
                       name={person.fullName}
@@ -5260,7 +5260,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       avatarId={person.avatarId}
                       size="md"
                       roundedClass="rounded-full"
-                      fallbackClassName="bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-200"
+                      fallbackClassName="bg-info-line dark:bg-info-bg/70 text-info dark:text-info-line"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
@@ -5300,7 +5300,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           <div className="w-full sm:max-w-sm bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+                <Trash2 className="w-5 h-5 text-danger" />
                 <h3 className="text-base font-bold text-ink">
                   Delete for Everyone?
                 </h3>
@@ -5346,7 +5346,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 disabled={deletingMsgBusy}
                 onClick={handleConfirmDeleteMessage}
-                className="flex-1 min-h-[44px] rounded-xl bg-red-600 hover:bg-red-700 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
               >
                 {deletingMsgBusy ? 'Deleting...' : 'Delete Message'}
               </button>
@@ -5603,7 +5603,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           key={docMsg.id}
                           className="p-3 rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 flex items-center gap-2.5"
                         >
-                          <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 flex flex-col items-center justify-center font-mono text-[10px] font-bold shrink-0">
+                          <div className="w-10 h-10 rounded-xl bg-info-line dark:bg-info-bg/70 text-info flex flex-col items-center justify-center font-mono text-[10px] font-bold shrink-0">
                             <FileText className="w-3.5 h-3.5 mb-0.5" />
                             <span>{badge}</span>
                           </div>
@@ -5734,7 +5734,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         >
           <div className="w-full max-w-xl flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              <span className="w-7 h-7 rounded-full border-2 border-dashed border-brand text-emerald-300 flex items-center justify-center text-xs font-bold shrink-0">
+              <span className="w-7 h-7 rounded-full border-2 border-dashed border-brand text-success flex items-center justify-center text-xs font-bold shrink-0">
                 1
               </span>
               <div className="min-w-0">
@@ -5768,7 +5768,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               />
             ) : activeViewOnceModal.kind === 'voice' && activeViewOnceModal.audioData ? (
               <div className="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-800 p-6 space-y-4">
-                <div className="flex items-center gap-2 text-emerald-400 text-xs font-semibold">
+                <div className="flex items-center gap-2 text-success text-xs font-semibold">
                   <Volume2 className="w-4 h-4" />
                   <span>Listen once before closing</span>
                 </div>
@@ -5913,7 +5913,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             </div>
 
             {radarFormError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/70 px-3 py-2 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
                 {radarFormError}
               </div>
             )}
@@ -5933,7 +5933,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         onClick={() => setRadarStatusDraft(key)}
                         className={`min-h-[40px] px-3 rounded-xl border text-xs font-semibold text-left transition-colors cursor-pointer ${
                           selected
-                            ? 'border-brand bg-brand-subtle dark:bg-brand-subtle/60 text-brand ring-2 ring-emerald-500/20'
+                            ? 'border-brand bg-brand-subtle dark:bg-brand-subtle/60 text-brand ring-2 ring-success/20'
                             : 'border-line bg-sunken/70 dark:bg-sunken/60 text-ink-soft hover:border-line'
                         }`}
                       >
@@ -6030,7 +6030,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line p-3.5 space-y-2.5">
                 <div className="flex items-center justify-between gap-2 flex-wrap">
                   <div className="flex items-center gap-1.5 text-xs font-bold text-ink dark:text-ink-soft">
-                    <Timer className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                    <Timer className="w-4 h-4 text-info" />
                     <span>Exam / Test Countdown Timer (optional)</span>
                   </div>
                   <div className="flex items-center gap-1 flex-wrap">
@@ -6040,7 +6040,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         const d = new Date(Date.now() + 2 * 3_600_000);
                         setRadarExamAtDraft(toLocalDateTimeInputValue(d));
                       }}
-                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-indigo-500 cursor-pointer"
+                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-info cursor-pointer"
                     >
                       +2 Hours
                     </button>
@@ -6052,7 +6052,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         d.setHours(9, 0, 0, 0);
                         setRadarExamAtDraft(toLocalDateTimeInputValue(d));
                       }}
-                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-indigo-500 cursor-pointer"
+                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-info cursor-pointer"
                     >
                       Tomorrow 9 AM
                     </button>
@@ -6064,7 +6064,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         d.setHours(9, 0, 0, 0);
                         setRadarExamAtDraft(toLocalDateTimeInputValue(d));
                       }}
-                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-indigo-500 cursor-pointer"
+                      className="min-h-[26px] px-2 rounded-lg bg-surface border border-line text-[10.5px] font-semibold text-ink-body dark:text-ink-soft hover:border-info cursor-pointer"
                     >
                       +7 Days
                     </button>
@@ -6096,7 +6096,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="button"
                     disabled={radarSaving}
                     onClick={handleClearRadar}
-                    className="min-h-[44px] px-4 rounded-xl border border-red-200 dark:border-red-900/70 text-red-700 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/40 text-xs font-semibold cursor-pointer"
+                    className="min-h-[44px] px-4 rounded-xl border border-danger-line dark:border-danger/70 text-danger hover:bg-danger-bg hover:bg-danger-bg/40 text-xs font-semibold cursor-pointer"
                   >
                     Clear Radar
                   </button>
