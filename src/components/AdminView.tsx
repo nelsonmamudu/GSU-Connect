@@ -78,6 +78,15 @@ interface AdminViewProps {
 
 type AdminSubTab = 'pending' | 'reports' | 'users' | 'groups' | 'departments' | 'settings';
 
+function reviewFailure(err: unknown): string {
+  const message = err && typeof err === 'object' && 'message' in err ? String(err.message) : '';
+  if (/not authorized|review not permitted|permission denied/i.test(message)) return 'You cannot review this request. Check your review scope and whether the request is still pending.';
+  if (/invalid cohort|confirm the student level/i.test(message)) return "Choose the student's level first";
+  if (/fetch|network|offline/i.test(message)) return 'Could not reach the server. Check your connection and try again.';
+  if (/rejection reason/i.test(message)) return 'Enter a reason for the rejection.';
+  return message || 'The decision could not be confirmed. Refresh the request and try again.';
+}
+
 const DECISION_UNDO_DELAY_MS = 6000;
 
 interface QueuedSignupDecision {
@@ -180,12 +189,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [draftLevels,setDraftLevels]=useState<Record<string,string>>({});
   const levelChoices = (user: AppUser) => currentUser.role === 'classRep' ? [currentUser.level]
     : user.level === 'Class of 2026' ? ['Class of 2026'] : ['100','200','300','400','500','600'];
-  const selectedLevel = (user: AppUser) => draftLevels[user.uid] ?? (levelChoices(user).includes(user.level) ? user.level : '');
+  const selectedLevel = (user: AppUser) => draftLevels[user.uid] ?? (user.status !== 'pending' && levelChoices(user).includes(user.level) ? user.level : '');
   const confirmLevel = async (user: AppUser) => {
     const level = selectedLevel(user);
     const { error } = await supabase.rpc('confirm_review_level', { target: user.uid, confirmed_level: level });
-    if (error) { setAdminError(error.message); return false; }
-    setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);
+    if (error) { setAdminError(reviewFailure(error)); return false; }
+    if (user.status !== 'pending') setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);
     return true;
   };
   const cohortPicker = (user: AppUser, standalone = false) => (
@@ -441,6 +450,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         item.reason
       );
       if (isMountedRef.current) {
+        setCohortNotice(`${item.decision === 'approved' ? 'Approved' : 'Rejected'}: ${item.user.fullName}`);
         setCommittedDecisionIds((prev) => {
           const next = new Set(prev);
           next.add(uid);
@@ -449,11 +459,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       }
     } catch (err) {
       if (isMountedRef.current) {
-        setAdminError(
-          err instanceof Error
-            ? err.message
-            : `Unable to mark ${item.user.fullName} as ${item.decision}.`
-        );
+        setAdminError(`${item.user.fullName}: ${reviewFailure(err)}`);
       }
     } finally {
       if (isMountedRef.current) {
@@ -473,6 +479,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     reason?: string
   ) => {
     setAdminError(null);
+    setCohortNotice('');
     const assignedRole =
       isAdmin && decision === 'approved'
         ? pendingRoleMap[user.uid] || getDefaultApprovalRole(user)
@@ -1168,13 +1175,19 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </button>
                       <button
                         type="button"
-                        disabled={busyId === user.uid || (!isLecturerReq && !selectedLevel(user))}
+                        disabled={busyId === user.uid}
                         onClick={async () => {
+                          setCohortNotice('');
+                          setAdminError(null);
+                          if (!isLecturerReq && !selectedLevel(user)) {
+                            setAdminError("Choose the student's level first");
+                            return;
+                          }
                           if (!window.confirm(isLecturerReq ? `Approve ${user.fullName} after reviewing their evidence?` : `Confirm level ${selectedLevel(user)} and approve ${user.fullName}?`)) return;
                           setBusyId(user.uid);
                           try {
                             if (isLecturerReq || await confirmLevel(user)) handleDecision(user, 'approved');
-                          } catch { setAdminError('Could not confirm the student level. Please retry.'); }
+                          } catch (err) { setAdminError(reviewFailure(err)); }
                           finally { setBusyId(null); }
                         }}
                         className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
@@ -2320,7 +2333,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               >
                 <div className="min-w-0">
                   <p className="text-xs font-medium truncate">
-                    {isApproved ? 'Approved' : 'Rejected'}{' '}
+                    {isApproved ? 'Approval queued for' : 'Rejection queued for'}{' '}
                     <span className="font-semibold">{item.user.fullName}</span>.
                   </p>
                   <p className="text-[11px] text-slate-400 tabular-nums mt-0.5">
