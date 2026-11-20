@@ -21,12 +21,12 @@ const allowed = new Set([graduateError, 'Please complete the security check, the
   "Password is incorrect.",
   "Password must be at least 8 characters.",
   "Photo is too large",
-  "Please enter a valid Matric Number, Staff ID, registered phone number, or sign-in email.",
+  "Please enter a valid Matric Number, Staff ID or registered phone number.",
   "Please enter a valid email address.",
   "Please enter a valid email address. Password reset links are sent there.",
-  "Please enter a valid matric number, staff ID or sign-in email.",
+  "Please enter a valid matric number or staff ID.",
   "Please enter a valid phone number (e.g. 0803 123 4567).",
-  "Please enter your Matric Number, Staff ID, registered phone number, or sign-in email.",
+  "Please enter your Matric Number, Staff ID or registered phone number.",
   "Please enter your current password.",
   "Please select or enter your department (at least 2 characters).",
   "Please select or enter your department or office (at least 2 characters).",
@@ -64,7 +64,7 @@ export function formatAuthError(err: unknown): string {
     return 'Please enter a valid email address or Matric Number / Staff ID.';
   }
   if (lower.includes('invalid login credentials')) {
-    return 'Incorrect Matric Number, Staff ID, sign-in email, or password.';
+    return 'Incorrect Matric Number, Staff ID, or password.';
   }
   if (lower.includes('email not confirmed')) {
     return 'Please confirm your email address via the verification link in your inbox before signing in.';
