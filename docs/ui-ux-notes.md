@@ -1,9 +1,9 @@
 # UI/UX notes
 
 A working reference for the auth, status-gate and admin-queue screens. Built from the
-`ux-patterns-master` library (112 patterns) plus 17 short reel transcripts, absorbed
-2026-11-20. Nothing here has been applied to the code yet — this is the spec we will
-build from, and the shortlist we agreed to keep to.
+`ux-patterns-master` library (112 patterns), 17 short reel transcripts, and one 2026
+design-trends guide, absorbed 2026-11-20. Nothing here has been applied to the code yet —
+this is the spec we will build from, and the shortlist we agreed to keep to.
 
 > **Sources.** Pattern teaching is @designmotionhq's; the library is
 > `YourFutureSiteDev/ux-patterns`, whose own components are their implementation of the
@@ -416,7 +416,42 @@ These are the gaps worth closing first. Nothing here has been changed.
 
 ---
 
-## 5. How to use this later
+## 5. Trends layer (secondary — use with care)
+
+Source: "Top 2026 App Design Trends" (Codex Community, `youtu.be/VNDq1Q_W1Bs`). The
+retrieved transcript is truncated partway through the second topic, carries no timecodes,
+and the narrator's claims cannot be verified from what we have. Treat this as a
+**secondary** layer: §2-§3 are principle-level and durable; trends are season-level and
+decay. Take the durable mechanics, ignore the year label.
+
+**Emotionally intelligent design is a UX approach, not a visual trend.**
+- Use personality or character only where it supports the product's purpose. We have no
+  mascot and should not add one for its own sake.
+- **Tie expressive states to truthful product events** — a completed milestone, a real
+  status change. Never fabricate progress. Same rule as `zeigarnik-effect`: manufactured
+  progress on chores creates zero pull.
+- Keep emotional feedback **supportive**. No guilt, no pressure, no manipulative reaction to
+  inactivity. Duolingo's Duo is the reference — including its worst behaviour: the
+  distressed → angry → worried → frozen escalation on a user's absence is exactly the
+  pattern to avoid, not to imitate.
+- **Provide accessible equivalents** for anything conveyed by colour, animation or facial
+  expression. If a character's mood carries meaning, a word must carry it too.
+
+**Where this bites us:** the status gate is an emotional surface. An applicant waiting on
+verification, or reading a rejection, is not in a neutral state. Supportive and truthful
+copy matters more there than anywhere else in the app — which is why §4.4 (the "24–48
+hours" ETA) is a real problem and not a wording nit.
+
+**Chat / streaming** (relevant: this repo has a chat schema and `ChatsView`).
+- Text entry and image attachment are part of the conversation, not extras.
+- Streaming responses should communicate arrival without getting in the way. Motion signals
+  progress; it never decorates.
+- Design how a user attaches or amends a message. The source cuts off here; the specifics
+  were not recoverable.
+
+---
+
+## 6. How to use this later
 
 1. Name the module being changed.
 2. Take its primary set from §2, plus secondary only if that element actually exists.
