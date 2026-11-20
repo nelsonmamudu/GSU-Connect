@@ -73,6 +73,9 @@ import {
 } from './types';
 import { RoleBadge } from './components/RoleBadge';
 import { UserAvatar } from './components/UserAvatar';
+import { bindFunnelFlush } from './services/funnel';
+import { setGraduationClassYear } from './utils/graduationClass';
+import { fetchEntryConfig } from './services/supabaseService';
 
 const LazyAuthScreen = React.lazy(() =>
   import('./components/AuthScreen').then((m) => ({ default: m.AuthScreen }))
@@ -294,6 +297,24 @@ function MainApp() {
       // Ignore storage quota errors
     }
   }, [theme]);
+
+  // Flush queued funnel events when the tab is hidden or the page unloads.
+  useEffect(() => bindFunnelFlush(), []);
+
+  // Load the graduate class year once for the whole session so reviewers and
+  // the status gate see the same configured cohort as the signup screen.
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const config = await fetchEntryConfig();
+      if (!active || !config) return;
+      setGraduationClassYear(config.graduationClassYear);
+    };
+    void load();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleToggleTheme = () => {
     setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
@@ -1004,7 +1025,8 @@ function MainApp() {
           />
         </React.Suspense>
         {authUser && <RecoveryEmailConfirm />}
-        {authUser && <RecoveryEmailPrompt />}
+        {/* The status gate already has an inline recovery-email editor; the
+            floating verification prompt only appears once the account is approved. */}
       </>
     );
   }

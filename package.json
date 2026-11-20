@@ -10,8 +10,10 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:phase1": "node supabase/tests/phase1-access.mjs",
-    "test:entry": "tsx --test tests/entry.test.ts tests/cleanup.test.mjs tests/staff-email.test.ts tests/password-reset.test.mjs tests/recovery-email.test.mjs && npm run test:phase1",
-    "test:signin": "node --test tests/signin-browser.test.mjs"
+    "test:entry": "tsx --test tests/entry.test.ts tests/funnel.test.ts tests/cleanup.test.mjs tests/staff-email.test.ts tests/password-reset.test.mjs tests/recovery-email.test.mjs && node supabase/tests/funnel-events.mjs && npm run test:phase1",
+    "test:funnel": "tsx --test tests/funnel.test.ts && node supabase/tests/funnel-events.mjs",
+    "test:signin": "node --test tests/signin-browser.test.mjs",
+    "test:browser": "node --test tests/signin-browser.test.mjs tests/proof-card-browser.test.mjs tests/turnstile-browser.test.mjs"
   },
   "dependencies": {
     "@capacitor/app": "^8.1.2",

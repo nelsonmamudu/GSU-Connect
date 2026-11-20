@@ -56,6 +56,23 @@ import {
 import { CreateGroupModal } from './CreateGroupModal';
 import { RoleBadge } from './RoleBadge';
 import { UserAvatar } from './UserAvatar';
+import { Alert } from './ui/Alert';
+import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
+import { Card } from './ui/Card';
+import { EmptyState } from './ui/EmptyState';
+import { Field } from './ui/Field';
+import { Input } from './ui/Input';
+import { Select } from './ui/Select';
+import { Tabs } from './ui/Tabs';
+import type { TabItem } from './ui/Tabs';
+import {
+  filterPending,
+  summarizePending,
+  type PendingFilter,
+  type PendingSort,
+} from '../utils/pendingQueue';
+import { graduationLevelLabel, isGraduateLevel } from '../utils/graduationClass';
 
 interface AdminViewProps {
   currentUser: AppUser;
@@ -109,6 +126,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [userSearch, setUserSearch] = useState('');
   const [remoteUserResults, setRemoteUserResults] = useState<AppUser[]>([]);
   const [pendingRoleMap, setPendingRoleMap] = useState<Record<string, UserRole>>({});
+  // Pending queue triage: search, filter and sort are client-side over the
+  // already-scoped queue, so they never widen a reviewer's access.
+  const [pendingQuery, setPendingQuery] = useState('');
+  const [pendingFilter, setPendingFilter] = useState<PendingFilter>('all');
+  const [pendingSort, setPendingSort] = useState<PendingSort>('newest');
 
   // Settings (allowed email domain) state
   const [domainInput, setDomainInput] = useState(allowedEmailDomain);
@@ -174,7 +196,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [cohortNotice, setCohortNotice] = useState('');
   const [draftLevels,setDraftLevels]=useState<Record<string,string>>({});
   const levelChoices = (user: AppUser) => currentUser.role === 'classRep' ? [currentUser.level]
-    : user.level === 'Class of 2026' ? ['Class of 2026'] : ['100','200','300','400','500','600'];
+    : isGraduateLevel(user.level) ? [user.level] : ['100','200','300','400','500','600',graduationLevelLabel()];
   const selectedLevel = (user: AppUser) => draftLevels[user.uid] ?? (user.status !== 'pending' && levelChoices(user).includes(user.level) ? user.level : '');
   const confirmLevel = async (user: AppUser) => {
     const level = selectedLevel(user);
@@ -256,6 +278,53 @@ export const AdminView: React.FC<AdminViewProps> = ({
     () => reports.filter((r) => r.status === 'open').length,
     [reports]
   );
+
+  const pendingSummary = useMemo(() => summarizePending(scopedPending), [scopedPending]);
+
+  const visiblePending = useMemo(
+    () =>
+      filterPending(scopedPending, {
+        query: pendingQuery,
+        filter: pendingFilter,
+        sort: pendingSort,
+      }),
+    [scopedPending, pendingQuery, pendingFilter, pendingSort]
+  );
+
+  const pendingFilterOptions = useMemo<
+    { key: PendingFilter; label: string; count?: number }[]
+  >(() => {
+    const summary = pendingSummary;
+    return [
+      { key: 'all', label: 'All', count: summary.total },
+      { key: 'students', label: 'Students', count: summary.students },
+      { key: 'staff', label: 'Staff', count: summary.staff },
+      { key: 'invited', label: 'Rep invites', count: summary.invited },
+      { key: 'no-proof', label: 'No proof yet', count: summary.withoutProof },
+    ];
+  }, [pendingSummary]);
+
+  const adminTabs = useMemo<TabItem<AdminSubTab>[]>(() => {
+    const items: TabItem<AdminSubTab>[] = [
+      { key: 'pending', label: 'Pending Sign-ups', count: scopedPending.length },
+      { key: 'reports', label: 'Reports', count: openReportsCount },
+      { key: 'users', label: 'Roles & Users' },
+      { key: 'groups', label: 'Groups', count: allGroups.length },
+    ];
+    if (isAdmin) {
+      items.push(
+        { key: 'departments', label: 'Departments', count: departments.length },
+        { key: 'settings', label: 'Settings', icon: Settings }
+      );
+    }
+    return items;
+  }, [
+    isAdmin,
+    scopedPending.length,
+    openReportsCount,
+    allGroups.length,
+    departments.length,
+  ]);
 
   useEffect(() => {
     if (subTab !== 'users') {
@@ -799,102 +868,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
       {/* Sub-navigation */}
       <div className="space-y-2">
-        <div className="w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div
-            role="tablist"
-            aria-label="Admin sections"
-            className="inline-flex flex-nowrap items-center gap-1 p-1 bg-slate-200/70 dark:bg-slate-800 rounded-2xl min-w-max"
-          >
-            <button
-              type="button"
-              role="tab"
-              aria-selected={subTab === 'pending'}
-              onClick={() => setSubTab('pending')}
-              className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
-                subTab === 'pending'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              Pending Sign-ups ({scopedPending.length})
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={subTab === 'reports'}
-              onClick={() => setSubTab('reports')}
-              className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
-                subTab === 'reports'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              Reports ({openReportsCount})
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={subTab === 'users'}
-              onClick={() => setSubTab('users')}
-              className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
-                subTab === 'users'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              Roles &amp; Users
-            </button>
-
-            <button
-              type="button"
-              role="tab"
-              aria-selected={subTab === 'groups'}
-              onClick={() => setSubTab('groups')}
-              className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
-                subTab === 'groups'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-              }`}
-            >
-              Groups ({allGroups.length})
-            </button>
-
-            {isAdmin && (
-              <>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={subTab === 'departments'}
-                  onClick={() => setSubTab('departments')}
-                  className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap ${
-                    subTab === 'departments'
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  Departments ({departments.length})
-                </button>
-                <button
-                  type="button"
-                  role="tab"
-                  aria-selected={subTab === 'settings'}
-                  onClick={() => setSubTab('settings')}
-                  className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${
-                    subTab === 'settings'
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  <Settings className="w-3.5 h-3.5" />
-                  <span>Settings</span>
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-
+        <Tabs<AdminSubTab>
+          label="Admin sections"
+          value={subTab}
+          onChange={setSubTab}
+          tabs={adminTabs}
+        />
         {currentUser.role==='classRep' && <div><button type="button" onClick={issueInvite}>Generate a 7-day department invite (replaces previous link)</button>
           {inviteLink && <input aria-label="Share this registration link" readOnly value={inviteLink} onFocus={e=>e.target.select()} />}</div>}
         {canDecide && inviteLink && <input readOnly aria-label="New registration link" value={inviteLink} onFocus={e=>e.target.select()}/>}
@@ -910,27 +889,91 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* Pending Sign-ups */}
       {subTab === 'pending' && (
         <>
-          {scopedPending.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
-              <UserCheck className="w-8 h-8 text-emerald-600/50 mx-auto" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">All caught up</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                There are no pending account registrations waiting for approval.
+          {scopedPending.length > 0 && (
+            <div className="space-y-2.5 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <Field label="Search pending sign-ups" htmlFor="pending-search" hideLabel className="flex-1">
+                  <Input
+                    id="pending-search"
+                    type="search"
+                    value={pendingQuery}
+                    leadingIcon={Search}
+                    placeholder="Name, matric number, email or department"
+                    onChange={(e) => setPendingQuery(e.target.value)}
+                  />
+                </Field>
+                <Field label="Sort by" htmlFor="pending-sort" hideLabel>
+                  <Select
+                    id="pending-sort"
+                    value={pendingSort}
+                    onChange={(e) => setPendingSort(e.target.value as PendingSort)}
+                  >
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                    <option value="name">Name A–Z</option>
+                    <option value="department">Department A–Z</option>
+                  </Select>
+                </Field>
+              </div>
+
+              <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter pending sign-ups">
+                {pendingFilterOptions.map((option) => (
+                  <Button
+                    key={option.key}
+                    type="button"
+                    size="sm"
+                    variant={pendingFilter === option.key ? 'secondary' : 'outline'}
+                    aria-pressed={pendingFilter === option.key}
+                    onClick={() => setPendingFilter(option.key)}
+                  >
+                    {option.label}
+                    {typeof option.count === 'number' ? ` (${option.count})` : ''}
+                  </Button>
+                ))}
+              </div>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Showing {visiblePending.length} of {pendingSummary.total}
+                {pendingSummary.oldestWaitingHours !== null &&
+                  ` · oldest waiting ${pendingSummary.oldestWaitingHours}h`}
               </p>
             </div>
+          )}
+
+          {scopedPending.length === 0 ? (
+            <EmptyState
+              icon={UserCheck}
+              title="All caught up"
+              body="There are no pending account registrations waiting for approval."
+            />
+          ) : visiblePending.length === 0 ? (
+            <EmptyState
+              icon={Search}
+              title="No matches"
+              body="No pending sign-ups match this search or filter."
+            >
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPendingQuery('');
+                  setPendingFilter('all');
+                }}
+              >
+                Clear search and filters
+              </Button>
+            </EmptyState>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {scopedPending.map((user) => {
+              {visiblePending.map((user) => {
                 const isLecturerReq =
                   user.requestedRole === 'lecturer' || user.accountType === 'staff';
                 const selectedRole =
                   pendingRoleMap[user.uid] || getDefaultApprovalRole(user);
 
                 return (
-                  <div
-                    key={user.uid}
-                    className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 space-y-4"
-                  >
+                  <Card key={user.uid} padding={5} className="space-y-4">
                     <div className="flex items-start gap-3">
                       <UserAvatar
                         name={user.fullName}
@@ -949,15 +992,9 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
                             {user.fullName}
                           </h3>
-                          <span
-                            className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg shrink-0 ${
-                              isLecturerReq
-                                ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200/70 dark:border-indigo-800/70'
-                                : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                            }`}
-                          >
+                          <Badge tone={isLecturerReq ? 'indigo' : 'slate'} className="shrink-0">
                             {user.invited && 'Rep invite · '}Requested: {isLecturerReq ? 'Lecturer' : 'Student'}
-                          </span>
+                          </Badge>
                         </div>
 
                         <p className="text-xs text-slate-600 dark:text-slate-300">
@@ -995,7 +1032,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         >
                           Assign Role
                         </label>
-                        <select
+                        <Select
                           id={`approve-role-${user.uid}`}
                           value={selectedRole}
                           disabled={busyId === user.uid}
@@ -1005,82 +1042,107 @@ export const AdminView: React.FC<AdminViewProps> = ({
                               [user.uid]: e.target.value as UserRole,
                             }))
                           }
-                          className="min-h-[38px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
                         >
                           {(Object.keys(ROLE_LABELS) as UserRole[]).map((roleKey) => (
                             <option key={roleKey} value={roleKey}>
                               {ROLE_LABELS[roleKey]}
                             </option>
                           ))}
-                        </select>
+                        </Select>
                       </div>
                     )}
 
-                    {user.proofMethod && <p className="text-sm">Evidence: {user.proofMethod}{user.proofDetail && ` · ${user.proofDetail}`}</p>}
-                    {(!user.proofMethod || ['Uploaded document','Staff ID photo'].includes(user.proofMethod)) && (                    <button
-                      type="button"
-                      onClick={() => handleOpenIdCardPreview(user)}
-                      className="w-full min-h-[38px] px-3 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/40 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/50 border border-emerald-200/70 dark:border-emerald-800/60 text-emerald-800 dark:text-emerald-300 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>View verification proof</span>
-                    </button>)}
+                    {user.proofMethod && (
+                      <p className="text-xs text-slate-600 dark:text-slate-300">
+                        <span className="font-semibold text-slate-500 dark:text-slate-400">Evidence: </span>
+                        {user.proofMethod}{user.proofDetail && ` · ${user.proofDetail}`}
+                      </p>
+                    )}
+                    {(!user.proofMethod || ['Uploaded document','Staff ID photo'].includes(user.proofMethod)) && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        full
+                        onClick={() => handleOpenIdCardPreview(user)}
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>View verification proof</span>
+                      </Button>
+                    )}
 
-                    {decisionMessage?.uid === user.uid && <p role={decisionMessage.error ? 'alert' : 'status'} className="text-sm font-semibold">{decisionMessage.text}</p>}
-                    {confirmId === user.uid ? <div className="rounded-xl border border-emerald-300 p-3 space-y-2">
-                      {!isLecturerReq && levelDifference(user.level,selectedLevel(user)) && <p className="text-sm font-medium text-amber-700">{levelDifference(user.level,selectedLevel(user))}</p>}
-                      <p className="font-semibold">Approve {user.fullName} as {isLecturerReq ? 'staff' : selectedLevel(user)}?</p>
-                      <div className="flex gap-2">
-                        <button type="button" disabled={!!busyId} onClick={() => void handleDecision(user, 'approved')} className="rounded-xl bg-emerald-700 text-white px-4 min-h-[44px]">Confirm</button>
-                        <button type="button" disabled={!!busyId} onClick={() => setConfirmId(null)} className="px-4 min-h-[44px]">Cancel</button>
+                    {decisionMessage?.uid === user.uid && (
+                      <Alert variant={decisionMessage.error ? 'error' : 'success'}>
+                        {decisionMessage.text}
+                      </Alert>
+                    )}
+                    {confirmId === user.uid ? (
+                      <div className="rounded-xl border border-emerald-300 p-3 space-y-2">
+                        {!isLecturerReq && levelDifference(user.level,selectedLevel(user)) && (
+                          <p className="text-sm font-medium text-amber-700">
+                            {levelDifference(user.level,selectedLevel(user))}
+                          </p>
+                        )}
+                        <p className="font-semibold">
+                          Approve {user.fullName} as {isLecturerReq ? 'staff' : selectedLevel(user)}?
+                        </p>
+                        <div className="flex gap-2">
+                          <Button type="button" disabled={!!busyId} onClick={() => void handleDecision(user, 'approved')}>
+                            Confirm
+                          </Button>
+                          <Button type="button" variant="outline" disabled={!!busyId} onClick={() => setConfirmId(null)}>
+                            Cancel
+                          </Button>
+                        </div>
                       </div>
-                    </div> : (
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        disabled={!!busyId}
-                        onClick={() => {
-                          setRejectTarget(user);
-                          setRejectionReasonInput('');
-                        }}
-                        className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 dark:hover:border-red-800/70 hover:text-red-700 dark:hover:text-red-300 text-slate-700 dark:text-slate-200 text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <X className="w-4 h-4" />
-                        <span>Reject</span>
-                      </button>
-                      <button
-                        type="button"
-                        disabled={!!busyId}
-                        onClick={() => {
-                          setCohortNotice('');
-                          if (!isLecturerReq && !selectedLevel(user)) {
-                            setDecisionMessage({uid:user.uid, text:chooseLevelMessage, error:true});
-                            return;
-                          }
-                          setDecisionMessage(null);
-                          setConfirmId(user.uid);
-                        }}
-                        className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
-                      >
-                        <Check className="w-4 h-4" />
-                        <span>Approve</span>
-                      </button>
-                    </div> )}
-                  </div>
+                    ) : (
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          variant="danger"
+                          full
+                          disabled={!!busyId}
+                          onClick={() => {
+                            setRejectTarget(user);
+                            setRejectionReasonInput('');
+                          }}
+                        >
+                          <X className="w-4 h-4" />
+                          <span>Reject</span>
+                        </Button>
+                        <Button
+                          type="button"
+                          full
+                          disabled={!!busyId}
+                          onClick={() => {
+                            setCohortNotice('');
+                            if (!isLecturerReq && !selectedLevel(user)) {
+                              setDecisionMessage({uid:user.uid, text:chooseLevelMessage, error:true});
+                              return;
+                            }
+                            setDecisionMessage(null);
+                            setConfirmId(user.uid);
+                          }}
+                        >
+                          <Check className="w-4 h-4" />
+                          <span>Approve</span>
+                        </Button>
+                      </div>
+                    )}
+                  </Card>
                 );
               })}
             </div>
           )}
           {hasMorePendingUsers && onLoadMore && (
             <div className="flex justify-center pt-2">
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 disabled={loadingMore}
                 onClick={() => onLoadMore('hasMorePendingUsers')}
-                className="min-h-[40px] px-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer disabled:opacity-60"
               >
-                {loadingMore ? 'Loading...' : 'Load more pending accounts'}
-              </button>
+                {loadingMore ? 'Loading…' : 'Load more pending accounts'}
+              </Button>
             </div>
           )}
         </>

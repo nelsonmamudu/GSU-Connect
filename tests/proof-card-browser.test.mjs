@@ -4,6 +4,16 @@ import test from 'node:test';
 import {chromium} from 'playwright-core';
 import {createServer} from 'vite';
 
+// Every status-gate state the owner can land in, including the transient
+// "checking" state (hasIdCard === null) and the suspended gate.
+const STATES = [
+  ['pending-attached','pending',true],
+  ['pending-empty','pending',false],
+  ['rejected-empty','rejected',false],
+  ['rejected-attached','rejected',true],
+  ['suspended','suspended',false],
+];
+
 test('mobile proof card states and transitions', async t => {
   const server = await createServer({define:{
     'import.meta.env.VITE_SUPABASE_URL':JSON.stringify('http://fixture.invalid'),
@@ -12,16 +22,13 @@ test('mobile proof card states and transitions', async t => {
   await server.listen(); t.after(()=>server.close());
   const browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH});
   t.after(()=>browser.close());
-  for (const [state,status,attached] of [
-    ['pending-attached','pending',true], ['pending-empty','pending',false],
-    ['rejected-empty','rejected',false], ['rejected-attached','rejected',true],
-  ]) await t.test(state, async t => {
+  for (const [state,status,attached] of STATES) await t.test(state, async t => {
     const page = await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
     t.after(()=>page.close());
     const id='00000000-0000-4000-8000-000000000076';
     const row={id,status,role:'student',level:'200',department:'QA Test',full_name:'QA Student',matric_no:'UG25/QAT/9104',
       rejection_reason:status==='rejected'?'Submit a replacement proof.':null,
-      id_card_path:attached?`${id}/12345678-0000-4000-8000-000000000001_registration.pdf`:null};
+      id_card_path:attached===true?`${id}/12345678-0000-4000-8000-000000000001_registration.pdf`:null};
     await page.addInitScript(profile => {window.fixtureProfile=profile},row);
     const writes=[];
     await page.route('**/*', async route => {
@@ -39,21 +46,34 @@ test('mobile proof card states and transitions', async t => {
     await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/tests/fixtures/proof-card.html`);
     const card=page.getByRole('region',{name:'Verification proof'});
     const replace=card.getByRole('button',{name:'Replace file'});
-    const photo=card.getByLabel('Choose photo'), pdf=card.getByLabel('Choose PDF');
+    const choose=card.getByRole('button',{name:'Choose replacement'});
+    const fileInput=card.locator('input[type=file]');
     if(status==='pending') await page.getByRole('heading',{name:attached?'Waiting for Approval':'Finish Verification'}).waitFor();
-    if(attached) await card.getByText('registration.pdf',{exact:true}).waitFor();
-    if(status==='pending' && attached) {
-      await replace.waitFor(); assert.equal(await card.locator('input').count(),0);
-    } else { await photo.waitFor(); await pdf.waitFor(); assert.equal(await replace.count(),0); }
-    if(status==='rejected' && attached) await card.getByText('Upload a replacement to resubmit').waitFor();
+    if(status==='suspended') {
+      await page.getByRole('heading',{name:'Account Suspended'}).waitFor();
+      assert.equal(await card.count(),0,'suspended owners get no upload UI');
+      assert.equal(await page.getByRole('button',{name:'Check status'}).count(),1);
+      return;
+    }
+    if(attached===true) await card.getByText('registration.pdf',{exact:true}).waitFor();
+    if(status==='pending' && attached===true) {
+      await replace.waitFor(); assert.equal(await fileInput.count(),0);
+    } else if(attached===false) {
+      await choose.waitFor(); assert.equal(await replace.count(),0);
+    }
+    if(status==='rejected' && attached===false) await card.getByText('Upload a replacement to resubmit').waitFor();
+    if(status==='pending') {
+      await page.getByText('Most requests are reviewed within 24–48 hours.').waitFor();
+      await page.getByRole('heading',{name:'Review decision'}).waitFor();
+    }
     if(process.env.PROOF_SCREENSHOTS && state!=='pending-empty') {
       await card.evaluate(el=>el.scrollIntoView({block:'center'}));
       await page.screenshot({path:`qa-screenshots/batch2d-${state}.png`});
     }
-    if(status==='pending' && attached) {
-      await replace.click(); await photo.waitFor(); await pdf.waitFor();
+    if(status==='pending' && attached===true) {
+      await replace.click(); await choose.waitFor();
       await card.getByRole('button',{name:'Cancel'}).click(); await replace.waitFor();
-      assert.equal(await card.locator('input').count(),0); assert.deepEqual(writes,[]);
+      assert.equal(await fileInput.count(),0); assert.deepEqual(writes,[]);
       await replace.click();
     }
     if(state==='pending-empty') {
@@ -70,11 +90,42 @@ test('mobile proof card states and transitions', async t => {
       }
       await page.getByRole('button',{name:'Cancel',exact:true}).click();
     }
-    // State 4: every initial state converges on the compact pending card.
-    await pdf.setInputFiles({name:'new-proof.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-test')});
+    // Every initial state converges on the compact pending card after upload.
+    await fileInput.setInputFiles({name:'new-proof.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-test')});
     await page.getByText('Proof uploaded. Waiting for review.').waitFor();
     await card.getByText('Attached for reviewer verification').waitFor(); await replace.waitFor();
-    assert.equal(await card.locator('input').count(),0);
+    assert.equal(await fileInput.count(),0);
     assert.deepEqual(writes,status==='rejected'?['upload','attach','submit']:['upload','attach']);
   });
+});
+
+test('status gate shows a checking state, not a wrong "Unconfirmed" flash', async t => {
+  const server = await createServer({define:{
+    'import.meta.env.VITE_SUPABASE_URL':JSON.stringify('http://fixture.invalid'),
+    'import.meta.env.VITE_SUPABASE_ANON_KEY':JSON.stringify('local-only'),
+  },server:{host:'127.0.0.1',port:0,hmr:false},logLevel:'error'});
+  await server.listen(); t.after(()=>server.close());
+  const browser = await chromium.launch({executablePath:process.env.CHROMIUM_PATH});
+  t.after(()=>browser.close());
+  const page = await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
+  t.after(()=>page.close());
+  const id='00000000-0000-4000-8000-000000000077';
+  const row={id,status:'pending',role:'student',level:'200',department:'QA Test',full_name:'QA Student',matric_no:'UG25/QAT/9105'};
+  await page.addInitScript(profile => {window.fixtureProfile=profile},row);
+  let release;
+  const gate = new Promise(resolve => { release = resolve; });
+  await page.route('**/*', async route => {
+    const path=new URL(route.request().url());
+    if(path.hostname==='127.0.0.1') return route.continue();
+    if(path.hostname!=='fixture.invalid') return route.abort();
+    if(path.pathname.endsWith('/check_own_entry')) { await gate; return route.fulfill({json:row}); }
+    await route.fulfill({json:null});
+  });
+  await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/tests/fixtures/proof-card.html`);
+  await page.getByRole('heading',{name:'Checking your status…'}).waitFor();
+  await page.getByText('Checking…',{exact:true}).waitFor();
+  assert.equal(await page.getByText('Incomplete',{exact:true}).count(),0);
+  release();
+  await page.getByRole('heading',{name:'Finish Verification'}).waitFor();
+  await page.getByText('Incomplete',{exact:true}).waitFor();
 });

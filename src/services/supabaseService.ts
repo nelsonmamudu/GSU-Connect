@@ -5650,3 +5650,45 @@ export function subscribeToVoiceCall(
     supabase.removeChannel(rtcBroadcast);
   };
 }
+
+export interface EntryConfig {
+  graduationClassYear: number;
+  sessionLabel?: string;
+}
+
+/**
+ * Graduate cohort and session hint for the auth screens. Both come from the
+ * server so the class year is configuration rather than a bundled constant.
+ * Returns null when the RPC is unavailable — callers keep their shipped default.
+ */
+export async function fetchEntryConfig(): Promise<EntryConfig | null> {
+  try {
+    const { data, error } = await supabase.rpc('entry_config');
+    if (error || !data || typeof data !== 'object') return null;
+    const record = data as { graduationClassYear?: unknown; sessionLabel?: unknown };
+    const year = Number(record.graduationClassYear);
+    if (!Number.isFinite(year) || year <= 2000) return null;
+    const label = record.sessionLabel;
+    return {
+      graduationClassYear: Math.trunc(year),
+      sessionLabel: typeof label === 'string' && label ? label : undefined,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Older deployments only expose `session_end_year`. Used as a label-only
+ * fallback so the class year is never guessed from the session.
+ */
+export async function fetchSessionEndYear(): Promise<number | null> {
+  try {
+    const { data, error } = await supabase.rpc('session_end_year');
+    if (error) return null;
+    const year = Number(data);
+    return Number.isFinite(year) && year > 2000 ? Math.trunc(year) : null;
+  } catch {
+    return null;
+  }
+}
