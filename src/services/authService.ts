@@ -485,6 +485,34 @@ export async function updateRecoveryEmail(
   }
 }
 
+/**
+ * Starts verification of a NEW recovery inbox. Re-checks the current password
+ * (fresh Turnstile token expected from the caller), then asks the
+ * `recovery-email` function to send a single-use link to the new address.
+ * The old verified inbox stays active until the new one confirms.
+ */
+export async function requestRecoveryEmailVerification(
+  newEmail: string,
+  currentPassword: string,
+  captchaToken?: string
+): Promise<void> {
+  const clean = newEmail.trim().toLowerCase();
+  if (clean.length > 254 || !/^[a-z0-9][a-z0-9._+-]*@[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/.test(clean)) {
+    throw new Error('Please enter a valid email address.');
+  }
+  await verifyOwnPassword(currentPassword, 'verifying a recovery email', captchaToken);
+  const { error } = await supabase.functions.invoke('recovery-email', {
+    body: { action: 'send', email: clean, captchaToken },
+  });
+  if (error) {
+    const status = (error as { context?: { status?: number } })?.context?.status;
+    if (status === 429) {
+      throw new Error('Too many verification requests. Please wait a few minutes and try again.');
+    }
+    throw new Error('Could not send the verification email. Please check your connection and try again.');
+  }
+}
+
 export async function signOutUser(scope: 'local' | 'global' = 'global'): Promise<void> {
   clearCachedWorkspaceStorage();
   const { error } = await supabase.auth.signOut({ scope });

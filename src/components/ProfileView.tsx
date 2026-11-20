@@ -35,7 +35,7 @@ import {
   unstarMessageForUser,
   updateOwnAvatar,
   updateOwnFullName,
-  updateRecoveryEmail,
+  requestRecoveryEmailVerification,
   updateUserLastSeen,
 } from '../services/supabaseService';
 import {
@@ -161,6 +161,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [recoveryPassword, setRecoveryPassword] = useState('');
   const [savingRecovery, setSavingRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
+  // Address awaiting inbox confirmation — shown as "pending" until reload; the
+  // verified binding (and this list) moves only when the new inbox confirms.
+  const [pendingRecovery, setPendingRecovery] = useState('');
 
   // Change password modal
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -298,11 +301,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     setRecoveryError(null);
     setSavingRecovery(true);
     try {
-      await updateRecoveryEmail(cleaned, recoveryPassword, recoveryCheck.consume());
-      setRecoveryEmail(cleaned);
+      await requestRecoveryEmailVerification(cleaned, recoveryPassword, recoveryCheck.consume());
+      setPendingRecovery(cleaned);
       setEditingRecovery(false);
       setRecoveryPassword('');
-      showSavedToast('Recovery email updated.');
+      showSavedToast('Verification link sent. Your current recovery email stays active until the new one is confirmed.');
     } catch (err) {
       setRecoveryError(friendlyEntryError(err, 'Could not update recovery email.'));
     } finally {
@@ -849,7 +852,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
 
           {!editingRecovery ? (
-            recoveryEmail ? (
+            <>
+            {recoveryEmail ? (
               <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 break-all">
                 {recoveryEmail}
               </p>
@@ -859,7 +863,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   ? 'Loading...'
                   : 'No recovery email set — add one for password resets.'}
               </p>
-            )
+            )}
+            {pendingRecovery && (
+              <p className="text-[11px] font-medium text-amber-700 dark:text-amber-400 pt-1">
+                Pending confirmation: {pendingRecovery} — open the link we sent there. Your current recovery email stays active until then.
+              </p>
+            )}
+            </>
           ) : (
             <form onSubmit={handleSaveRecoveryEmail} className="space-y-2 pt-1">
               <div className="flex flex-col gap-2">
