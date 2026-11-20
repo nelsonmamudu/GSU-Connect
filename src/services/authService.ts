@@ -157,7 +157,7 @@ export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'i
       upsert: false,
     });
   if (uploadError) {
-    throw new Error(uploadError.message);
+    throw new Error('Upload failed. Please try again.');
   }
 
   onAttach?.();
@@ -170,7 +170,7 @@ export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'i
     .eq('id', uid).in('status',['pending','rejected']).select('id').single();
 
   if (updateError) {
-    throw new Error(updateError.message);
+    throw new Error('Could not attach proof. Please try again.');
   }
 
   window.dispatchEvent(new CustomEvent('entry-uploaded',{detail:uid}));
@@ -178,7 +178,7 @@ export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'i
 }
 
 /**
- * Resolves a Matric Number, Staff ID, Phone Number, or Email via the
+ * Resolves a Matric Number, Staff ID or email via the
  * `resolve_login` RPC (returns only the minimal internal auth email).
  */
 export async function resolveLoginEmail(rawIdentifier: string): Promise<string> {
@@ -193,8 +193,8 @@ export async function resolveLoginEmail(rawIdentifier: string): Promise<string> 
     if (emailLower.length < 5 || !emailLower.includes('.')) {
       throw new Error('Please enter a valid email address.');
     }
-  } else if (normalizeIdNumber(trimmed).length < 3) {
-    throw new Error('Please enter a valid matric number, Staff ID, phone number, or email.');
+  } else if (normalizeIdNumber(trimmed).length < 3 || (/^[+\d\s().-]+$/.test(trimmed) && trimmed.replace(/\D/g,'').length >= 10)) {
+    throw new Error('Please enter a valid matric number, staff ID or sign-in email.');
   }
 
   assertClientThrottle('login', {
@@ -204,7 +204,7 @@ export async function resolveLoginEmail(rawIdentifier: string): Promise<string> 
     actionLabel: 'signing in again',
   });
 
-  if (isEmailInput && trimmed.toLowerCase().endsWith('@gsuconnect.app')) {
+  if (isEmailInput) {
     return trimmed.toLowerCase();
   }
 
@@ -219,7 +219,7 @@ export async function resolveLoginEmail(rawIdentifier: string): Promise<string> 
     // Fall back below if RPC does not return a mapped email
   }
 
-  return isEmailInput ? trimmed.toLowerCase() : idToInternalEmail(trimmed);
+  return idToInternalEmail(trimmed);
 }
 
 /**
@@ -365,7 +365,7 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
 
   if (input.idCardFile && signUpData.session) {
     uploadedIdCardPath = await uploadIdCardFile(uid, input.idCardFile, input.staffPath).catch((err) => {
-      reportEntryIssue(uid, `Account created. Proof not submitted: ${err instanceof Error ? err.message : 'Upload failed'}. Upload again below.`);
+      reportEntryIssue(uid, `Account created. Proof not submitted: ${err instanceof Error && err.message === 'Could not attach proof. Please try again.' ? 'Could not attach proof.' : 'Upload failed.'} Upload again below.`);
       return undefined;
     });
   }
@@ -406,7 +406,7 @@ export async function verifyOwnPassword(
     throw new Error('Please enter your current password.');
   }
   const { data: userData, error: userErr } = await supabase.auth.getUser();
-  if (userErr || !userData.user) {
+  if (userErr || !userData.user?.email) {
     throw new Error(`Please sign in again before ${action}.`);
   }
   if (userData.user.email) {

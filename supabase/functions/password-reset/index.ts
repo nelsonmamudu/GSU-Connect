@@ -1,3 +1,4 @@
+import {resetOrigin} from './redirect.ts';
 // GSU Connect — Password Reset Edge Function (Hardened)
 // Resolves a Matric Number / Staff ID / Phone Number / GSU email to an account,
 // looks up the recovery email on file, generates a Supabase recovery link, and
@@ -12,6 +13,7 @@
 // Required secrets:
 //   BREVO_API_KEY       — Brevo transactional API key
 //   BREVO_SENDER_EMAIL  — a sender address verified in Brevo
+//   ALLOWED_APP_ORIGINS — comma-separated exact HTTPS origins (no wildcards or paths)
 //   APP_URL             — the deployed app URL (used as the reset redirect)
 
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -236,14 +238,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
         return genericSuccess();
       }
 
-      let safeAppUrl: string;
-      try {
-        const u = new URL(appUrl);
-        if (u.protocol !== 'https:' && u.protocol !== 'http:') {
-          throw new Error('Invalid protocol');
-        }
-        safeAppUrl = u.toString();
-      } catch {
+      const safeAppUrl = resetOrigin(appUrl, Deno.env.get('ALLOWED_APP_ORIGINS'));
+      if (!safeAppUrl) {
         console.error('password-reset: invalid APP_URL configuration');
         await waitResponseFloor(startedAt);
         return genericSuccess();
