@@ -975,7 +975,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               </div>
             </div>
             {viewerError && (
-              <div className="rounded-xl bg-danger-bg/90 border border-danger/80 px-3 py-2 text-xs text-danger-line text-center">
+              <div className="rounded-xl bg-danger-bg/90 border border-danger/80 px-3 py-2 text-xs text-danger text-center">
                 {viewerError}
               </div>
             )}

@@ -85,7 +85,7 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   }
   return {
     label: 'Below Pass',
-    toneClass: 'bg-danger-line text-danger dark:bg-danger-bg/80',
+    toneClass: 'bg-danger-bg text-danger dark:bg-danger-bg/80',
   };
 }
 

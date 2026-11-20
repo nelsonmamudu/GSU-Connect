@@ -1280,7 +1280,7 @@ function MainApp() {
           return (
             <div
               role="status"
-              className="bg-warn-bg dark:bg-warn-bg/70 border-b border-warn-line dark:border-warn/80 text-warn-bg dark:text-warn-line px-4 py-2.5 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5"
+              className="bg-warn-bg dark:bg-warn-bg/70 border-b border-warn-line dark:border-warn/80 text-warn dark:text-warn px-4 py-2.5 text-xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5"
             >
               <div className="flex items-start sm:items-center gap-2 min-w-0">
                 <AlertTriangle className="w-4 h-4 text-warn shrink-0 mt-0.5 sm:mt-0" />
@@ -1351,7 +1351,7 @@ function MainApp() {
         {workspaceError && (
           <div
             role="alert"
-            className="bg-danger-bg dark:bg-danger-bg/60 border-b border-danger-line/80 dark:border-danger/70 text-danger dark:text-danger-line px-4 py-2 text-xs font-medium flex items-center justify-between gap-3"
+            className="bg-danger-bg dark:bg-danger-bg/60 border-b border-danger-line/80 dark:border-danger/70 text-danger px-4 py-2 text-xs font-medium flex items-center justify-between gap-3"
           >
             <span className="truncate">{workspaceError}</span>
             <div className="flex items-center gap-1.5 shrink-0">

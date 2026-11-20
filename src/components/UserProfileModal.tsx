@@ -249,7 +249,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 </h3>
                 <RoleBadge role={roleValue} showStudent />
                 {statusValue === 'suspended' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-danger-line dark:bg-danger-bg/70 text-danger">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-danger-line dark:bg-danger-bg/70 text-ink">
                     Suspended
                   </span>
                 )}
@@ -334,7 +334,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           )}
 
           {errorMsg && (
-            <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
+            <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
               {errorMsg}
             </div>
           )}

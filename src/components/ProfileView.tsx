@@ -1215,7 +1215,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </div>
 
             {avatarError && (
-              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
                 {avatarError}
               </div>
             )}
@@ -1347,7 +1347,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
               {passwordCheck.widget}
               {passwordError && (
-                <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
+                <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
                   {passwordError}
                 </div>
               )}
@@ -1584,7 +1584,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
                 {deleteCheck.widget}
                 {deleteError && (
-                  <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
+                  <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
                     {deleteError}
                   </div>
                 )}

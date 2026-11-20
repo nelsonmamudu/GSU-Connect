@@ -2153,7 +2153,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       part.toLowerCase() === trimmedInChatQuery ? (
         <mark
           key={`${keyPrefix}-${idx}`}
-          className="bg-warn/90 dark:bg-warn/40 text-ink dark:text-warn-bg rounded px-0.5 font-semibold"
+          className="bg-warn-on text-warn dark:bg-warn-on/25 dark:text-warn rounded px-0.5 font-semibold"
         >
           {part}
         </mark>
@@ -2344,7 +2344,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   <span
                     className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide shrink-0 inline-flex items-center gap-1 ${
                       chat.radarStatus === 'class_cancelled'
-                        ? 'bg-danger-line dark:bg-danger-bg/70 text-danger'
+                        ? 'bg-danger-line dark:bg-danger-bg/70 text-ink'
                         : chat.radarStatus === 'venue_changed'
                           ? 'bg-warn-line dark:bg-warn-bg/70 text-warn'
                           : 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
@@ -3693,7 +3693,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     <div
                                       className={`w-10 h-10 rounded-lg shrink-0 flex flex-col items-center justify-center font-mono text-[10px] font-bold tracking-tight ${
                                         isMine
-                                          ? 'bg-on-brand/20 text-on-brand'
+                                          ? 'bg-on-brand/15 text-on-brand'
                                           : 'bg-info-line dark:bg-info-bg/70 text-info'
                                       }`}
                                     >
@@ -3792,7 +3792,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 <div
                                   className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center ${
                                     isMine
-                                      ? 'bg-on-brand/20 text-on-brand'
+                                      ? 'bg-on-brand/15 text-on-brand'
                                       : 'bg-warn-line dark:bg-warn/60 text-warn'
                                   }`}
                                 >
@@ -3875,7 +3875,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   roundedClass="rounded-full"
                                   fallbackClassName={
                                     isMine
-                                      ? 'bg-on-brand/20 text-on-brand'
+                                      ? 'bg-on-brand/15 text-on-brand'
                                       : 'bg-info-line dark:bg-info-bg/70 text-info dark:text-info-line'
                                   }
                                 />
@@ -3923,7 +3923,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   onClick={() => handleMessageSharedContact(msg)}
                                   className={`w-full min-h-[36px] rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60 ${
                                     isMine
-                                      ? 'bg-on-brand/20 hover:bg-white/30 text-on-brand'
+                                      ? 'bg-on-brand/15 text-on-brand hover:ring-1 hover:ring-inset hover:ring-on-brand/60'
                                       : 'bg-brand hover:bg-brand-strong text-on-brand'
                                   }`}
                                 >

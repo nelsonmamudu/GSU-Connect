@@ -363,7 +363,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
       </div>
 
       {bannerError && (
-        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger dark:text-danger-line flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger flex items-center justify-between gap-2">
           <span>{bannerError}</span>
           <button
             type="button"
@@ -829,7 +829,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
             </div>
 
             {formError && (
-              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger dark:text-danger-line">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
                 {formError}
               </div>
             )}
