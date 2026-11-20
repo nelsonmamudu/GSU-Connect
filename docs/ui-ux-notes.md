@@ -520,6 +520,28 @@ destination) without spelling out "from" and "to". Two caveats: an icon is not u
 understood, so keep an accessible label or equivalent text; and hierarchy is a set of
 principles, not one mandatory arrangement — pick the layout that fits the content.
 
+### 5.4 A six-stage design process (secondary — process claim only, no stage detail)
+
+Source: "Our World Class App Design Formula" (Tim Gabe, `youtu.be/wmTkiF23GRQ`). The
+transcript covers only the introduction, names the six stages, then cuts off during the
+onboarding discussion. The guide itself flags that its per-stage descriptions are
+interpretation, not transcription. **No method, spec or technique is recoverable from it.**
+
+What is recordable is the ordering claim:
+
+> Onboarding → Discovery → UX → UI → Emotional integration → Delivery
+
+- **Foundation before finishes.** The analogy is building a house: establish the foundation
+  before adding the finishes. Do not jump into visual design early.
+- Two named failure modes: researching endlessly without ever testing in practice, and
+  skipping research altogether. Both produce rework and "flat" products.
+- Emotional integration is a distinct stage rather than an afterthought — that is §5.1's
+  subject.
+
+**Why this is recorded at all:** it is a process claim, not a design rule, and its value
+here is confirmatory. We are currently in the Discovery/UX stage — building the spec before
+touching the UI — which is the order it argues for. Nothing in it changes §2 or §3.
+
 ---
 
 ## 6. How to use this later
