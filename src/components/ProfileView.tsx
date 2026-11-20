@@ -1,3 +1,4 @@
+import {useTurnstile} from './Turnstile';
 import {friendlyEntryError} from '../utils/entryErrors';
 import { AdminTotp } from './AdminTotp';
 import React, { useEffect, useRef, useState } from 'react';
@@ -156,12 +157,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [loadingRecovery, setLoadingRecovery] = useState(true);
   const [editingRecovery, setEditingRecovery] = useState(false);
   const [recoveryInput, setRecoveryInput] = useState('');
+  const recoveryCheck = useTurnstile('recovery');
   const [recoveryPassword, setRecoveryPassword] = useState('');
   const [savingRecovery, setSavingRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
 
   // Change password modal
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const passwordCheck = useTurnstile('password');
+  const deleteCheck = useTurnstile('delete');
   const [currentPasswordInput, setCurrentPasswordInput] = useState('');
   const [newPasswordInput, setNewPasswordInput] = useState('');
   const [confirmPasswordInput, setConfirmPasswordInput] = useState('');
@@ -294,7 +298,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     setRecoveryError(null);
     setSavingRecovery(true);
     try {
-      await updateRecoveryEmail(cleaned, recoveryPassword);
+      await updateRecoveryEmail(cleaned, recoveryPassword, recoveryCheck.consume());
       setRecoveryEmail(cleaned);
       setEditingRecovery(false);
       setRecoveryPassword('');
@@ -324,7 +328,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     }
     setSavingPassword(true);
     try {
-      await changeOwnPassword(currentPasswordInput, newPasswordInput);
+      await changeOwnPassword(currentPasswordInput, newPasswordInput,passwordCheck.consume());
       setPasswordModalOpen(false);
       setCurrentPasswordInput('');
       setNewPasswordInput('');
@@ -360,7 +364,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     setDeleteError(null);
     setDeletingAccount(true);
     try {
-      const outcome = await requestOwnAccountDeletion(deletePasswordInput);
+      const outcome = await requestOwnAccountDeletion(deletePasswordInput,deleteCheck.consume());
       if (outcome === 'deleted') {
         clearUserDeviceData();
         setDeleteModalOpen(false);
@@ -883,6 +887,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 aria-label="Current password"
                 className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
               />
+                {recoveryCheck.widget}
                 <div className="flex gap-2">
                   <button
                     type="submit"
@@ -1280,6 +1285,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 />
               </div>
 
+              {passwordCheck.widget}
               {passwordError && (
                 <div className="rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/70 px-3 py-2 text-xs text-rose-700 dark:text-rose-200">
                   {passwordError}
@@ -1516,6 +1522,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   />
                 </div>
 
+                {deleteCheck.widget}
                 {deleteError && (
                   <div className="rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900/70 px-3 py-2 text-xs text-rose-700 dark:text-rose-200">
                     {deleteError}

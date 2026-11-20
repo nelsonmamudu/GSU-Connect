@@ -1,3 +1,4 @@
+import {verifyTurnstile} from './turnstile.ts';
 import {resetOrigin} from './redirect.ts';
 // GSU Connect — Password Reset Edge Function (Hardened)
 // Resolves a Matric Number / Staff ID / Phone Number / GSU email to an account,
@@ -241,6 +242,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const safeAppUrl = resetOrigin(appUrl, Deno.env.get('ALLOWED_APP_ORIGINS'));
       if (!safeAppUrl) {
         console.error('password-reset: invalid APP_URL configuration');
+        await waitResponseFloor(startedAt);
+        return genericSuccess();
+      }
+
+      if (!await verifyTurnstile((parsedBody as {captchaToken?:unknown}).captchaToken, Deno.env.get('TURNSTILE_SECRET_KEY'))) {
         await waitResponseFloor(startedAt);
         return genericSuccess();
       }
