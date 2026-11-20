@@ -12,7 +12,7 @@
 //   * takes NO input: query string, body and headers are ignored
 //   * deletes only (a) queued paths whose owner is approved, (b) verified orphans
 //   * running it twice is safe (ack only clears rows whose object is gone)
-//   * responds with counts only — never paths, names or file ids
+//   * reports counts on success, stage and code on failure — never paths, names or file ids
 import { createClient } from '@supabase/supabase-js';
 import { timingSafeEqual } from 'node:crypto';
 
@@ -35,43 +35,52 @@ export default async function handler(req, res) {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return res.status(500).json({ error: 'Missing Supabase configuration' });
 
-  const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-
+  let stage = 'init';
   try {
+    const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
     let approved = 0;
     let orphans = 0;
 
     // 1. Queued proofs whose owner is approved. The RPC re-checks the owner at read
     //    time, so a path is never removed for a pending/rejected/suspended account.
     for (let i = 0; i < 5; i++) {
+      stage = 'batch_rpc';
       const { data, error } = await db.rpc('entry_cleanup_batch_approved', { p_limit: 100 });
       if (error) throw error;
       const paths = (data ?? []).map((row) => row.path);
       if (paths.length === 0) break;
 
+      stage = 'storage_remove';
       const removed = await db.storage.from('id-cards').remove(paths);
       if (removed.error) throw removed.error;
 
+      stage = 'ack';
       const ack = await db.rpc('entry_cleanup_ack', { paths });
       if (ack.error) throw ack.error;
+      if (ack.data !== true) throw new Error();
       approved += paths.length;
     }
 
     // 2. Verified orphans: objects whose first path segment has no profile row at all.
     for (let i = 0; i < 2; i++) {
+      stage = 'orphan_rpc';
       const { data, error } = await db.rpc('entry_orphan_batch', { p_limit: 50 });
       if (error) throw error;
       const paths = data ?? [];
       if (paths.length === 0) break;
 
+      stage = 'orphan_remove';
       const removed = await db.storage.from('id-cards').remove(paths);
       if (removed.error) throw removed.error;
       orphans += paths.length;
     }
 
     return res.status(200).json({ deleted: approved + orphans, approved, orphans });
-  } catch {
-    // Counts only; no path or error detail leaves the function.
-    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain' });
+  } catch (error) {
+    const code = [error?.code, error?.status].find(value =>
+      Number.isSafeInteger(value) || (typeof value === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(value))
+    ) ?? null;
+    console.error(JSON.stringify({ stage, code }));
+    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', stage, code });
   }
 }
