@@ -198,3 +198,48 @@
     }
   }
 }
+
+/*
+ * Always-dark surfaces. A call sheet, a lightbox, a view-once viewer sits on a
+ * scrim and is dark in both themes, so the role tokens — which swap with the
+ * theme — are the wrong thing to reach for inside one. These are the dark-theme
+ * values, pinned: `on-dark-ink` for text, `on-dark-success` / `-warn` /
+ * `-danger` for state, `on-dark-fill` for the panel itself.
+ */
+@utility bg-on-dark {
+  background-color: #1d1b17;
+}
+
+@utility text-on-dark {
+  color: #f5f4f1;
+}
+
+@utility text-on-dark-muted {
+  color: #b3afa4;
+}
+
+@utility text-on-dark-success {
+  color: #6fd3ac;
+}
+
+@utility text-on-dark-warn {
+  color: #f0b45a;
+}
+
+@utility text-on-dark-danger {
+  color: #f97066;
+}
+
+@utility bg-on-dark-danger {
+  background-color: #f97066;
+  color: #2c1412;
+}
+
+@utility bg-on-dark-brand {
+  background-color: #4fa582;
+  color: #0e1a14;
+}
+
+@utility border-on-dark {
+  border-color: #4a463f;
+}
