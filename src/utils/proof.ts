@@ -23,3 +23,13 @@ export function extractProofFields(text: string, departments: string[]) {
     department: departments.find((d) => d.toLowerCase() === dept?.toLowerCase()),
   };
 }
+
+export function proofFileName(path?: string | null): string {
+  if (!path) return '';
+  const base = path.split('/').pop() || path;
+  const withoutUuid = base.replace(
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_/i,
+    ''
+  );
+  return withoutUuid || base;
+}

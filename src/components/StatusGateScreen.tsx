@@ -1,6 +1,6 @@
 import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
 import {noFileMessage, prepareReviewProof} from '../utils/prepareReviewProof';
-import {studentProof,staffProof} from '../utils/proof';
+import {studentProof,staffProof,proofFileName} from '../utils/proof';
 import {takeEntryIssue} from '../services/entryFeedback';
 import { mapProfileRowToAppUser } from '../services/supabaseService';
 import React, { useEffect, useRef, useState } from 'react';
@@ -44,16 +44,6 @@ function toTitleCase(name: string): string {
     .filter(Boolean)
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
     .join(' ');
-}
-
-function extractFileNameFromPath(path?: string | null): string {
-  if (!path) return '';
-  const base = path.split('/').pop() || path;
-  const withoutUuid = base.replace(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_/i,
-    ''
-  );
-  return withoutUuid || base;
 }
 
 export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
@@ -306,7 +296,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     }
   };
 
-  const noFile = () => setFeedback({type:'error', text:noFileMessage});
+  const noFile = (accept: string) => setFeedback({type:'error', text:accept === 'application/pdf' ? 'No PDF received. Try again and choose a PDF from Files.' : noFileMessage});
   const submitAttached = async () => {
     setUploadStep('Submitting…');
     const {error} = await supabase.rpc('resubmit_signup');
@@ -327,7 +317,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const handleUploadIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const original = e.target.files?.[0];
     e.target.value = '';
-    if (!original) { noFile(); return; }
+    if (!original) { noFile(e.currentTarget.accept); return; }
     setUploadingIdCard(true);
     setFeedback(null);
     let stage = 'prepare';
@@ -368,7 +358,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         ? 'Pending Admin Verification'
         : 'Waiting for Approval';
 
-  const attachedFileName = uploadedFileName || extractFileNameFromPath(user.idCardPath);
+  const attachedFileName = uploadedFileName || proofFileName(user.idCardPath);
 
   const description = isSuspended
     ? 'Your GSU Connect account has been suspended by an administrator due to a moderation review. You cannot read or send messages while suspended.'
@@ -466,7 +456,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     <Upload className="w-4 h-4" />{accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
                     <input type="file" accept={accept} disabled={uploadingIdCard}
                       aria-label={accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
-                      ref={node => { if (node) node.oncancel = noFile; }} onChange={handleUploadIdCard}
+                      ref={node => { if (node) node.oncancel = () => noFile(accept); }} onChange={handleUploadIdCard}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   </label>
                 ))}
@@ -624,10 +614,10 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           )}
 
           <div className="space-y-1.5">
-            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 gap-y-1">
+            <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1">
               <span className="text-slate-500 dark:text-slate-400">Recovery Email</span>
               {!editingRecovery && (
-                <span className="text-right text-sm font-medium text-slate-900 dark:text-slate-100 break-all">
+                <span className="overflow-x-auto whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">
                   {loadingRecovery ? 'Loading...' : recoveryEmail || 'Not set'}
                 </span>
               )}
@@ -635,7 +625,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 <button
                   type="button"
                   onClick={handleOpenEditRecovery}
-                  className="col-start-2 justify-self-end text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                  className="justify-self-start text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <Edit3 className="w-3 h-3" />
                   <span>Edit details</span>

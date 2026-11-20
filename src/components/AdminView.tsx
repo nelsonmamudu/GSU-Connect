@@ -132,6 +132,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     user: AppUser;
     url: string | null;
     isPdf: boolean;
+    fileName?: string;
     loading: boolean;
     error: string | null;
   } | null>(null);
@@ -404,6 +405,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         user,
         url: signed.url,
         isPdf: signed.isPdf,
+        fileName: signed.fileName,
         loading: false,
         error: null,
       });
@@ -1944,6 +1946,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   <p className="text-xs font-mono text-slate-500 dark:text-slate-400 truncate">
                     {idCardModal.user.idNumber}
                   </p>
+                  {idCardModal.fileName && <p className="text-sm break-words">{idCardModal.fileName}</p>}
                 </div>
               </div>
               <button
@@ -1969,7 +1972,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 idCardModal.isPdf ? (
                   <iframe
                     src={idCardModal.url}
-                    title="Verification document PDF"
+                    title={idCardModal.fileName || "Verification document PDF"}
                     className="w-full h-[360px] rounded-xl border border-slate-200 dark:border-slate-700"
                   />
                 ) : (
