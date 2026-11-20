@@ -77,6 +77,17 @@
   --color-info: #1d4ed8;
   --color-info-bg: #eef3fe;
   --color-info-line: #cfdcfb;
+
+  /*
+   * Text on a solid state fill. `bg-danger` swaps with the theme like every
+   * other role token, so `text-white` on it is 6.57:1 in light mode and 2.79:1
+   * in dark mode. These are the matching opposites: pale tints on the light
+   * fills, deep tints on the dark ones. Each pair clears 4.5:1 on its own fill.
+   */
+  --color-danger-on: #fdecea;
+  --color-warn-on: #fcf3e2;
+  --color-success-on: #eaf6f0;
+  --color-info-on: #eef3fe;
 }
 
 @layer base {
@@ -108,6 +119,11 @@
     --color-info: #8fb0f5;
     --color-info-bg: #131e33;
     --color-info-line: #2a3a5c;
+
+    --color-danger-on: #2c1412;
+    --color-warn-on: #2a1e0c;
+    --color-success-on: #04241a;
+    --color-info-on: #131e33;
   }
 
   html, body {

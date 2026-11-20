@@ -964,7 +964,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <button
                     type="button"
                     onClick={() => { void signOutUser('local'); }}
-                    className="min-h-[36px] px-3 rounded-lg bg-warn text-white text-[11px] font-semibold"
+                    className="min-h-[36px] px-3 rounded-lg bg-warn text-warn-on text-[11px] font-semibold"
                   >
                     Sign in again
                   </button>
@@ -1120,7 +1120,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               setDeleteManualRequired(false);
               setDeleteModalOpen(true);
             }}
-            className="min-h-[38px] px-3.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
+            className="min-h-[38px] px-3.5 rounded-xl bg-danger hover:bg-danger text-danger-on text-xs font-semibold inline-flex items-center gap-1.5 shrink-0 cursor-pointer"
           >
             <Trash2 className="w-3.5 h-3.5" />
             <span>Delete Account</span>
@@ -1519,7 +1519,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
                 <a
                   href={ndpaMailtoHref}
-                  className="w-full min-h-[44px] px-4 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors"
+                  className="w-full min-h-[44px] px-4 rounded-xl bg-danger hover:bg-danger text-danger-on text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors"
                 >
                   <Mail className="w-4 h-4" />
                   <span>Send NDPA Deletion Email ({SUPPORT_EMAIL})</span>
@@ -1601,7 +1601,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <button
                     type="submit"
                     disabled={deletingAccount || deleteConfirmText.trim().toUpperCase() !== 'DELETE' || !deletePasswordInput}
-                    className="min-h-[40px] px-4 rounded-xl bg-danger hover:bg-danger disabled:opacity-50 text-white text-xs font-semibold cursor-pointer"
+                    className="min-h-[40px] px-4 rounded-xl bg-danger hover:bg-danger disabled:opacity-50 text-danger-on text-xs font-semibold cursor-pointer"
                   >
                     {deletingAccount ? 'Processing...' : 'Confirm Deletion'}
                   </button>

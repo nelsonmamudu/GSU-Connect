@@ -695,7 +695,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                               type="button"
                               onClick={() => handleDelete(item)}
                               disabled={isBusy}
-                              className="min-h-[42px] px-2.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
+                              className="min-h-[42px] px-2.5 rounded-xl bg-danger hover:bg-danger text-danger-on text-xs font-semibold cursor-pointer"
                             >
                               {isBusy ? '...' : 'Delete'}
                             </button>

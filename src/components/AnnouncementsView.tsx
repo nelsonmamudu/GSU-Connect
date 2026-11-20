@@ -261,7 +261,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                             type="button"
                             disabled={isDeleting}
                             onClick={() => handleDeleteAnnouncement(item.id)}
-                            className="min-h-[28px] px-2 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[28px] px-2 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-[11px] font-semibold cursor-pointer"
                           >
                             {isDeleting ? 'Deleting...' : 'Confirm'}
                           </button>

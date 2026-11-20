@@ -1361,7 +1361,7 @@ function MainApp() {
                   setWorkspaceError(null);
                   workspaceHandleRef.current?.retryAll();
                 }}
-                className="min-h-[28px] px-2.5 rounded-lg bg-danger hover:bg-danger text-white font-semibold text-[11px] cursor-pointer"
+                className="min-h-[28px] px-2.5 rounded-lg bg-danger hover:bg-danger text-danger-on font-semibold text-[11px] cursor-pointer"
               >
                 Retry
               </button>

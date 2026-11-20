@@ -561,7 +561,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                             type="button"
                             onClick={() => handleDelete(item)}
                             disabled={deletingId === item.id}
-                            className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-[11px] font-semibold cursor-pointer"
                           >
                             {deletingId === item.id ? 'Deleting...' : 'Confirm'}
                           </button>

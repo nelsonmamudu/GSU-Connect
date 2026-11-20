@@ -937,7 +937,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                         type="button"
                         disabled={deletingBusy}
                         onClick={handleDeleteActiveSlide}
-                        className="min-h-[34px] px-2.5 rounded-full bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
+                        className="min-h-[34px] px-2.5 rounded-full bg-danger hover:bg-danger text-danger-on text-xs font-semibold cursor-pointer"
                       >
                         {deletingBusy ? '...' : 'Confirm'}
                       </button>

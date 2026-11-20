@@ -63,11 +63,11 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
 
     const badgeClass =
       status === 'class_cancelled'
-        ? 'bg-danger text-white'
+        ? 'bg-danger text-danger-on'
         : status === 'venue_changed'
-          ? 'bg-warn text-white'
+          ? 'bg-warn text-warn-on'
           : status === 'exam_countdown'
-            ? 'bg-info text-white'
+            ? 'bg-info text-info-on'
             : 'bg-brand text-on-brand';
 
     return (
@@ -110,7 +110,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
                   <span
                     className={`px-2 py-0.5 rounded-lg font-mono text-[11px] font-bold tabular-nums ${
                       countdown.expired
-                        ? 'bg-danger text-white'
+                        ? 'bg-danger text-danger-on'
                         : 'bg-slate-900 dark:bg-sunken text-white'
                     }`}
                   >
@@ -141,7 +141,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
                       await onClear();
                       setConfirmingClear(false);
                     }}
-                    className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger text-white text-[11px] font-semibold cursor-pointer"
+                    className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger text-danger-on text-[11px] font-semibold cursor-pointer"
                   >
                     {radarSaving ? '...' : 'Clear'}
                   </button>

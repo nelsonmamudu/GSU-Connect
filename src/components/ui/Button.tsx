@@ -29,7 +29,7 @@ const variants: Record<ButtonVariant, string> = {
   ghost: 'text-ink-muted hover:bg-sunken',
   danger:
     'border border-line bg-surface hover:bg-danger-bg hover:border-danger-line hover:text-danger text-ink-soft',
-  dangerSolid: 'bg-danger hover:bg-danger/90 text-white',
+  dangerSolid: 'bg-danger hover:bg-danger/90 text-danger-on',
 };
 
 /**

@@ -1259,7 +1259,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             type="button"
                             disabled={busyId === report.id}
                             onClick={() => handleSuspendReportedUser(report)}
-                            className="min-h-[42px] px-3.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
+                            className="min-h-[42px] px-3.5 rounded-xl bg-danger hover:bg-danger text-danger-on text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                           >
                             <Ban className="w-4 h-4" />
                             <span>Suspend User</span>
@@ -1668,7 +1668,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                             type="button"
                             disabled={busyId === group.id}
                             onClick={() => handleDeleteGroup(group)}
-                            className="min-h-[30px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[30px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-[11px] font-semibold cursor-pointer"
                           >
                             {busyId === group.id ? 'Deleting...' : 'Confirm'}
                           </button>
@@ -2038,7 +2038,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === rejectTarget.uid || !rejectionReasonInput.trim()}
                 onClick={() => handleDecision(rejectTarget, 'rejected', rejectionReasonInput)}
-                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-sm font-semibold cursor-pointer"
               >
                 {busyId === rejectTarget.uid ? 'Rejecting...' : 'Confirm Reject'}
               </button>
@@ -2154,7 +2154,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === expireTarget.uid}
                 onClick={handleConfirmExpireUser}
-                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-sm font-semibold cursor-pointer"
               >
                 {busyId === expireTarget.uid ? 'Expiring...' : 'Expire Account'}
               </button>
@@ -2294,7 +2294,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 type="button"
                 disabled={busyId === deleteDeptTarget.id}
                 onClick={handleConfirmDeleteDepartment}
-                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-sm font-semibold cursor-pointer"
               >
                 {busyId === deleteDeptTarget.id ? 'Removing...' : 'Delete Department'}
               </button>

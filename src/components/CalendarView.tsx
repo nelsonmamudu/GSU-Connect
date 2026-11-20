@@ -523,7 +523,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                       type="button"
                                       onClick={() => handleDelete(ev)}
                                       disabled={busyId === ev.id}
-                                      className="min-h-[32px] px-2 rounded-lg bg-danger hover:bg-danger text-white text-[11px] font-semibold cursor-pointer"
+                                      className="min-h-[32px] px-2 rounded-lg bg-danger hover:bg-danger text-danger-on text-[11px] font-semibold cursor-pointer"
                                     >
                                       {busyId === ev.id ? '...' : 'Confirm'}
                                     </button>

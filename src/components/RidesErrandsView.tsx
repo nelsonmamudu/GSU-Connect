@@ -580,7 +580,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                               type="button"
                               disabled={deletingId === post.id}
                               onClick={() => handleDelete(post.id)}
-                              className="min-h-[38px] px-2.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
+                              className="min-h-[38px] px-2.5 rounded-xl bg-danger hover:bg-danger text-danger-on text-xs font-semibold cursor-pointer"
                             >
                               {deletingId === post.id ? '...' : 'Confirm'}
                             </button>

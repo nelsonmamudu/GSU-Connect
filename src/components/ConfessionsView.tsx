@@ -300,7 +300,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               >
                 <span>Moderation Queue</span>
                 {pendingQueue.length > 0 && (
-                  <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-warn text-white text-[10px] font-bold tabular-nums flex items-center justify-center">
+                  <span className="min-w-[18px] h-[18px] px-1 rounded-full bg-warn text-warn-on text-[10px] font-bold tabular-nums flex items-center justify-center">
                     {pendingQueue.length}
                   </span>
                 )}
@@ -560,7 +560,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                             type="button"
                             disabled={deletingId === post.id}
                             onClick={() => handleDelete(post.id)}
-                            className="min-h-[36px] px-2.5 rounded-xl bg-danger hover:bg-danger text-white text-xs font-semibold cursor-pointer"
+                            className="min-h-[36px] px-2.5 rounded-xl bg-danger hover:bg-danger text-danger-on text-xs font-semibold cursor-pointer"
                           >
                             {deletingId === post.id ? '...' : 'Confirm'}
                           </button>

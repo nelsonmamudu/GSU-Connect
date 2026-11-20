@@ -4790,7 +4790,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 <button
                   type="submit"
                   disabled={submittingReport}
-                  className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-sm font-semibold cursor-pointer"
                 >
                   {submittingReport ? 'Submitting...' : 'Submit Report'}
                 </button>
@@ -5346,7 +5346,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 type="button"
                 disabled={deletingMsgBusy}
                 onClick={handleConfirmDeleteMessage}
-                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                className="flex-1 min-h-[44px] rounded-xl bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-sm font-semibold cursor-pointer"
               >
                 {deletingMsgBusy ? 'Deleting...' : 'Delete Message'}
               </button>
