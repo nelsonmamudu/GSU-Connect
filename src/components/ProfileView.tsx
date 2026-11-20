@@ -268,7 +268,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const showSavedToast = (message = 'Profile updated.') => {
     setSavedBannerText(message);
     if (savedTimerRef.current) window.clearTimeout(savedTimerRef.current);
-    savedTimerRef.current = window.setTimeout(() => setSavedBannerText(null), 3500);
+    savedTimerRef.current = window.setTimeout(() => setSavedBannerText(null), 4000);
   };
 
   const handleSaveName = async (e: React.FormEvent) => {
@@ -621,7 +621,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         )}
 
         {savedBannerText && (
-          <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-3 py-2 text-xs text-emerald-900 dark:text-emerald-200 inline-flex items-center gap-1.5">
+          <div
+            role="status"
+            className="rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-3 py-2 text-xs text-emerald-900 dark:text-emerald-200 inline-flex items-center gap-1.5"
+          >
             <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
             <span>{savedBannerText}</span>
           </div>

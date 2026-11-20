@@ -6,6 +6,8 @@ export { Button } from './Button';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './Button';
 export { Card } from './Card';
 export type { CardProps } from './Card';
+export { Chip, ChipRow } from './Chip';
+export type { ChipProps, ChipRowProps } from './Chip';
 export { EmptyState } from './EmptyState';
 export type { EmptyStateProps } from './EmptyState';
 export { Field } from './Field';

@@ -128,6 +128,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [step, setStep] = useState<SignupStep>(1);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
+  const submittingRef = useRef(false);
   const challenge = useTurnstile(mode);
   const [staffPath,setStaffPath]=useState<StaffPath>('email');
   const [accountType, setAccountType] = useState<AccountType>('student');
@@ -430,6 +431,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Double-submit guard: the button also goes busy, but a second Enter or a
+    // double tap can still re-enter before the first request resolves.
+    if (submittingRef.current) return;
     setError(null);
 
     const next =
@@ -443,6 +447,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
       return;
     }
 
+    submittingRef.current = true;
     setSubmitting(true);
 
     try {
@@ -517,6 +522,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
       trackFunnel('auth_error', { mode, message: formatAuthError(err) });
       setError(formatAuthError(err));
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };
@@ -1076,6 +1082,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const submittingRef = useRef(false);
   const [fieldErrors, setFieldErrors] = useState<
     Partial<Record<'password' | 'confirmPassword', string>>
   >({});
@@ -1132,6 +1139,8 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
       setTouched({ password: true, confirmPassword: true });
       return;
     }
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     try {
       const { error: updateError } = await supabase.auth.updateUser({ password });
@@ -1140,6 +1149,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
     } catch (err) {
       setError(formatAuthError(err));
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   };

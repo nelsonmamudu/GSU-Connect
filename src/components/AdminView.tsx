@@ -60,6 +60,7 @@ import { Alert } from './ui/Alert';
 import { Badge } from './ui/Badge';
 import { Button } from './ui/Button';
 import { Card } from './ui/Card';
+import { Chip, ChipRow } from './ui/Chip';
 import { EmptyState } from './ui/EmptyState';
 import { Field } from './ui/Field';
 import { Input } from './ui/Input';
@@ -916,23 +917,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 </Field>
               </div>
 
-              <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter pending sign-ups">
+              <ChipRow label="Filter pending sign-ups">
                 {pendingFilterOptions.map((option) => (
-                  <Button
+                  <Chip
                     key={option.key}
-                    type="button"
-                    size="sm"
-                    variant={pendingFilter === option.key ? 'secondary' : 'outline'}
-                    aria-pressed={pendingFilter === option.key}
+                    active={pendingFilter === option.key}
+                    count={option.count}
                     onClick={() => setPendingFilter(option.key)}
                   >
                     {option.label}
-                    {typeof option.count === 'number' ? ` (${option.count})` : ''}
-                  </Button>
+                  </Chip>
                 ))}
-              </div>
+                {pendingFilter !== 'all' && (
+                  <Chip
+                    onClick={() => setPendingFilter('all')}
+                    label="Clear filter"
+                  >
+                    Clear filter
+                  </Chip>
+                )}
+              </ChipRow>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 tabular-nums">
                 Showing {visiblePending.length} of {pendingSummary.total}
                 {pendingSummary.oldestWaitingHours !== null &&
                   ` · oldest waiting ${pendingSummary.oldestWaitingHours}h`}
@@ -945,7 +951,16 @@ export const AdminView: React.FC<AdminViewProps> = ({
               icon={UserCheck}
               title="All caught up"
               body="There are no pending account registrations waiting for approval."
-            />
+            >
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setSubTab('users')}
+              >
+                Review approved accounts
+              </Button>
+            </EmptyState>
           ) : visiblePending.length === 0 ? (
             <EmptyState
               icon={Search}
@@ -989,7 +1004,10 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       />
                       <div className="min-w-0 flex-1 space-y-1">
                         <div className="flex items-center justify-between gap-2 flex-wrap">
-                          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate">
+                          <h3
+                            className="text-sm font-bold text-slate-900 dark:text-slate-100 truncate"
+                            title={user.fullName}
+                          >
                             {user.fullName}
                           </h3>
                           <Badge tone={isLecturerReq ? 'indigo' : 'slate'} className="shrink-0">
@@ -1015,11 +1033,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           </span>
                         </p>
 
-                        {user.email && (
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">
-                            Email: {user.email}
-                          </p>
-                        )}
+                        <p
+                          className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate"
+                          title={user.email || undefined}
+                        >
+                          Email:{' '}
+                          <span className="text-slate-700 dark:text-slate-300">
+                            {user.email || '—'}
+                          </span>
+                        </p>
                       </div>
                     </div>
 
@@ -1076,7 +1098,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </Alert>
                     )}
                     {confirmId === user.uid ? (
-                      <div className="rounded-xl border border-emerald-300 p-3 space-y-2">
+                      <div className="rounded-xl border border-emerald-300 dark:border-emerald-800/70 p-3 space-y-2">
                         {!isLecturerReq && levelDifference(user.level,selectedLevel(user)) && (
                           <p className="text-sm font-medium text-amber-700">
                             {levelDifference(user.level,selectedLevel(user))}
@@ -1086,10 +1108,21 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           Approve {user.fullName} as {isLecturerReq ? 'staff' : selectedLevel(user)}?
                         </p>
                         <div className="flex gap-2">
-                          <Button type="button" disabled={!!busyId} onClick={() => void handleDecision(user, 'approved')}>
+                          <Button
+                            type="button"
+                            loading={busyId === user.uid}
+                            loadingLabel="Approving…"
+                            disabled={!!busyId && busyId !== user.uid}
+                            onClick={() => void handleDecision(user, 'approved')}
+                          >
                             Confirm
                           </Button>
-                          <Button type="button" variant="outline" disabled={!!busyId} onClick={() => setConfirmId(null)}>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            disabled={busyId === user.uid}
+                            onClick={() => setConfirmId(null)}
+                          >
                             Cancel
                           </Button>
                         </div>
@@ -1100,7 +1133,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           type="button"
                           variant="danger"
                           full
-                          disabled={!!busyId}
+                          disabled={!!busyId && busyId !== user.uid}
                           onClick={() => {
                             setRejectTarget(user);
                             setRejectionReasonInput('');
@@ -1112,7 +1145,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         <Button
                           type="button"
                           full
-                          disabled={!!busyId}
+                          disabled={!!busyId && busyId !== user.uid}
                           onClick={() => {
                             setCohortNotice('');
                             if (!isLecturerReq && !selectedLevel(user)) {
@@ -1138,10 +1171,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
               <Button
                 type="button"
                 variant="outline"
-                disabled={loadingMore}
+                loading={loadingMore}
+                loadingLabel="Loading…"
                 onClick={() => onLoadMore('hasMorePendingUsers')}
               >
-                {loadingMore ? 'Loading…' : 'Load more pending accounts'}
+                Load more pending accounts
               </Button>
             </div>
           )}
@@ -1152,13 +1186,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {subTab === 'reports' && (
         <>
           {reports.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
-              <Flag className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">No reports</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Reported messages from chats will appear here for moderation review.
-              </p>
-            </div>
+            <EmptyState
+              icon={Flag}
+              title="No reports"
+              body="Reported messages from chats will appear here for moderation review."
+            />
           ) : (
             <div className="space-y-3">
               {reports.map((report) => {
@@ -1254,14 +1286,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
           )}
           {hasMoreReports && onLoadMore && (
             <div className="flex justify-center pt-2">
-              <button
+              <Button
                 type="button"
-                disabled={loadingMore}
+                variant="outline"
+                loading={loadingMore}
+                loadingLabel="Loading…"
                 onClick={() => onLoadMore('hasMoreReports')}
-                className="min-h-[40px] px-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer disabled:opacity-60"
               >
-                {loadingMore ? 'Loading...' : 'Load more reports'}
-              </button>
+                Load more reports
+              </Button>
             </div>
           )}
         </>
@@ -1317,17 +1350,26 @@ export const AdminView: React.FC<AdminViewProps> = ({
           )}
 
           {filteredAllUsers.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
-              <Users className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-                No matching users
-              </h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {userSearch.trim()
+            <EmptyState
+              icon={Users}
+              title="No matching users"
+              body={
+                userSearch.trim()
                   ? `No campus members matched "${userSearch.trim()}".`
-                  : 'No user accounts have loaded yet.'}
-              </p>
-            </div>
+                  : 'No user accounts have loaded yet.'
+              }
+            >
+              {userSearch.trim() && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setUserSearch('')}
+                >
+                  Clear search
+                </Button>
+              )}
+            </EmptyState>
           ) : (
           <div className="space-y-2.5">
             {filteredAllUsers.map((user) => {
@@ -1495,14 +1537,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
           )}
           {hasMoreAllUsers && onLoadMore && (
             <div className="flex justify-center pt-2">
-              <button
+              <Button
                 type="button"
-                disabled={loadingMore}
+                variant="outline"
+                loading={loadingMore}
+                loadingLabel="Loading…"
                 onClick={() => onLoadMore('hasMoreAllUsers')}
-                className="min-h-[40px] px-5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 cursor-pointer disabled:opacity-60"
               >
-                {loadingMore ? 'Loading...' : 'Load more users'}
-              </button>
+                Load more users
+              </Button>
             </div>
           )}
         </div>
@@ -1552,13 +1595,20 @@ export const AdminView: React.FC<AdminViewProps> = ({
           )}
 
           {filteredGroups.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
-              <Users className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">No groups yet</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Department and General groups are provisioned automatically, or create a custom group above.
-              </p>
-            </div>
+            <EmptyState
+              icon={Users}
+              title="No groups yet"
+              body="Department and General groups are provisioned automatically, or create a custom group."
+            >
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setCreateGroupOpen(true)}
+              >
+                Create a group
+              </Button>
+            </EmptyState>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               {filteredGroups.map((group) => {
@@ -1702,13 +1752,22 @@ export const AdminView: React.FC<AdminViewProps> = ({
           )}
 
           {filteredDepartments.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2">
-              <Building2 className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">No departments found</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Add a new department or adjust your search filter.
-              </p>
-            </div>
+            <EmptyState
+              icon={Building2}
+              title="No departments found"
+              body="Add a new department or adjust your search filter."
+            >
+              {deptSearch.trim() && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setDeptSearch('')}
+                >
+                  Clear search
+                </Button>
+              )}
+            </EmptyState>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
               {filteredDepartments.map((dept) => (
