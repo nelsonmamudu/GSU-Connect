@@ -73,6 +73,67 @@ export async function testRecoveryEmail(db) {
   );
   await superq(`delete from phase1_private.recovery_mail_limits where ip_hash = 'iptest'`);
 
+  // --- recovery key: Gmail dot/tag variants are ONE destination ---------------
+  for (const n of [211, 212, 213, 214, 216, 217, 218]) {
+    await superq(`insert into auth.users values('${id(n)}', '{}') on conflict do nothing`);
+  }
+  await serviceq(`select public.request_recovery_email('${id(211)}', 'a.b@gmail.com', '${tok('a1')}')`);
+  await serviceq(`select public.request_recovery_email('${id(212)}', 'ab@gmail.com', '${tok('a2')}')`);
+  await serviceq(`select public.request_recovery_email('${id(213)}', 'ab+x@gmail.com', '${tok('a3')}')`);
+  assert.equal(
+    await val(`select count(*)::int from phase1_private.recovery_mail_limits where destination = 'ab@gmail.com'`),
+    3,
+    'Gmail spellings of one inbox are counted under one recovery key'
+  );
+  // googlemail.com maps to the same key, and its per-destination cap is exhausted.
+  await assert.rejects(
+    serviceq(`select public.request_recovery_email('${id(214)}', 'ab@googlemail.com', '${tok('a4')}')`),
+    /Too many verification requests for this address/
+  );
+  // A confirmed Gmail binding is keyed — every spelling of that inbox matches it.
+  await serviceq(`select public.confirm_recovery_email('${id(211)}', '${tok('a1')}')`);
+  assert.equal(
+    await val(`select email_key from phase1_private.verified_recovery where user_id = '${id(211)}'`),
+    'ab@gmail.com'
+  );
+  await assert.rejects(
+    serviceq(`select public.confirm_recovery_email('${id(212)}', '${tok('a2')}')`),
+    /already linked/
+  );
+  await assert.rejects(
+    serviceq(`select public.confirm_recovery_email('${id(213)}', '${tok('a3')}')`),
+    /already linked/
+  );
+  // Non-Gmail plus-addresses stay distinct destinations AND distinct bindings.
+  await serviceq(`select public.request_recovery_email('${id(216)}', 'ab+x@example.com', '${tok('a5')}')`);
+  await serviceq(`select public.request_recovery_email('${id(217)}', 'ab+y@example.com', '${tok('a6')}')`);
+  assert.equal(
+    await val(`select count(*)::int from phase1_private.recovery_mail_limits where destination in ('ab+x@example.com', 'ab+y@example.com')`),
+    2
+  );
+  await serviceq(`select public.confirm_recovery_email('${id(216)}', '${tok('a5')}')`);
+  await serviceq(`select public.confirm_recovery_email('${id(217)}', '${tok('a6')}')`);
+  assert.equal(
+    await val(`select count(*)::int from phase1_private.verified_recovery where email_key in ('ab+x@example.com', 'ab+y@example.com')`),
+    2
+  );
+  // Non-Gmail dots are NOT collapsed: a.b@example.com is its own key.
+  await serviceq(`select public.request_recovery_email('${id(218)}', 'a.b@example.com', '${tok('a7')}')`);
+  assert.equal(
+    await val(`select destination from phase1_private.recovery_mail_limits where user_id = '${id(218)}'`),
+    'a.b@example.com'
+  );
+  // --- fixed advisory-lock order -------------------------------------------------
+  // PGlite is sequential: this proves the lock STATEMENTS appear in the stated
+  // order in the function body. It does NOT prove runtime concurrency safety;
+  // that rests on the advisory-lock design itself.
+  const prosrc = (await db.query(`select p.prosrc from pg_proc p join pg_namespace n on n.oid = p.pronamespace where n.nspname = 'public' and p.proname = 'request_recovery_email'`)).rows[0].prosrc;
+  const iGlobal = prosrc.indexOf('recovery-global');
+  const iUser = prosrc.indexOf('recovery-user:');
+  const iDest = prosrc.indexOf('recovery-mail:');
+  assert.ok(iGlobal !== -1 && iUser !== -1 && iDest !== -1, 'request_recovery_email takes all three locks');
+  assert.ok(iGlobal < iUser && iUser < iDest, 'lock order must be global -> per-account -> per-destination');
+
   // --- one active challenge per account: re-issue revokes the previous one -----
   await cool(id(201));
   await serviceq(`select public.request_recovery_email('${id(201)}', 'reissue@example.com', '${tok('c')}')`);
@@ -188,5 +249,5 @@ export async function testRecoveryEmail(db) {
   );
   await superq('select 1');
 
-  console.log('Recovery email: normalization-before-count, 60-minute TTL, global/destination/account caps, replay/expiry/cross-account, atomic claim, old-inbox continuity and my_recovery_status passed.');
+  console.log('Recovery email: normalization-before-count, 60-minute TTL, global/destination/account caps, replay/expiry/cross-account, atomic claim, old-inbox continuity and my_recovery_status and recovery-email_key (gmail dot/tag collapse, already-linked by key, non-Gmail plus distinctness, fixed lock order) passed.');
 }
