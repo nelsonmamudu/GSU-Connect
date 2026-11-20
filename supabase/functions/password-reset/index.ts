@@ -277,7 +277,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
       }
 
       // 3. Generate a Supabase password-recovery link for the auth account.
-      const { data: linkData, error: linkError } = await admin.auth.generateLink({
+      const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
         type: 'recovery',
         email: lookup.auth_email,
         options: { redirectTo: safeAppUrl },

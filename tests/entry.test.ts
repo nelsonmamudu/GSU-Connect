@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from "node:fs";
 import { extractProofFields } from '../src/utils/proof';
 
 test('only labelled identity fields, no levels/sessions or guesses from course lists', () => {
@@ -80,4 +81,10 @@ test('entry feedback never echoes backend diagnostics, even alongside familiar k
     assert.doesNotMatch(formatAuthError(new Error(message)),/owner|SQLSTATE/);
     assert.equal(friendlyEntryError(new Error(message),'Could not submit.'),'Could not submit.');
   }
+});
+
+test('password-reset generates recovery links through the Auth admin API', () => {
+  const source = readFileSync(new URL('../supabase/functions/password-reset/index.ts', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /\.auth\s*\.generateLink\s*\(/);
+  assert.match(source, /\.auth\s*\.admin\s*\.generateLink\s*\(/);
 });
