@@ -1,4 +1,5 @@
 import React from 'react';
+import { focusRing } from './styles';
 
 export interface TabItem<T extends string> {
   key: T;
@@ -16,7 +17,11 @@ export interface TabsProps<T extends string> {
   className?: string;
 }
 
-/** Segmented control used for admin sections. */
+/**
+ * Segmented control. The row scrolls instead of wrapping so a count change
+ * never reflows the tabs, and counts are tabular so a changing number does not
+ * make the label jitter.
+ */
 export function Tabs<T extends string>({
   tabs,
   value,
@@ -25,7 +30,9 @@ export function Tabs<T extends string>({
   className = '',
 }: TabsProps<T>) {
   return (
-    <div className={`w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}>
+    <div
+      className={`w-full overflow-x-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden ${className}`}
+    >
       <div
         role="tablist"
         aria-label={label}
@@ -41,15 +48,17 @@ export function Tabs<T extends string>({
               role="tab"
               aria-selected={active}
               onClick={() => onChange(tab.key)}
-              className={`min-h-[40px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${
+              className={`min-h-[44px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${focusRing} ${
                 active
                   ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-2xs'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+                  : 'text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100'
               }`}
             >
               {Icon && <Icon className="w-3.5 h-3.5" />}
               <span>{tab.label}</span>
-              {typeof tab.count === 'number' && <>({tab.count})</>}
+              {typeof tab.count === 'number' && (
+                <span className="tabular-nums">({tab.count})</span>
+              )}
             </button>
           );
         })}

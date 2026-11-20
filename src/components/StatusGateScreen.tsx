@@ -543,7 +543,9 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               />
             </ol>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-              Most requests are reviewed within 24–48 hours. This page updates automatically once a decision is made.
+              Review timing depends on admin availability, so there is no fixed
+              deadline. This page updates automatically once a decision is made —
+              or tap “Check status” to look again.
             </p>
           </div>
         )}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle2 } from 'lucide-react';
+import { focusRing } from './styles';
 
 export interface StepperStep {
   key: string | number;
@@ -33,12 +34,12 @@ export function Stepper({ steps, current, onSelect, label, className = '' }: Ste
                   }}
                   disabled={!done}
                   aria-current={active ? 'step' : undefined}
-                  className={`flex items-center gap-2 rounded-xl px-1 py-1 transition-colors ${
+                  className={`flex items-center gap-2 rounded-xl px-1.5 py-1 min-h-[44px] transition-colors ${focusRing} ${
                     done ? 'cursor-pointer' : 'cursor-default'
                   }`}
                 >
                   <span
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold border shrink-0 ${
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold tabular-nums border shrink-0 ${
                       done
                         ? 'bg-emerald-700 border-emerald-700 text-white'
                         : active

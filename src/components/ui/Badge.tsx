@@ -29,7 +29,7 @@ export interface BadgeProps {
 export function Badge({ tone = 'slate', className = '', children }: BadgeProps) {
   return (
     <span
-      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-lg ${tones[tone]} ${className}`}
+      className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded tabular-nums ${tones[tone]} ${className}`}
     >
       {children}
     </span>

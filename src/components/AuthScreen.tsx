@@ -127,6 +127,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [mode, setMode] = useState<AuthMode>(new URLSearchParams(location.search).has('invite')?'signup':'login');
   const [step, setStep] = useState<SignupStep>(1);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [touched, setTouched] = useState<Partial<Record<FieldName, boolean>>>({});
   const challenge = useTurnstile(mode);
   const [staffPath,setStaffPath]=useState<StaffPath>('email');
   const [accountType, setAccountType] = useState<AccountType>('student');
@@ -237,16 +238,30 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [department, accountType]);
 
-  const clearFieldError = (name: FieldName) =>
+  const setFieldError = (name: FieldName, message?: string) =>
     setFieldErrors((prev) => {
+      if (message) {
+        if (prev[name] === message) return prev;
+        return { ...prev, [name]: message };
+      }
       if (!prev[name]) return prev;
       const next = { ...prev };
       delete next[name];
       return next;
     });
 
+  const touchField = (name: FieldName) =>
+    setTouched((prev) => (prev[name] ? prev : { ...prev, [name]: true }));
+
   const applyErrors = (next: FieldErrors) => {
     setFieldErrors(next);
+    setTouched((prev) => {
+      const merged = { ...prev };
+      (Object.keys(next) as FieldName[]).forEach((name) => {
+        merged[name] = true;
+      });
+      return merged;
+    });
     const first = Object.keys(next)[0] as FieldName | undefined;
     if (!first) return;
     const el = document.getElementById(FIELD_ELEMENT_ID[first]);
@@ -256,58 +271,110 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     }
   };
 
-  const validateProof = (): FieldErrors => {
-    if (accountType === 'staff' && (staffPath === 'id' || staffPath === 'document') && !idCardFile) {
-      return { proof: 'Attach your selected proof of staff status, or choose email or vouching.' };
-    }
-    return {};
-  };
-
-  const validateIdentity = (): FieldErrors => {
-    const next: FieldErrors = {};
-    if (fullName.trim().length < 2) next.fullName = 'Please enter your full name.';
-    if (idNumber.trim().length < 3) {
-      next.idNumber = accountType === 'staff' ? 'Enter your Staff ID.' : 'Enter your Matric Number.';
-    }
-    if (department.trim().length < 2) {
-      next.department =
-        accountType === 'staff' ? 'Please select your department or office.' : 'Please select your department.';
-    }
-    if (accountType === 'student' && !level) next.level = 'Please select your level.';
-    return next;
-  };
-
-  const validateAccount = (): FieldErrors => {
-    const next: FieldErrors = {};
-    const cleanEmail = email.trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
-      next.email = 'Please enter a valid recovery email.';
-    }
-    if (phone.trim()) {
-      const digits = phone.replace(/\D/g, '');
-      if (digits.length < 10 || digits.length > 15) {
-        next.phone = 'Please enter a valid phone number (e.g. 0803 123 4567).';
+  /**
+   * One validator per field. Fields are judged on blur, then re-judged live
+   * while the user fixes them — never on every keystroke from the first one.
+   */
+  const FIELD_VALIDATORS: Record<FieldName, () => string | undefined> = {
+    fullName: () =>
+      fullName.trim().length < 2 ? 'Please enter your full name.' : undefined,
+    idNumber: () => {
+      if (idNumber.trim().length >= 3) return undefined;
+      if (mode === 'login') return 'Enter your Matric Number or Staff ID.';
+      if (mode === 'forgot') {
+        return 'Enter your Matric Number, Staff ID or registered phone number.';
       }
-    }
-    if (password.length < minPasswordLength) next.password = 'Password must be at least 8 characters.';
-    if (password !== confirmPassword) next.confirmPassword = 'Passwords do not match.';
+      return accountType === 'staff' ? 'Enter your Staff ID.' : 'Enter your Matric Number.';
+    },
+    department: () =>
+      department.trim().length < 2
+        ? accountType === 'staff'
+          ? 'Please select your department or office.'
+          : 'Please select your department.'
+        : undefined,
+    level: () =>
+      accountType === 'student' && !level ? 'Please select your level.' : undefined,
+    email: () =>
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim().toLowerCase())
+        ? undefined
+        : 'Please enter a valid recovery email.',
+    phone: () => {
+      if (!phone.trim()) return undefined;
+      const digits = phone.replace(/\D/g, '');
+      return digits.length < 10 || digits.length > 15
+        ? 'Please enter a valid phone number (e.g. 0803 123 4567).'
+        : undefined;
+    },
+    password: () => {
+      if (mode !== 'signup') return password ? undefined : 'Enter your password.';
+      return password.length < minPasswordLength
+        ? 'Password must be at least 8 characters.'
+        : undefined;
+    },
+    confirmPassword: () =>
+      password !== confirmPassword ? 'Passwords do not match.' : undefined,
+    proof: () =>
+      accountType === 'staff' && (staffPath === 'id' || staffPath === 'document') && !idCardFile
+        ? 'Attach your selected proof of staff status, or choose email or vouching.'
+        : undefined,
+    forgotIdentifier: () =>
+      forgotIdentifier.trim().length < 3
+        ? 'Enter your Matric Number, Staff ID or registered phone number.'
+        : undefined,
+  };
+
+  const collectErrors = (names: FieldName[]): FieldErrors => {
+    const next: FieldErrors = {};
+    names.forEach((name) => {
+      const message = FIELD_VALIDATORS[name]?.();
+      if (message) next[name] = message;
+    });
     return next;
   };
 
-  const validateLogin = (): FieldErrors => {
-    const next: FieldErrors = {};
-    if (idNumber.trim().length < 3) next.idNumber = 'Enter your Matric Number or Staff ID.';
-    if (!password) next.password = 'Enter your password.';
-    return next;
-  };
+  const validateProof = (): FieldErrors => collectErrors(['proof']);
+  const validateIdentity = (): FieldErrors =>
+    collectErrors(['fullName', 'idNumber', 'department', 'level']);
+  const validateAccount = (): FieldErrors =>
+    collectErrors(['email', 'phone', 'password', 'confirmPassword']);
+  const validateLogin = (): FieldErrors => collectErrors(['idNumber', 'password']);
+  const validateForgot = (): FieldErrors => collectErrors(['forgotIdentifier']);
 
-  const validateForgot = (): FieldErrors => {
-    const next: FieldErrors = {};
-    if (forgotIdentifier.trim().length < 3) {
-      next.forgotIdentifier = 'Enter your Matric Number, Staff ID or registered phone number.';
-    }
-    return next;
-  };
+  // Live re-validation, but only for fields the user has already left (or that
+  // already carry a message). Untouched fields stay quiet until blur or submit.
+  useEffect(() => {
+    const live = (Object.keys(FIELD_VALIDATORS) as FieldName[]).filter(
+      (name) => touched[name] || fieldErrors[name],
+    );
+    if (live.length === 0) return;
+    const next = collectErrors(live);
+    setFieldErrors((prev) => {
+      const keys = new Set<FieldName>([
+        ...(Object.keys(prev) as FieldName[]),
+        ...(Object.keys(next) as FieldName[]),
+      ]);
+      let changed = false;
+      keys.forEach((key) => {
+        if (prev[key] !== next[key]) changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [
+    fullName,
+    idNumber,
+    department,
+    level,
+    email,
+    phone,
+    password,
+    confirmPassword,
+    idCardFile,
+    accountType,
+    staffPath,
+    mode,
+    touched,
+    fieldErrors,
+  ]);
 
   const handleProofFile = async (file: File) => {
     if (file.size > MAX_ID_CARD_BYTES) {
@@ -320,7 +387,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
       return;
     }
     setError(null);
-    clearFieldError('proof');
+    touchField('proof');
     setIdCardFile(file);
     trackFunnel('signup_proof_selected', {
       bytes: file.size,
@@ -442,7 +509,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         try { sessionStorage.setItem('gsu_signup_recovery', email.trim().toLowerCase()); } catch { /* ignore */ }
         // Signup and a usable session are separate outcomes (e.g. auth configuration changes).
         if (!(await supabase.auth.getSession()).data.session) {
-          setMode('login');setPassword('');setStep(1);setFieldErrors({});
+          setMode('login');setPassword('');setStep(1);setFieldErrors({});setTouched({});
           setSignupNotice('Sign in to finish verification. Creating an account alone does not submit it for review.');
         }
       }
@@ -462,6 +529,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     setForgotSent(false);
     setStep(1);
     setFieldErrors({});
+    setTouched({});
   };
 
   const handleContinue = () => {
@@ -497,7 +565,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               onClick={() => {
                 setAccountType(type);
                 setError(null);
-                clearFieldError('proof');
+                touchField('proof');
               }}
               className={
                 accountType === type
@@ -517,7 +585,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         </Alert>
       )}
       {accountType==='staff' && (
-        <StaffPathPicker value={staffPath} onChange={v=>{setStaffPath(v);setIdCardFile(null);scan.current?.abort();setOcrHint('');clearFieldError('proof');}}/>
+        <StaffPathPicker value={staffPath} onChange={v=>{setStaffPath(v);setIdCardFile(null);scan.current?.abort();setOcrHint('');touchField('proof');}}/>
       )}
 
       {(accountType==='student' || staffPath==='id' || staffPath==='document') ? (
@@ -569,7 +637,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           maxLength={100}
           value={fullName}
           autoComplete="name"
-          onChange={(e) => { setFullName(e.target.value); clearFieldError('fullName'); }}
+          onChange={(e) => setFullName(e.target.value)}
+          onBlur={() => touchField('fullName')}
           placeholder="e.g. Amina Bello Musa"
         />
       </Field>
@@ -589,7 +658,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           autoComplete="username"
           className="font-mono"
           onChange={(e) => setIdNumber(entryIdentifier(e.target.value, true))}
-          onBlur={(e) => setIdNumber(entryIdentifier(e.target.value, true, true))}
+          onBlur={(e) => {
+            setIdNumber(entryIdentifier(e.target.value, true, true));
+            touchField('idNumber');
+          }}
           placeholder={accountType === 'staff' ? 'e.g. GSU/STF/1042' : 'e.g. UG21/CS/1001'}
         />
       </Field>
@@ -604,7 +676,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
             id="department-picker"
             departments={departments}
             value={department}
-            onChange={(v) => { setDepartment(v); clearFieldError('department'); }}
+            onChange={(v) => { setDepartment(v); touchField('department'); }}
             customOptionLabel={
               accountType === 'staff'
                 ? 'Other (Type department or office)'
@@ -631,7 +703,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               <div className="grid grid-cols-3 gap-2">
                 {[...availableLevels, 'graduate' as const].map(value => (
                   <label key={value} className={`flex items-center gap-2 rounded-xl border px-2 py-2 text-sm ${value==='graduate'?'col-span-full':''} ${level===value?'border-emerald-600':'border-slate-200'}`}>
-                    <input type="radio" name="student-level" value={value} checked={level===value} onChange={()=>{setLevel(value);clearFieldError('level');}} />
+                    <input type="radio" name="student-level" value={value} checked={level===value} onChange={()=>{setLevel(value);touchField('level');}} />
                     {value==='graduate' ? `Graduate — ${graduationLevelLabel()} only` : `${value} Level`}
                   </label>
                 ))}
@@ -669,7 +741,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           value={email}
           autoComplete="email"
           leadingIcon={Mail}
-          onChange={(e) => { setEmail(e.target.value); clearFieldError('email'); }}
+          onChange={(e) => setEmail(e.target.value)}
+          onBlur={() => touchField('email')}
           placeholder="e.g. yourname@gmail.com"
         />
       </Field>
@@ -688,7 +761,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           value={phone}
           autoComplete="tel"
           leadingIcon={Phone}
-          onChange={(e) => { setPhone(e.target.value); clearFieldError('phone'); }}
+          onChange={(e) => setPhone(e.target.value)}
+          onBlur={() => touchField('phone')}
           placeholder="e.g. 0803 123 4567"
         />
       </Field>
@@ -706,7 +780,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           value={password}
           autoComplete="new-password"
           leadingIcon={Lock}
-          onChange={(e) => { setPassword(e.target.value); clearFieldError('password'); }}
+          onChange={(e) => setPassword(e.target.value)}
+          onBlur={() => touchField('password')}
           placeholder="Enter your password"
           trailing={
             <button
@@ -734,7 +809,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           value={confirmPassword}
           autoComplete="new-password"
           leadingIcon={Lock}
-          onChange={(e) => { setConfirmPassword(e.target.value); clearFieldError('confirmPassword'); }}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          onBlur={() => touchField('confirmPassword')}
           placeholder="Repeat your password"
         />
       </Field>
@@ -861,7 +937,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                         autoComplete="username"
                         className="font-mono"
                         onChange={(e) => setIdNumber(entryIdentifier(e.target.value, false))}
-                        onBlur={(e) => setIdNumber(entryIdentifier(e.target.value, false, true))}
+                        onBlur={(e) => {
+                          setIdNumber(entryIdentifier(e.target.value, false, true));
+                          touchField('idNumber');
+                        }}
                         placeholder="e.g. UG21/CS/1001"
                       />
                     </Field>
@@ -874,7 +953,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                         value={password}
                         autoComplete="current-password"
                         leadingIcon={Lock}
-                        onChange={(e) => { setPassword(e.target.value); clearFieldError('password'); }}
+                        onChange={(e) => setPassword(e.target.value)}
+                        onBlur={() => touchField('password')}
                         placeholder="Enter your password"
                         trailing={
                           <button
@@ -961,8 +1041,11 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       autoCapitalize="none"
                       autoComplete="username"
                       className="font-mono"
-                      onChange={(e) => { setForgotIdentifier(entryIdentifier(e.target.value)); clearFieldError('forgotIdentifier'); }}
-                      onBlur={(e) => setForgotIdentifier(entryIdentifier(e.target.value, false, true))}
+                      onChange={(e) => setForgotIdentifier(entryIdentifier(e.target.value))}
+                      onBlur={(e) => {
+                        setForgotIdentifier(entryIdentifier(e.target.value, false, true));
+                        touchField('forgotIdentifier');
+                      }}
                       placeholder="e.g. UG21/CS/1001"
                     />
                   </Field>
@@ -993,17 +1076,60 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<'password' | 'confirmPassword', string>>
+  >({});
+  const [touched, setTouched] = useState<
+    Partial<Record<'password' | 'confirmPassword', boolean>>
+  >({});
+
+  const touch = (name: 'password' | 'confirmPassword') =>
+    setTouched((prev) => (prev[name] ? prev : { ...prev, [name]: true }));
+
+  const resetValidators: Record<
+    'password' | 'confirmPassword',
+    () => string | undefined
+  > = {
+    password: () => passwordError(password) || undefined,
+    confirmPassword: () =>
+      password !== confirmPassword ? 'Passwords do not match.' : undefined,
+  };
+
+  // Blur first, then live — so the strength rules are not read as nagging while
+  // the password is still being typed.
+  useEffect(() => {
+    const live = (Object.keys(resetValidators) as ('password' | 'confirmPassword')[]).filter(
+      (name) => touched[name] || fieldErrors[name],
+    );
+    if (live.length === 0) return;
+    const next: Partial<Record<'password' | 'confirmPassword', string>> = {};
+    live.forEach((name) => {
+      const message = resetValidators[name]();
+      if (message) next[name] = message;
+    });
+    setFieldErrors((prev) => {
+      const keys = new Set<'password' | 'confirmPassword'>([
+        ...(Object.keys(prev) as ('password' | 'confirmPassword')[]),
+        ...(Object.keys(next) as ('password' | 'confirmPassword')[]),
+      ]);
+      let changed = false;
+      keys.forEach((key) => {
+        if (prev[key] !== next[key]) changed = true;
+      });
+      return changed ? next : prev;
+    });
+  }, [password, confirmPassword, touched, fieldErrors]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    const next: Partial<Record<'password' | 'confirmPassword', string>> = {};
     const weakPassword = passwordError(password);
-    if (weakPassword) {
-      setError(weakPassword);
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
+    if (weakPassword) next.password = weakPassword;
+    if (password !== confirmPassword) next.confirmPassword = 'Passwords do not match.';
+    if (Object.keys(next).length > 0) {
+      setFieldErrors(next);
+      setTouched({ password: true, confirmPassword: true });
       return;
     }
     setSubmitting(true);
@@ -1035,8 +1161,8 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Field label="New Password" htmlFor="newPassword" error={undefined}>
+        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <Field label="New Password" htmlFor="newPassword" error={fieldErrors.password}>
             <Input
               id="newPassword"
               type={showPassword ? 'text' : 'password'}
@@ -1044,6 +1170,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
               minLength={minPasswordLength}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              onBlur={() => touch('password')}
               placeholder="Minimum 8 characters"
               leadingIcon={Lock}
               trailing={
@@ -1060,7 +1187,11 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
           </Field>
           <PasswordStrengthMeter value={password} />
 
-          <Field label="Confirm New Password" htmlFor="confirmPassword" error={undefined}>
+          <Field
+            label="Confirm New Password"
+            htmlFor="confirmPassword"
+            error={fieldErrors.confirmPassword}
+          >
             <Input
               id="confirmPassword"
               type={showPassword ? 'text' : 'password'}
@@ -1068,6 +1199,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
               minLength={minPasswordLength}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              onBlur={() => touch('confirmPassword')}
               placeholder="Repeat your new password"
               leadingIcon={Lock}
             />
