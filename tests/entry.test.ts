@@ -60,3 +60,9 @@ test('choosing a level clears only that card’s level warning and flags a chang
   assert.equal(levelDifference('200','300'),'Differs from requested level 200');
   assert.equal(levelDifference('200','200'),'');
 });
+
+import {proofFileName} from '../src/utils/proof';
+test('proof viewer displays only the filename without the storage UUID prefix', () => {
+  assert.equal(proofFileName('owner/12345678-1234-1234-1234-123456789abc_registration_form.pdf'),'registration_form.pdf');
+  assert.equal(proofFileName('owner/document.pdf'),'document.pdf');
+});

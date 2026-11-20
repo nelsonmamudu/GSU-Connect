@@ -1,6 +1,6 @@
 import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
 import {noFileMessage, prepareReviewProof} from '../utils/prepareReviewProof';
-import {studentProof,staffProof} from '../utils/proof';
+import {studentProof,staffProof,proofFileName} from '../utils/proof';
 import {takeEntryIssue} from '../services/entryFeedback';
 import { mapProfileRowToAppUser } from '../services/supabaseService';
 import React, { useEffect, useRef, useState } from 'react';
@@ -46,16 +46,6 @@ function toTitleCase(name: string): string {
     .join(' ');
 }
 
-function extractFileNameFromPath(path?: string | null): string {
-  if (!path) return '';
-  const base = path.split('/').pop() || path;
-  const withoutUuid = base.replace(
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}_/i,
-    ''
-  );
-  return withoutUuid || base;
-}
-
 export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   user,
   authUser,
@@ -66,6 +56,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   useEffect(()=>{const route=()=>{if(location.hash.startsWith('#staff-confirm='))setStaffPath('email')};window.addEventListener('hashchange',route);return()=>window.removeEventListener('hashchange',route);},[]);
   const [method,setMethod]=useState(''),[vouchState,setVouchState]=useState('');
   const [hasIdCard, setHasIdCard] = useState<boolean | null>(null);
+  const [choosingReplacement, setChoosingReplacement] = useState(false);
+  const [resubmitted, setResubmitted] = useState(false);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
   const [uploadStep, setUploadStep] = useState('');
@@ -88,6 +80,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         if (seq !== checkSeq.current) return;
         const profile = mapProfileRowToAppUser(data);
         onChecked(profile);
+        setResubmitted(false);
+        if (!profile.idCardPath) setUploadedFileName(null);
         const ready=Boolean(data.proof_method || profile.idCardPath);setMethod(data.proof_method || '');setVouchState(data.vouch_state||'');setHasIdCard(ready);
         setCheckMessage(
           manual
@@ -306,14 +300,16 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     }
   };
 
-  const noFile = () => setFeedback({type:'error', text:noFileMessage});
+  const noFile = (accept: string) => setFeedback({type:'error', text:accept === 'application/pdf' ? 'No PDF received. Try again and choose a PDF from Files.' : noFileMessage});
   const submitAttached = async () => {
     setUploadStep('Submitting…');
     const {error} = await supabase.rpc('resubmit_signup');
     if (error) throw error;
+    setResubmitted(true);
     setRetrySubmit(false);
   };
   const finishUpload = async () => {
+    setChoosingReplacement(false);
     setFeedback({type:'info', text:'Proof uploaded. Waiting for review.'});
     await check();
   };
@@ -327,7 +323,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const handleUploadIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const original = e.target.files?.[0];
     e.target.value = '';
-    if (!original) { noFile(); return; }
+    if (!original) { noFile(e.currentTarget.accept); return; }
     setUploadingIdCard(true);
     setFeedback(null);
     let stage = 'prepare';
@@ -339,7 +335,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         stage = 'attach'; setUploadStep('Attaching proof…');
       });
       setHasIdCard(true);
-      setUploadedFileName(original.name);
+      setUploadedFileName(proofFileName(original.name));
       if (isRejected) { stage = 'submit'; setRetrySubmit(true); await submitAttached(); }
       await finishUpload();
     } catch (err) {
@@ -368,7 +364,10 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         ? 'Pending Admin Verification'
         : 'Waiting for Approval';
 
-  const attachedFileName = uploadedFileName || extractFileNameFromPath(user.idCardPath);
+  const attachedFileName = uploadedFileName || proofFileName(user.idCardPath);
+
+  const needsReplacement = isRejected && !resubmitted && !retrySubmit;
+  const showPickers = !attachedFileName || needsReplacement || choosingReplacement;
 
   const description = isSuspended
     ? 'Your GSU Connect account has been suspended by an administrator due to a moderation review. You cannot read or send messages while suspended.'
@@ -433,18 +432,18 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           {method && <p>Evidence received: {method}. Final admin review is required.</p>}
           <StaffProofAction path={staffPath} state={vouchState} onUpdate={()=>void check()}/></>}
         {!isSuspended && authUser && (!isLecturerRequest || staffPath==='id' || staffPath==='document') && (
-          <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2 text-left">
+          <section aria-label="Verification proof" className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2 text-left">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-2.5 min-w-0">
                 <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
                 <div className="min-w-0 space-y-1">
-                  {user.idCardPath ? (
+                  {attachedFileName ? (
                     <>
                       <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug break-all">
-                        {attachedFileName || 'Attached verification file'}
+                        {attachedFileName}
                       </p>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        Attached for reviewer verification
+                        {needsReplacement ? 'Upload a replacement to resubmit' : 'Attached for reviewer verification'}
                       </p>
                     </>
                   ) : (
@@ -460,24 +459,29 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                   )}
                 </div>
               </div>
-              <div className="flex flex-col gap-2 shrink-0">
+              {showPickers ? <div className="flex flex-col gap-2 shrink-0">
                 {(isLecturerRequest && staffPath==='id' ? ['image/*'] : ['image/*','application/pdf']).map(accept => (
                   <label key={accept} className="relative flex items-center justify-center gap-2 min-h-[44px] px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus-within:ring-2 focus-within:ring-emerald-600">
                     <Upload className="w-4 h-4" />{accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
                     <input type="file" accept={accept} disabled={uploadingIdCard}
                       aria-label={accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
-                      ref={node => { if (node) node.oncancel = noFile; }} onChange={handleUploadIdCard}
+                      ref={node => { if (node) node.oncancel = () => noFile(accept); }} onChange={handleUploadIdCard}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   </label>
                 ))}
-              </div>
+                {choosingReplacement && !needsReplacement && <button type="button" disabled={uploadingIdCard}
+                  onClick={() => { setChoosingReplacement(false); setFeedback(null); }}
+                  className="text-sm underline text-emerald-700">Cancel</button>}
+              </div> : !retrySubmit && <button type="button" disabled={uploadingIdCard}
+                onClick={() => { setChoosingReplacement(true); setFeedback(null); }}
+                className="min-h-[44px] shrink-0 rounded-xl border px-4 text-sm font-semibold">Replace file</button>}
             </div>
             {uploadStep && <p role="status" className="text-sm font-semibold">{uploadStep}</p>}
             {retrySubmit && isRejected && !uploadingIdCard && <button type="button" className="min-h-[44px] font-semibold text-emerald-700" onClick={() => void submitOnly()}>Retry submission</button>}
-            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            {showPickers && <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Private verification file. Deleted within 24 hours after approval; replaced copies too.
-            </p>
-          </div>
+            </p>}
+          </section>
         )}
 
         {feedback && (
@@ -624,10 +628,10 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           )}
 
           <div className="space-y-1.5">
-            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 gap-y-1">
+            <div className="grid min-w-0 grid-cols-[minmax(0,1fr)] gap-1">
               <span className="text-slate-500 dark:text-slate-400">Recovery Email</span>
               {!editingRecovery && (
-                <span className="text-right text-sm font-medium text-slate-900 dark:text-slate-100 break-all">
+                <span className="overflow-x-auto whitespace-nowrap text-sm font-medium text-slate-900 dark:text-slate-100">
                   {loadingRecovery ? 'Loading...' : recoveryEmail || 'Not set'}
                 </span>
               )}
@@ -635,7 +639,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 <button
                   type="button"
                   onClick={handleOpenEditRecovery}
-                  className="col-start-2 justify-self-end text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
+                  className="justify-self-start text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <Edit3 className="w-3 h-3" />
                   <span>Edit details</span>

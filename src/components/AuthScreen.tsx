@@ -626,7 +626,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       required
-                      minLength={minPasswordLength}
+                      minLength={mode === 'signup' ? minPasswordLength : undefined}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"

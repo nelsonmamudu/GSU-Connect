@@ -1,3 +1,4 @@
+import {proofFileName} from '../utils/proof';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
 import {
@@ -1360,7 +1361,7 @@ export async function searchPeople(q: string): Promise<AppUser[]> {
 
 export async function getPendingUserIdCardSignedUrl(
   userId: string
-): Promise<{ url: string; isPdf: boolean } | null> {
+): Promise<{ url: string; isPdf: boolean; fileName: string } | null> {
   const cleanId = (userId || '').trim();
   if (!cleanId) return null;
   const {data:storagePath,error}=await supabase.rpc('review_proof_path',{target:cleanId});
@@ -1370,6 +1371,7 @@ export async function getPendingUserIdCardSignedUrl(
   return {
     url,
     isPdf: storagePath.toLowerCase().endsWith('.pdf'),
+    fileName: proofFileName(storagePath),
   };
 }
 
