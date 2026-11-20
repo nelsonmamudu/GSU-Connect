@@ -1,4 +1,5 @@
 import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
+import {noFileMessage, prepareReviewProof} from '../utils/prepareReviewProof';
 import {studentProof,staffProof,proofTypes} from '../utils/proof';
 import {takeEntryIssue} from '../services/entryFeedback';
 import { mapProfileRowToAppUser } from '../services/supabaseService';
@@ -26,7 +27,6 @@ import {
   DepartmentItem,
   formatLevelLabel,
   levelsForDuration,
-  MAX_ID_CARD_BYTES,
 } from '../types';
 import { DepartmentPicker } from './DepartmentPicker';
 
@@ -68,6 +68,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const [hasIdCard, setHasIdCard] = useState<boolean | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
+  const [uploadStep, setUploadStep] = useState('');
+  const [retrySubmit, setRetrySubmit] = useState(false);
   const idCardInputRef = useRef<HTMLInputElement | null>(null);
 
   const [checkMessage, setCheckMessage] = useState('');
@@ -304,38 +306,48 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     }
   };
 
-  const handleUploadIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
-    if (file.size > MAX_ID_CARD_BYTES) {
-      setFeedback({
-        type: 'error',
-        text: 'Verification file exceeds the 3 MB limit. Please pick a smaller image.',
-      });
-      return;
-    }
-
+  const noFile = () => setFeedback({type:'error', text:noFileMessage});
+  const submitAttached = async () => {
+    setUploadStep('Submitting…');
+    const {error} = await supabase.rpc('resubmit_signup');
+    if (error) throw error;
+    setRetrySubmit(false);
+  };
+  const finishUpload = async () => {
+    setFeedback({type:'info', text:'Proof uploaded. Waiting for review.'});
+    await check();
+  };
+  const submitOnly = async () => {
     setUploadingIdCard(true);
     setFeedback(null);
+    try { await submitAttached(); await finishUpload(); }
+    catch { setFeedback({type:'error', text:'Submission failed. Your proof is attached. Retry submission without uploading it again.'}); }
+    finally { setUploadingIdCard(false); setUploadStep(''); }
+  };
+  const handleUploadIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const original = e.target.files?.[0];
+    e.target.value = '';
+    if (!original) { noFile(); return; }
+    setUploadingIdCard(true);
+    setFeedback(null);
+    let stage = 'prepare';
     try {
-      await uploadIdCardFile(user.uid,file,isLecturerRequest?staffPath:undefined);
-      if(isRejected){const {error}=await supabase.rpc('resubmit_signup');if(error)throw error;}
-      void check();
+      setUploadStep('Preparing file…');
+      const file = await prepareReviewProof(original);
+      stage = 'upload'; setUploadStep('Uploading…');
+      await uploadIdCardFile(user.uid,file,isLecturerRequest?staffPath:undefined, () => {
+        stage = 'attach'; setUploadStep('Attaching proof…');
+      });
       setHasIdCard(true);
-      setUploadedFileName(file.name);
-      setFeedback({
-        type: 'info',
-        text: 'File uploaded securely. Your reviewer can now view it during verification.',
-      });
+      setUploadedFileName(original.name);
+      if (isRejected) { stage = 'submit'; setRetrySubmit(true); await submitAttached(); }
+      await finishUpload();
     } catch (err) {
-      setFeedback({
-        type: 'error',
-        text: err instanceof Error ? err.message : 'Failed to upload file.',
-      });
-    } finally {
-      setUploadingIdCard(false);
-    }
+      const reason = err && typeof err === 'object' && 'message' in err ? String(err.message) : 'Check your connection and try again.';
+      const label = stage === 'submit' ? 'Submission failed. Your proof is attached. Retry submission without uploading it again.'
+        : stage === 'attach' ? 'Attaching proof failed.' : stage === 'upload' ? 'Upload failed.' : '';
+      setFeedback({type:'error',text:`${label} ${reason}`.trim()});
+    } finally { setUploadingIdCard(false); setUploadStep(''); }
   };
 
   const Icon = isSuspended
@@ -422,7 +434,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           <StaffProofAction path={staffPath} state={vouchState} onUpdate={()=>void check()}/></>}
         {!isSuspended && authUser && (!isLecturerRequest || staffPath==='id' || staffPath==='document') && (
           <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2 text-left">
-            <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-2.5 min-w-0">
                 <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
                 <div className="min-w-0 space-y-1">
@@ -442,14 +454,14 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                           ? staffProof : studentProof}
                       </p>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        Required for review · JPEG, PNG, WebP or PDF · max 3 MB
+                        {isLecturerRequest && staffPath === 'id' ? 'JPEG, PNG or WebP' : 'JPEG, PNG, WebP or PDF'} · photos resized under 1 MB{(!isLecturerRequest || staffPath !== 'id') && ' · PDFs up to 3 MB'}
                       </p>
                     </>
                   )}
                 </div>
               </div>
               <input
-                ref={idCardInputRef}
+                ref={node => { idCardInputRef.current = node; if (node) node.oncancel = noFile; }}
                 type="file"
                 accept={(isLecturerRequest && staffPath==='id'?proofTypes.filter(t=>t.startsWith('image/')):proofTypes).join(',')}
                 onChange={handleUploadIdCard}
@@ -459,14 +471,16 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 type="button"
                 disabled={uploadingIdCard}
                 onClick={() => idCardInputRef.current?.click()}
-                className="min-h-[36px] px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-600 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-60"
+                className="min-h-[44px] w-full sm:w-auto justify-center px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-600 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-60"
               >
                 <Upload className="w-3.5 h-3.5" />
                 <span>
-                  {uploadingIdCard ? 'Uploading...' : isRejected ? 'Upload & resubmit' : hasIdCard ? 'Replace' : 'Upload'}
+                  {isLecturerRequest && staffPath === 'id' ? 'Choose photo' : 'Choose photo or PDF'}
                 </span>
               </button>
             </div>
+            {uploadStep && <p role="status" className="text-sm font-semibold">{uploadStep}</p>}
+            {retrySubmit && isRejected && !uploadingIdCard && <button type="button" className="min-h-[44px] font-semibold text-emerald-700" onClick={() => void submitOnly()}>Retry submission</button>}
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Private verification file. Deleted within 24 hours after approval; replaced copies too.
             </p>

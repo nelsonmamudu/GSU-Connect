@@ -323,6 +323,7 @@ function MainApp() {
 
   // 1. Auth state listener (Supabase Auth)
   useEffect(() => {
+    let previousUid: string | undefined;
     const unsub = subscribeToAuthState((event, session) => {
       const user = session?.user ?? null;
       setAuthUser(user);
@@ -340,9 +341,10 @@ function MainApp() {
         setAccountStatusCheckedUid(null);
         setVerifyingAlumni(false);
         setVerifyAlumniError(null);
-      } else {
+      } else if (user.id !== previousUid) {
         setUserLoading(true);
       }
+      previousUid = user?.id;
     });
     return () => unsub();
   }, []);
@@ -409,15 +411,16 @@ function MainApp() {
     return () => unsub();
   }, [isApproved]);
 
+  const authUid = authUser?.id;
   // 2. Real-time listener for current user's profile row
   useEffect(() => {
-    if (!authReady || !authUser) return;
-    const unsub = subscribeToOwnProfile(authUser.id, (profile) => {
+    if (!authReady || !authUid) return;
+    const unsub = subscribeToOwnProfile(authUid, (profile) => {
       setCurrentUser(profile);
       setUserLoading(false);
     });
     return () => unsub();
-  }, [authReady, authUser]);
+  }, [authReady, authUid]);
 
   const refreshOwnProfile = () => {
     if (!authUser?.id) return;

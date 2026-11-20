@@ -135,7 +135,7 @@ function toTitleCaseName(raw: string): string {
 }
 
 // Always use an opaque path with a MIME-derived extension, not a personal filename.
-export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'id'|'document'|'vouch'): Promise<string> {
+export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'id'|'document'|'vouch', onAttach?: () => void): Promise<string> {
   if (!uid) throw new Error('Sign in to upload verification proof.');
   if (!file || file.size < 1) {
     throw new Error('Choose a nonempty proof image or PDF.');
@@ -159,6 +159,7 @@ export async function uploadIdCardFile(uid: string, file: File, kind?:'email'|'i
     throw new Error(uploadError.message);
   }
 
+  onAttach?.();
   const { error: updateError } = await supabase
     .from('profiles')
     .update({

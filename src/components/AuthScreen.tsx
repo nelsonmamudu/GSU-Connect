@@ -344,7 +344,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               <div>
                 <p className="font-semibold text-slate-900 dark:text-slate-100">Verified Campus Access</p>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Every account is reviewed and approved by an admin, class rep, or department helper before campus access is granted.
+                  Staff accounts are reviewed by an admin. Student accounts are reviewed by an authorized reviewer in their department or by an admin.
                 </p>
               </div>
             </div>
@@ -385,7 +385,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                 {mode === 'signup' && (
                   <>
                     <p className="text-xs text-slate-600 dark:text-slate-300 bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-900/60 rounded-xl px-3.5 py-2.5 leading-relaxed">
-                      Every account is verified by an admin, class rep, or department helper before access is granted.
+                      Staff accounts are reviewed by an admin. Student accounts are reviewed by an authorized reviewer in their department or by an admin.
                     </p>
 
                     <div>
