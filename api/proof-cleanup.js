@@ -23,6 +23,31 @@ const bearerOk = (header) => {
   return Boolean(secret) && supplied.length === expected.length && timingSafeEqual(supplied, expected);
 };
 
+// Diagnostic hints only: an unverified JWT claim is not evidence of authorization.
+function invalidKeyDiag(keyEnv, urlEnv, key, url) {
+  let keyType = 'unknown';
+  let keyRef = null;
+  let urlRef = null;
+  try {
+    urlRef = /^([a-z0-9-]+)\.supabase\.co$/.exec(new URL(url).hostname)?.[1] ?? null;
+  } catch { /* Not a project URL. */ }
+  if (key.startsWith('sb_secret_')) keyType = 'sb_secret';
+  else if (key.startsWith('sb_publishable_')) keyType = 'sb_publishable';
+  else {
+    const payload = /^[A-Za-z0-9_-]+\.([A-Za-z0-9_-]+)\.[A-Za-z0-9_-]+$/.exec(key)?.[1];
+    if (payload) {
+      try {
+        const claims = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
+        if (claims && typeof claims === 'object' && !Array.isArray(claims)) {
+          keyType = claims.role === 'service_role' ? 'jwt_service_role' : claims.role === 'anon' ? 'jwt_anon' : 'jwt_other';
+          if (typeof claims.ref === 'string' && /^[a-z0-9-]{1,63}$/.test(claims.ref)) keyRef = claims.ref;
+        }
+      } catch { /* Malformed payload: leave the type unknown. */ }
+    }
+  }
+  return { keyEnv, urlEnv, keyType, keyRef, urlRef, refMatch: keyRef === null ? null : keyRef === urlRef };
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
@@ -31,8 +56,10 @@ export default async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!bearerOk(req.headers.authorization)) return res.status(401).json({ error: 'Unauthorized' });
 
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key = process.env.GSU_SUPABASE_SECRET_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const urlEnv = process.env.SUPABASE_URL ? 'SUPABASE_URL' : 'VITE_SUPABASE_URL';
+  const url = process.env[urlEnv];
+  const keyEnv = process.env.GSU_SUPABASE_SECRET_KEY ? 'GSU_SUPABASE_SECRET_KEY' : 'SUPABASE_SERVICE_ROLE_KEY';
+  const key = process.env[keyEnv];
   if (!url || !key) return res.status(500).json({ error: 'Server not configured' });
 
   let stage = 'init';
@@ -86,7 +113,9 @@ export default async function handler(req, res) {
     else if (/fetch failed|ENOTFOUND|ECONNREFUSED|ETIMEDOUT|network/i.test(message)) kind = 'network';
     else if (error?.code === '42501' || /permission denied/i.test(message)) kind = 'permission';
     else if (error?.code === '42883' || error?.code === 'PGRST202') kind = 'missing_function';
-    console.error(JSON.stringify({ stage, code, kind }));
-    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', stage, code, kind });
+    const details = { stage, code, kind };
+    if (kind === 'invalid_key') details.diag = invalidKeyDiag(keyEnv, urlEnv, key, url);
+    console.error(JSON.stringify(details));
+    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', ...details });
   }
 }
