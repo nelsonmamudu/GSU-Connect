@@ -542,6 +542,38 @@ What is recordable is the ordering claim:
 here is confirmatory. We are currently in the Discovery/UX stage — building the spec before
 touching the UI — which is the order it argues for. Nothing in it changes §2 or §3.
 
+### 5.5 Mobile navigation (secondary — largely already satisfied here)
+
+Source: "Everything you need to know about Mobile App UI's in 8 minutes" (Kole Jain,
+`youtu.be/Gfsd8NNuD9g`). Truncated during the first discussion of fitting content on screen.
+
+**The two approaches**
+- **A — Bottom navigation.** Consolidate the desktop destinations into a few key icons; a
+  bottom bar, often floating; keep the important action visually separate from routine nav;
+  **3-4 destinations is ideal, 5 is the upper limit**; touch targets over 44px; the actions
+  may be contextual to the current screen.
+- **B — Navigation as a page.** When there are too many important destinations for a bottom
+  bar, make the navigation a full page (Notion's pattern): recent items near the top, actions
+  and counts on the right, leaving the bottom free for one prominent search or action.
+- **Contextual top-bar actions.** A notification bell and an overflow menu near the top,
+  showing only what is relevant to the current page.
+- **Do not shrink desktop onto mobile.** Do not compress everything to fit; give each screen
+  one clear primary purpose.
+
+**Verified against `src/App.tsx` on 2026-11-20 — we already do most of this.**
+- Mobile bottom bar exists (`hideMobileBottomBar`, rendered at ~line 1705) with **5** core
+  destinations: Today, Chats, Study, Campus, Profile.
+- The remaining 9-10 destinations live in a sliding hamburger drawer.
+- The bar is hidden when a chat is open, so the conversation gets the full screen.
+
+**Two flags.**
+1. **Five is the stated ceiling, not a target.** We are exactly at it, with nine further
+   destinations one tap into a drawer. That is defensible today, but it is the first thing to
+   revisit if more destinations appear — approach B is the named alternative.
+2. **No global top-bar notification or overflow entry point.** Search exists per view, but
+   there is no app-shell bell or overflow menu. Whether that is a gap depends on whether a
+   global notification surface is actually needed; nothing currently demands one.
+
 ---
 
 ## 6. How to use this later
