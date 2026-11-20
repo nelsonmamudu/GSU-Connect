@@ -35,7 +35,7 @@ test('Sign In submits a six-character password to Auth without browser validatio
   await page.route('**/*',route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await page.goto(`http://127.0.0.1:${server.httpServer.address().port}`);
   const pw = page.locator('#password');
-  await page.getByLabel('Matric number, staff ID or sign-in email').fill('08031234567');
+  await page.getByLabel('Matric number or staff ID').fill('08031234567');
   await pw.fill('123456');
   await page.locator('form button[type=submit]').click();
   await page.getByRole('alert').filter({hasText:'Please enter a valid matric number'}).waitFor();

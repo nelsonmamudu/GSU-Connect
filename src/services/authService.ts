@@ -186,7 +186,7 @@ export async function resolveLoginEmail(rawIdentifier: string): Promise<string> 
       throw new Error('Please enter a valid email address.');
     }
   } else if (normalizeIdNumber(trimmed).length < 3 || (/^[+\d\s().-]+$/.test(trimmed) && trimmed.replace(/\D/g,'').length >= 10)) {
-    throw new Error('Please enter a valid matric number, staff ID or sign-in email.');
+    throw new Error('Please enter a valid matric number or staff ID.');
   }
 
   assertClientThrottle('login', {
@@ -433,18 +433,18 @@ export async function signInUser(identifier: string, password: string, captchaTo
  */
 export async function requestPasswordReset(identifier: string, captchaToken?: string): Promise<void> {
   if (/[\x00-\x1F\x7F]/.test(identifier)) {
-    throw new Error('Please enter a valid Matric Number, Staff ID, registered phone number, or sign-in email.');
+    throw new Error('Please enter a valid Matric Number, Staff ID or registered phone number.');
   }
   const trimmed = identifier.trim();
   if (trimmed.length < 3 || trimmed.length > 120) {
-    throw new Error('Please enter your Matric Number, Staff ID, registered phone number, or sign-in email.');
+    throw new Error('Please enter your Matric Number, Staff ID or registered phone number.');
   }
   if (trimmed.includes('@')) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) {
       throw new Error('Please enter a valid email address.');
     }
   } else if (normalizeIdNumber(trimmed).length < 3) {
-    throw new Error('Please enter your Matric Number, Staff ID, registered phone number, or sign-in email.');
+    throw new Error('Please enter your Matric Number, Staff ID or registered phone number.');
   }
 
   assertClientThrottle('password_reset', {
