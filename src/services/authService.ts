@@ -509,6 +509,9 @@ export async function requestRecoveryEmailVerification(
     if (status === 429) {
       throw new Error('Too many verification requests. Please wait a few minutes and try again.');
     }
+    if (status === 403 && (await functionsErrorCode(error)) === 'reauth_required') {
+      throw reauthRequiredError();
+    }
     throw new Error('Could not send the verification email. Please check your connection and try again.');
   }
 }
@@ -530,6 +533,29 @@ export async function fetchMyRecoveryStatus(): Promise<{ verified: boolean; mask
     verified: raw.verified === true,
     maskedEmail: typeof raw.masked_email === 'string' ? raw.masked_email : null,
   };
+}
+
+/** Machine-readable re-auth signal: the edge function requires a fresh sign-in. */
+export function reauthRequiredError(): Error {
+  const err = new Error('Sign in again to change your verified recovery address.');
+  (err as { code?: string }).code = 'reauth_required';
+  return err;
+}
+export function isReauthRequired(err: unknown): boolean {
+  return Boolean(err) && typeof err === 'object' && (err as { code?: unknown }).code === 'reauth_required';
+}
+/** Best-effort extraction of the machine code from a functions.invoke error body. */
+export async function functionsErrorCode(error: unknown): Promise<string | undefined> {
+  try {
+    const ctx = (error as { context?: unknown })?.context;
+    if (ctx && typeof (ctx as { json?: unknown }).json === 'function') {
+      const body = await (ctx as { json: () => Promise<unknown> }).json() as { code?: unknown };
+      return typeof body?.code === 'string' ? body.code : undefined;
+    }
+  } catch {
+    // non-JSON or unreadable body — treat as no code
+  }
+  return undefined;
 }
 
 export async function signOutUser(scope: 'local' | 'global' = 'global'): Promise<void> {

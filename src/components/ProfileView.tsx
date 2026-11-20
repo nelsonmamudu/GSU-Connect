@@ -38,6 +38,7 @@ import {
   updateOwnAvatar,
   updateOwnFullName,
   requestRecoveryEmailVerification,
+  isReauthRequired,
   updateUserLastSeen,
 } from '../services/supabaseService';
 import {
@@ -167,6 +168,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   // Address awaiting inbox confirmation — shown as "pending" until reload; the
   // verified binding (and this list) moves only when the new inbox confirms.
   const [pendingRecovery, setPendingRecovery] = useState('');
+  const [reauthRequiredRecovery, setReauthRequiredRecovery] = useState(false);
 
   // Change password modal
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -316,7 +318,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setRecoveryPassword('');
       showSavedToast('Verification link sent. Your current recovery email stays active until the new one is confirmed.');
     } catch (err) {
-      setRecoveryError(friendlyEntryError(err, 'Could not update recovery email.'));
+      if (isReauthRequired(err)) {
+        setReauthRequiredRecovery(true);
+        setRecoveryError(null);
+      } else {
+        setRecoveryError(friendlyEntryError(err, 'Could not update recovery email.'));
+      }
     } finally {
       setSavingRecovery(false);
     }
@@ -946,6 +953,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   </button>
                 </div>
               </div>
+              {reauthRequiredRecovery && (
+                <div role="alert" className="rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-2 space-y-2">
+                  <p className="text-[11px] font-medium text-amber-900 dark:text-amber-200">
+                    For your security, sign in again before changing your verified recovery address — the current session is too old to make this change.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { void signOutUser('local'); }}
+                    className="min-h-[36px] px-3 rounded-lg bg-amber-700 dark:bg-amber-600 text-white text-[11px] font-semibold"
+                  >
+                    Sign in again
+                  </button>
+                </div>
+              )}
               {recoveryError && (
                 <p className="text-xs text-rose-600 dark:text-rose-400">{recoveryError}</p>
               )}

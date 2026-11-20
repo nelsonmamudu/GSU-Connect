@@ -247,7 +247,24 @@ export async function testRecoveryEmail(db) {
     db.query(`select phase1_private.mask_recovery_email('leak@example.com')`),
     /permission denied/i
   );
+  // --- has_verified_recovery(): service_role only, boolean, no uid argument ----
+  const hreMigration = readFileSync(
+    new URL('../migrations/20261127_has_verified_recovery.sql', import.meta.url),
+    'utf8'
+  );
+  await superq(hreMigration);
+  const hasVerified = async n => {
+    const rows = (await db.query(`select public.has_verified_recovery('${id(n)}') as s`)).rows;
+    return rows[0].s;
+  };
+  await db.exec('reset role; set role service_role');
+  assert.equal(await hasVerified(201), true, 'account 201 confirmed a binding earlier in this suite');
+  assert.equal(await hasVerified(207), false, '207 requested but never confirmed — no binding');
+  await db.exec('reset role; set role authenticated');
+  await assert.rejects(db.query(`select public.has_verified_recovery('${id(201)}')`), /permission denied/i);
+  await db.exec('reset role; set role anon');
+  await assert.rejects(db.query(`select public.has_verified_recovery('${id(201)}')`), /permission denied/i);
   await superq('select 1');
 
-  console.log('Recovery email: normalization-before-count, 60-minute TTL, global/destination/account caps, replay/expiry/cross-account, atomic claim, old-inbox continuity and my_recovery_status and recovery-email_key (gmail dot/tag collapse, already-linked by key, non-Gmail plus distinctness, fixed lock order) passed.');
+  console.log('Recovery email: normalization-before-count, 60-minute TTL, global/destination/account caps, replay/expiry/cross-account, atomic claim, old-inbox continuity and my_recovery_status and recovery-email_key (gmail dot/tag collapse, already-linked by key, non-Gmail plus distinctness, fixed lock order), and has_verified_recovery (service_role only) passed.');
 }

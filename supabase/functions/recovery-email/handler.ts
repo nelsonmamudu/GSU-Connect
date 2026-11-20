@@ -68,6 +68,57 @@ function extractClientIp(req: Request): string {
   return '';
 }
 
+const AMR_FRESH_MS = 15 * 60 * 1000;       // amr timestamps are Unix SECONDS
+const AMR_SKEW_MS = 5 * 60 * 1000;        // tolerate clock skew between client and auth server
+
+/** Decode the (already-authenticated) JWT payload for claim inspection only. */
+const decodeJwtPayload = (jwt: string): Record<string, unknown> | null => {
+  const parts = jwt.split('.');
+  if (parts.length < 2) return null;
+  try {
+    const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const pad = b64 + '='.repeat((4 - (b64.length % 4)) % 4);
+    const bin = atob(pad);
+    const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+    const payload = JSON.parse(new TextDecoder().decode(bytes));
+    return payload && typeof payload === 'object' ? (payload as Record<string, unknown>) : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Fresh-authentication check for REPLACING an existing verified inbox.
+ * Reads the token's `amr` claim — Authentication Method References — whose
+ * timestamps are the times of the actual authentication events (Unix seconds,
+ * most-recent first). A plain token REFRESH does NOT bump these (verified
+ * against supabase/auth source: refresh re-issues the access token from the
+ * session's stored AMRClaims rows; only issue-time/MFA-verify call
+ * AddClaimToSession, which sets the row's updated_at). So an old `amr` means
+ * the user authenticated a while ago; a fresh `amr` means they just did —
+ * hijacked long-lived sessions fail this check.
+ *
+ * Fail closed: missing payload, missing/empty amr, any malformed entry, or a
+ * newest timestamp older than the window => not fresh.
+ */
+const hasFreshAuthentication = (jwt: string, nowMs: number = Date.now()): boolean => {
+  const payload = decodeJwtPayload(jwt);
+  const amr = payload?.amr;
+  if (!Array.isArray(amr) || amr.length === 0) return false;
+  let newest = Number.NEGATIVE_INFINITY;
+  for (const entry of amr) {
+    if (!entry || typeof entry !== 'object') return false;
+    const method = (entry as { method?: unknown }).method;
+    const ts = Number((entry as { timestamp?: unknown }).timestamp);
+    if (typeof method !== 'string' || method.trim() === '' || !Number.isFinite(ts) || ts <= 0) {
+      return false;
+    }
+    if (ts * 1000 > newest) newest = ts * 1000;
+  }
+  const ageMs = nowMs - newest;
+  return ageMs <= AMR_FRESH_MS && -ageMs <= AMR_SKEW_MS;
+};
+
 /**
  * ip_hash is an HMAC-SHA256 of the client IP, keyed by an existing function
  * secret (TURNSTILE_SECRET_KEY — the one secret guaranteed present whenever a
@@ -90,6 +141,10 @@ const hmacSha256 = async (secret: string, message: string) => {
 
 const reply = (status: number, message: string) =>
   new Response(JSON.stringify({ message }), { status, headers });
+
+/** Distinct machine-readable code so the client can route to a sign-in screen. */
+const replyWithCode = (status: number, message: string, code: string) =>
+  new Response(JSON.stringify({ message, code }), { status, headers });
 
 const hex = (bytes: Uint8Array) =>
   Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
@@ -180,6 +235,24 @@ export function recoveryEmailHandler(deps: Dependencies) {
       if (!await verifyTurnstile((input as {captchaToken?:unknown}).captchaToken, deps.turnstileSecret())) {
         await waitResponseFloor(startedAt);
         return reply(200, 'Check your inbox. The link expires in 60 minutes.');
+      }
+
+      // ---- fresh-authentication gate for CHANGING a verified inbox ----------
+      // Runs after Turnstile (no RPC happens before it) and only for sends.
+      // Confirm is deliberately not gated: a link can only exist after a send
+      // passed this check, and the confirmation link expires in 60 minutes.
+      const binding = await deps.rpc('has_verified_recovery', { u });
+      if (binding.error) {
+        // Fail closed: we cannot learn binding state, so we cannot safely
+        // relax the freshness requirement.
+        return reply(503, 'Could not complete recovery email request');
+      }
+      if (binding.data === true && !hasFreshAuthentication(auth.slice(7))) {
+        return replyWithCode(
+          403,
+          'Sign in again to change your verified recovery address.',
+          'reauth_required'
+        );
       }
 
       const link = new URL('/', deps.appUrl());

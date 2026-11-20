@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useTurnstile } from './Turnstile';
 import { friendlyEntryError } from '../utils/entryErrors';
 import { maskEmail } from '../utils/maskEmail';
-import { fetchMyRecoveryStatus, requestRecoveryEmailVerification } from '../services/authService';
+import { fetchMyRecoveryStatus, requestRecoveryEmailVerification, isReauthRequired, functionsErrorCode, reauthRequiredError, signOutUser } from '../services/authService';
 import { fetchOwnRecoveryEmail } from '../services/supabaseService';
 
 // Shown to every signed-in account until the SERVER reports a verified
@@ -41,6 +41,7 @@ export function RecoveryEmailPrompt() {
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [reauthRequired, setReauthRequired] = useState(false);
   const changeCheck = useTurnstile('recovery-change');
   const resendCheck = useTurnstile('recovery-resend');
 
@@ -111,13 +112,17 @@ export function RecoveryEmailPrompt() {
       });
       if (error) {
         const statusCode = (error as { context?: { status?: number } })?.context?.status;
+        if (statusCode === 403 && (await functionsErrorCode(error)) === 'reauth_required') {
+          throw reauthRequiredError();
+        }
         throw new Error(statusCode === 429
           ? 'Too many verification requests. Please wait a few minutes and try again.'
           : 'Could not send the verification email. Please check your connection and try again.');
       }
       sent(maskEmail(resendTarget));
     } catch (err) {
-      setMessage(friendlyEntryError(err, 'Could not send the verification email.'));
+      if (isReauthRequired(err)) { setReauthRequired(true); setMessage(''); }
+      else setMessage(friendlyEntryError(err, 'Could not send the verification email.'));
     } finally {
       setBusy(false);
     }
@@ -131,7 +136,8 @@ export function RecoveryEmailPrompt() {
       await requestRecoveryEmailVerification(clean, password, changeCheck.consume());
       sent(maskEmail(clean));
     } catch (err) {
-      setMessage(friendlyEntryError(err, 'Could not send the verification email.'));
+      if (isReauthRequired(err)) { setReauthRequired(true); setMessage(''); }
+      else setMessage(friendlyEntryError(err, 'Could not send the verification email.'));
     } finally {
       setBusy(false);
     }
@@ -147,7 +153,25 @@ export function RecoveryEmailPrompt() {
     >
       <p className="font-semibold text-slate-900 dark:text-slate-100">{title}</p>
 
-      {mode === 'sent' ? (
+      {reauthRequired ? (
+        <>
+          <p role="alert" className="text-amber-800 dark:text-amber-300">
+            For your security, sign in again before changing your verified recovery address — the current session is too old to make this change.
+          </p>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => { void signOutUser('local'); }}
+              className="min-h-[44px] px-4 rounded-xl bg-emerald-700 text-white font-semibold"
+            >
+              Sign in again
+            </button>
+            <button type="button" onClick={() => setReauthRequired(false)} className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-medium">
+              Dismiss
+            </button>
+          </div>
+        </>
+      ) : mode === 'sent' ? (
         <>
           <p role="status" className="text-emerald-800 dark:text-emerald-300">{message}</p>
           <button type="button" onClick={() => { forgetSignupKey(); snooze(); }} className="min-h-[44px] px-4 rounded-xl bg-emerald-700 text-white font-semibold">Done</button>

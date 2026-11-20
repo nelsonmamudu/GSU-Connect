@@ -9,6 +9,12 @@ const hmacSha256 = (secret, message) =>
 
 const VALID = 'valid-captcha-token';
 
+// Craft a pre-signed-shape JWT (the handler inspects claims; signature is irrelevant here).
+const jwtWith = payload =>
+  `${Buffer.from(JSON.stringify({ alg: 'ES256', typ: 'JWT' })).toString('base64url')}.${Buffer.from(JSON.stringify(payload)).toString('base64url')}.testsig`;
+const nowSec = () => Math.floor(Date.now() / 1000);
+const verifiedBinding = { rpcImpl: async () => ({ data: true, error: null }) };
+
 function mockCaptcha(t, success) {
   t.mock.method(globalThis, 'fetch', async url => {
     assert.equal(url, 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
@@ -24,7 +30,14 @@ function harness(overrides = {}) {
     rpcImpl: overrides.rpcImpl || (async () => ({data: null, error: null})),
   };
   const handle = recoveryEmailHandler({
-    identify: async jwt => (jwt === 'valid-a' ? 'user-a' : jwt === 'valid-b' ? 'user-b' : null),
+    identify: async jwt => {
+    if (jwt === 'valid-a') return 'user-a';
+    if (jwt === 'valid-b') return 'user-b';
+    try {
+      const payload = JSON.parse(Buffer.from(jwt.split('.')[1], 'base64url').toString());
+      return payload?.sub === 'user-a' ? 'user-a' : payload?.sub === 'user-b' ? 'user-b' : null;
+    } catch { return null; }
+  },
     turnstileSecret: () => 'test-secret',
     rpc: async (name, args) => { calls.push({name, args}); return state.rpcImpl(name, args); },
     appUrl: () => 'https://campus.example',
@@ -75,18 +88,18 @@ test('send validates input and issues a normalized, server-side token', async (t
 
   const res = await post({action: 'send', email: '  Mixed.Case@Example.COM ', captchaToken: VALID});
   assert.equal(res.status, 200);
-  assert.equal(calls.length, 1);
-  assert.equal(calls[0].name, 'request_recovery_email');
-  assert.equal(calls[0].args.mail, 'mixed.case@example.com');
-  assert.match(calls[0].args.token_hash, /^[a-f0-9]{64}$/);
-  assert.equal(calls[0].args.ip_hash, '');
+  assert.deepEqual(calls.map(c => c.name), ['has_verified_recovery', 'request_recovery_email']);
+  assert.equal(calls[1].name, 'request_recovery_email');
+  assert.equal(calls[1].args.mail, 'mixed.case@example.com');
+  assert.match(calls[1].args.token_hash, /^[a-f0-9]{64}$/);
+  assert.equal(calls[1].args.ip_hash, '');
 
   assert.equal(state.deliverCalls.length, 1);
   const link = new URL(state.deliverCalls[0].link);
   assert.equal(link.origin, 'https://campus.example');
   const token = /^#recovery-confirm=([0-9a-f]{64})$/.exec(link.hash)?.[1];
   assert.ok(token, 'link carries a 256-bit recovery-confirm token');
-  assert.equal(calls[0].args.token_hash, sha256(token), 'only the digest reaches the database');
+  assert.equal(calls[1].args.token_hash, sha256(token), 'only the digest reaches the database');
 });
 
 test('the client IP is salted (HMAC, keyed by the Turnstile secret) before it reaches the database; the raw IP never does', async (t) => {
@@ -95,15 +108,15 @@ test('the client IP is salted (HMAC, keyed by the Turnstile secret) before it re
   const res = await post({action: 'send', email: 'a@example.com', captchaToken: VALID}, 'valid-a', {'x-forwarded-for': '203.0.113.9, 10.0.0.1'});
   assert.equal(res.status, 200);
   // Salted with the existing TURNSTILE_SECRET_KEY ('test-secret' here), domain-separated.
-  assert.equal(calls[0].args.ip_hash, hmacSha256('test-secret', 'recovery-ip:203.0.113.9'));
-  assert.notEqual(calls[0].args.ip_hash, sha256('203.0.113.9'));
-  assert.ok(!JSON.stringify(calls[0]).includes('203.0.113.9'));
+  assert.equal(calls[1].args.ip_hash, hmacSha256('test-secret', 'recovery-ip:203.0.113.9'));
+  assert.notEqual(calls[1].args.ip_hash, sha256('203.0.113.9'));
+  assert.ok(!JSON.stringify(calls[1]).includes('203.0.113.9'));
 });
 
 test('database cap errors (including per-IP) map to a generic 429', async (t) => {
   mockCaptcha(t, true);
   for (const message of ['Verification mail limit reached', 'Too many verification requests for this address', 'Email request limit reached', 'Too many verification requests from this network']) {
-    const {post} = harness({rpcImpl: async () => ({data: null, error: {message}})});
+    const {post} = harness({rpcImpl: async (name) => name === 'has_verified_recovery' ? {data: false, error: null} : ({data: null, error: {message}})});
     const res = await post({action: 'send', email: 'user@example.com', captchaToken: VALID});
     assert.equal(res.status, 429, message);
     assert.match(await res.text(), /wait before requesting/i);
@@ -207,4 +220,123 @@ test('send fails closed when the app URL is not https', async (t) => {
   });
   const res = await h(new Request('https://fn.example', {method: 'POST', headers: {Authorization: 'Bearer x'}, body: JSON.stringify({action: 'send', email: 'a@example.com', captchaToken: VALID})}));
   assert.equal(res.status, 503);
+});
+
+test('missing amr with an existing verified binding: 403 reauth_required, nothing sent or counted', async (t) => {
+  mockCaptcha(t, true);
+  const calls = [];
+  const h = recoveryEmailHandler({
+    identify: async () => 'user-a',
+    turnstileSecret: () => 'test-secret',
+    rpc: async (name, args) => { calls.push({ name, args }); return { data: true, error: null }; },
+    appUrl: () => 'https://campus.example',
+    deliver: async () => { throw new Error('must not deliver'); },
+  });
+  const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a' })}` }, body: JSON.stringify({ action: 'send', email: 'a@example.com', captchaToken: VALID }) }));
+  assert.equal(res.status, 403);
+  assert.deepEqual(await res.json(), { message: 'Sign in again to change your verified recovery address.', code: 'reauth_required' });
+  assert.deepEqual(calls.map(c => c.name), ['has_verified_recovery'], 'request_recovery_email must not run');
+});
+
+test('refreshed token with an old amr is refused (amr timestamps do not change on refresh)', async (t) => {
+  mockCaptcha(t, true);
+  const calls = [];
+  const h = recoveryEmailHandler({
+    identify: async () => 'user-a',
+    turnstileSecret: () => 'test-secret',
+    rpc: async (name, args) => { calls.push({ name, args }); return { data: true, error: null }; },
+    appUrl: () => 'https://campus.example',
+    deliver: async () => { throw new Error('must not deliver'); },
+  });
+  const staleAmr = [{ method: 'password', timestamp: nowSec() - 3600 }]; // signed in an hour ago, refreshed since
+  const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a', amr: staleAmr })}` }, body: JSON.stringify({ action: 'send', email: 'a@example.com', captchaToken: VALID }) }));
+  assert.equal(res.status, 403);
+  assert.deepEqual(await res.json(), { message: 'Sign in again to change your verified recovery address.', code: 'reauth_required' });
+  assert.deepEqual(calls.map(c => c.name), ['has_verified_recovery']);
+});
+
+test('fresh amr passes the gate and the send proceeds normally', async (t) => {
+  mockCaptcha(t, true);
+  const calls = [];
+  const h = recoveryEmailHandler({
+    identify: async () => 'user-a',
+    turnstileSecret: () => 'test-secret',
+    rpc: async (name, args) => { calls.push({ name, args }); return name === 'has_verified_recovery' ? { data: true, error: null } : { data: null, error: null }; },
+    appUrl: () => 'https://campus.example',
+    deliver: async () => true,
+  });
+  const freshAmr = [{ method: 'password', timestamp: nowSec() - 60 }];
+  const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a', amr: freshAmr })}` }, body: JSON.stringify({ action: 'send', email: 'a@example.com', captchaToken: VALID }) }));
+  assert.equal(res.status, 200);
+  assert.deepEqual(calls.map(c => c.name), ['has_verified_recovery', 'request_recovery_email']);
+});
+
+test('malformed amr fails closed with reauth_required', async (t) => {
+  mockCaptcha(t, true);
+  for (const amr of [
+    [],
+    [{ method: 'password' }],
+    [{ method: 'password', timestamp: 'soon' }],
+    [{ method: '', timestamp: nowSec() }],
+    [{ timestamp: nowSec() }],
+    ['password'],
+  ]) {
+    const calls = [];
+    const h = recoveryEmailHandler({
+      identify: async () => 'user-a',
+      turnstileSecret: () => 'test-secret',
+      rpc: async (name) => { calls.push(name); return { data: true, error: null }; },
+      appUrl: () => 'https://campus.example',
+      deliver: async () => { throw new Error('must not deliver'); },
+    });
+    const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a', amr })}` }, body: JSON.stringify({ action: 'send', email: 'a@example.com', captchaToken: VALID }) }));
+    assert.equal(res.status, 403, JSON.stringify(amr));
+    assert.deepEqual(await res.json(), { message: 'Sign in again to change your verified recovery address.', code: 'reauth_required' });
+    assert.deepEqual(calls, ['has_verified_recovery']);
+  }
+});
+
+test('no verified binding: bootstrap send works even with no amr (gate is for CHANGES)', async (t) => {
+  mockCaptcha(t, true);
+  const calls = [];
+  const h = recoveryEmailHandler({
+    identify: async () => 'user-a',
+    turnstileSecret: () => 'test-secret',
+    rpc: async (name) => { calls.push(name); return { data: false, error: null }; },
+    appUrl: () => 'https://campus.example',
+    deliver: async () => true,
+  });
+  const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a' })}` }, body: JSON.stringify({ action: 'send', email: 'a@example.com', captchaToken: VALID }) }));
+  assert.equal(res.status, 200);
+  assert.deepEqual(calls, ['has_verified_recovery', 'request_recovery_email']);
+});
+
+test('has_verified_recovery failure fails closed with 503 and no side effects', async (t) => {
+  mockCaptcha(t, true);
+  const calls = [];
+  const h = recoveryEmailHandler({
+    identify: async () => 'user-a',
+    turnstileSecret: () => 'test-secret',
+    rpc: async (name) => { calls.push(name); return { data: null, error: { message: 'db down' } }; },
+    appUrl: () => 'https://campus.example',
+    deliver: async () => { throw new Error('must not deliver'); },
+  });
+  const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a', amr: [{ method: 'password', timestamp: nowSec() - 60 }] })}` }, body: JSON.stringify({ action: 'send', email: 'a@example.com', captchaToken: VALID }) }));
+  assert.equal(res.status, 503);
+  assert.deepEqual(calls, ['has_verified_recovery']);
+});
+
+test('confirm action is NOT gated on fresh amr', async (t) => {
+  const calls = [];
+  const staleAmr = [{ method: 'password', timestamp: nowSec() - 7200 }];
+  const h = recoveryEmailHandler({
+    identify: async () => 'user-a',
+    turnstileSecret: () => 'test-secret',
+    rpc: async (name) => { calls.push(name); return name === 'has_verified_recovery' ? { data: true, error: null } : { data: { previous: null, current: 'a@example.com' }, error: null }; },
+    appUrl: () => 'https://campus.example',
+    deliver: async () => { throw new Error('must not deliver'); },
+  });
+  const res = await h(new Request('https://fn.example', { method: 'POST', headers: { Authorization: `Bearer ${jwtWith({ sub: 'user-a', amr: staleAmr })}` }, body: JSON.stringify({ action: 'confirm', token: 'f'.repeat(64) }) }));
+  assert.equal(res.status, 200);
+  assert.deepEqual(calls, ['confirm_recovery_email'], 'has_verified_recovery must not run on confirm');
 });
