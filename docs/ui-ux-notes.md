@@ -486,6 +486,40 @@ approval or rejection screen, and that is what gets remembered. The rejection pa
 the peak-end risk is highest: a hostile or cryptic rejection is the last thing a user takes
 away from the whole application.
 
+### 5.3 Signifiers, card hierarchy, and directional cues (secondary, partial overlap)
+
+Source: "Every UI/UX Concept Explained in Under 10 Minutes" (Kole Jain,
+`youtu.be/EcbgbKtOELY`). Truncated during the visual-design discussion; no timecodes, no
+frames.
+
+**Overlap:** the card-hierarchy half restates `visual-hierarchy` (§3) and `number-formatting`
+(§2c) — size/position/colour for emphasis, price right-aligned, metadata de-emphasised. The
+increments are below.
+
+**Signifiers** — a named concept worth adding to the vocabulary.
+A signifier is anything visible that communicates what an element does, without written
+instructions: button press states, a highlight on the active nav item, a hover state, a
+tooltip. Rules that come with it:
+- Group related controls with a consistent container or spacing.
+- Make the **current selection visually distinct** from the alternatives.
+- Style unavailable/inactive options differently **and make the behaviour match the
+  appearance**. A greyed control that still works, or an active-looking control that does
+  nothing, is a broken signifier.
+- Ship visible hover, pressed and active states where relevant.
+- Use a concise tooltip for an affordance that still needs explaining, and **never rely on
+  hover-only cues for essential information on touch devices** (same rule as `hover-trap`).
+
+**Card hierarchy as a comparison tool.** A repeated card that reads like a spreadsheet has
+failed. Primary item largest, boldest, nearest the top; supporting metadata (time, date,
+location) smaller and lower; accent colour reserved for meaningful emphasis. Keep repeated
+cards **consistent**, so users can compare them quickly — variance between cards costs more
+than variance within one.
+
+**Direction and alternatives.** Icons plus alignment can carry a relationship (origin →
+destination) without spelling out "from" and "to". Two caveats: an icon is not universally
+understood, so keep an accessible label or equivalent text; and hierarchy is a set of
+principles, not one mandatory arrangement — pick the layout that fits the content.
+
 ---
 
 ## 6. How to use this later
