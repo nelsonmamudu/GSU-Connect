@@ -6,8 +6,8 @@ export async function testApprovalScope(db) {
   const sql = s => db.exec(s);
   const val = async s => Object.values((await db.query(s)).rows[0])[0];
   const file = path => readFileSync(new URL(path, import.meta.url), 'utf8');
-  const migration = file('../migrations/20261125_approval_scope.sql');
-  const down = file('../rollback/20261125_approval_scope.sql');
+  const migration = file('../migrations/20261120033801_approval_scope.sql');
+  const down = file('../rollback/20261120033801_approval_scope.sql');
   const id = n => `00000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
   const actor = n => sql(`reset role; set role authenticated; set request.jwt.claims='${JSON.stringify({sub:id(n),session_id:id(n+100),aal:'aal1'})}'`);
   const status = n => val(`select status from profiles where id='${id(n)}'`);
