@@ -1,3 +1,5 @@
+import {updateRecoveryEmail} from '../services/authService';
+import {friendlyEntryError} from '../utils/entryErrors';
 import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
 import {noFileMessage, prepareReviewProof} from '../utils/prepareReviewProof';
 import {studentProof,staffProof,proofFileName} from '../utils/proof';
@@ -156,6 +158,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const [loadingRecovery, setLoadingRecovery] = useState(true);
   const [editingRecovery, setEditingRecovery] = useState(false);
   const [recoveryInput, setRecoveryInput] = useState('');
+  const [recoveryPassword, setRecoveryPassword] = useState('');
   const [savingRecovery, setSavingRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
 
@@ -257,7 +260,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         text: 'Details updated. Your reviewer will see the corrected information.',
       });
     } catch (err) {
-      setDetailsError(err instanceof Error ? err.message : 'Failed to update details.');
+      setDetailsError(friendlyEntryError(err, 'Failed to update details.'));
     } finally {
       setSavingDetails(false);
     }
@@ -266,6 +269,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const handleOpenEditRecovery = () => {
     setRecoveryInput(recoveryEmail || '');
     setRecoveryError(null);
+    setRecoveryPassword('');
     setEditingRecovery(true);
   };
 
@@ -281,20 +285,15 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     setSavingRecovery(true);
     setRecoveryError(null);
     try {
-      const { error } = await supabase.rpc('set_recovery_email', {
-        new_email: clean,
-      });
-      if (error) {
-        throw new Error(error.message);
-      }
+      await updateRecoveryEmail(clean, recoveryPassword);
       setRecoveryEmail(clean);
-      setEditingRecovery(false);
+      setEditingRecovery(false); setRecoveryPassword('');
       setFeedback({
         type: 'info',
         text: 'Recovery email updated.',
       });
     } catch (err) {
-      setRecoveryError(err instanceof Error ? err.message : 'Failed to update recovery email.');
+      setRecoveryError(friendlyEntryError(err, 'Failed to update recovery email.'));
     } finally {
       setSavingRecovery(false);
     }
@@ -317,7 +316,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     setUploadingIdCard(true);
     setFeedback(null);
     try { await submitAttached(); await finishUpload(); }
-    catch { setFeedback({type:'error', text:'Submission failed. Your proof is attached. Retry submission without uploading it again.'}); }
+    catch { setFeedback({type:'error', text:'Could not submit. Your proof is attached. Retry submission without uploading it again.'}); }
     finally { setUploadingIdCard(false); setUploadStep(''); }
   };
   const handleUploadIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -339,10 +338,11 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
       if (isRejected) { stage = 'submit'; setRetrySubmit(true); await submitAttached(); }
       await finishUpload();
     } catch (err) {
-      const reason = err && typeof err === 'object' && 'message' in err ? String(err.message) : 'Check your connection and try again.';
-      const label = stage === 'submit' ? 'Submission failed. Your proof is attached. Retry submission without uploading it again.'
-        : stage === 'attach' ? 'Attaching proof failed.' : stage === 'upload' ? 'Upload failed.' : '';
-      setFeedback({type:'error',text:`${label} ${reason}`.trim()});
+      const text = stage === 'submit' ? 'Could not submit. Your proof is attached. Retry submission without uploading it again.'
+        : stage === 'attach' ? 'Could not attach proof. Please try again.'
+        : stage === 'upload' ? 'Upload failed. Please try again.'
+        : friendlyEntryError(err, 'Could not prepare this file. Choose another photo or PDF.');
+      setFeedback({type:'error',text});
     } finally { setUploadingIdCard(false); setUploadStep(''); }
   };
 
@@ -649,8 +649,13 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
             {editingRecovery && (
               <form onSubmit={handleSaveRecovery} className="space-y-2 pt-0.5">
                 <div className="space-y-2">
+                  <label className="block text-xs font-semibold">Current password
+                    <input type="password" autoComplete="current-password" required value={recoveryPassword}
+                      onChange={e=>setRecoveryPassword(e.target.value)} className="block w-full rounded-xl border p-2 mt-1" />
+                  </label>
+                  <label htmlFor="status-recovery-email" className="block text-xs font-semibold">Recovery email</label>
                   <input
-                    aria-label="Recovery email"
+                    id="status-recovery-email"
                     type="email"
                     required
                     maxLength={120}
@@ -671,7 +676,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     type="button"
                     disabled={savingRecovery}
                     onClick={() => {
-                      setEditingRecovery(false);
+                      setEditingRecovery(false); setRecoveryPassword('');
                       setRecoveryError(null);
                     }}
                     className="min-h-[38px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-60 shrink-0"

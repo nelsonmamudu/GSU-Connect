@@ -1,3 +1,4 @@
+import {friendlyEntryError} from '../utils/entryErrors';
 import { AdminTotp } from './AdminTotp';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -272,7 +273,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       onProfileUpdated?.();
       showSavedToast('Display name updated.');
     } catch (err) {
-      setNameError(err instanceof Error ? err.message : 'Could not update display name.');
+      setNameError(friendlyEntryError(err, 'Could not update display name.'));
     } finally {
       setSaving(false);
     }
@@ -299,7 +300,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setRecoveryPassword('');
       showSavedToast('Recovery email updated.');
     } catch (err) {
-      setRecoveryError(err instanceof Error ? err.message : 'Could not update recovery email.');
+      setRecoveryError(friendlyEntryError(err, 'Could not update recovery email.'));
     } finally {
       setSavingRecovery(false);
     }
@@ -330,7 +331,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setConfirmPasswordInput('');
       showSavedToast('Password changed successfully.');
     } catch (err) {
-      setPasswordError(err instanceof Error ? err.message : 'Could not change password.');
+      setPasswordError(friendlyEntryError(err, 'Could not change password.'));
     } finally {
       setSavingPassword(false);
     }
@@ -371,7 +372,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setDeletePasswordInput('');
     } catch (err) {
       setDeleteError(
-        err instanceof Error ? err.message : 'Could not process account deletion.'
+        friendlyEntryError(err, 'Could not process account deletion.')
       );
     } finally {
       setDeletingAccount(false);
@@ -394,7 +395,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setAvatarModalOpen(false);
       showSavedToast('Profile photo updated.');
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : 'Failed to upload profile picture.');
+      setAvatarError(friendlyEntryError(err, 'Failed to upload profile picture.'));
     } finally {
       setAvatarSaving(false);
     }
@@ -413,7 +414,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setAvatarModalOpen(false);
       showSavedToast('Avatar updated.');
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : 'Failed to update avatar.');
+      setAvatarError(friendlyEntryError(err, 'Failed to update avatar.'));
     } finally {
       setAvatarSaving(false);
     }
@@ -432,7 +433,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       setAvatarModalOpen(false);
       showSavedToast('Avatar reset to initials.');
     } catch (err) {
-      setAvatarError(err instanceof Error ? err.message : 'Failed to reset avatar.');
+      setAvatarError(friendlyEntryError(err, 'Failed to reset avatar.'));
     } finally {
       setAvatarSaving(false);
     }
@@ -1020,13 +1021,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
       {currentUser.role === 'admin' && <AdminTotp />}
       {/* Sign Out */}
-      <button type="button" className="min-h-[44px]" onClick={() => signOutUser('local').catch(e=>setLogoutError(e.message))}>Sign out on this device</button>
+      <button type="button" className="min-h-[44px]" onClick={() => signOutUser('local').catch(e=>setLogoutError('Could not sign out. Please try again.'))}>Sign out on this device</button>
       {logoutError && <p role="alert">{logoutError}</p>}
       <button
         type="button"
         onClick={async () => {
           await updateUserLastSeen(currentUser.uid).catch(() => undefined);
-          await signOutUser('global').catch(e=>setLogoutError(e.message));
+          await signOutUser('global').catch(e=>setLogoutError('Could not sign out. Please try again.'));
         }}
         className="w-full min-h-[48px] rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-200 dark:hover:border-red-900/70 hover:text-red-700 dark:hover:text-red-300 text-slate-700 dark:text-slate-200 font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
       >

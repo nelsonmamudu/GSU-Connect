@@ -66,3 +66,18 @@ test('proof viewer displays only the filename without the storage UUID prefix', 
   assert.equal(proofFileName('owner/12345678-1234-1234-1234-123456789abc_registration_form.pdf'),'registration_form.pdf');
   assert.equal(proofFileName('owner/document.pdf'),'document.pdf');
 });
+
+import {resetOrigin} from '../supabase/functions/password-reset/redirect';
+import {friendlyEntryError, formatAuthError} from '../src/utils/entryErrors';
+test('reset mail requires an exact configured HTTPS origin', () => {
+  const allowed = 'https://one.example, https://two.example';
+  assert.equal(resetOrigin('https://two.example/',allowed),'https://two.example/');
+  for (const url of ['http://one.example','https://one.example.other','https://user@one.example','https://one.example/path','bad']) assert.equal(resetOrigin(url,allowed),null);
+  assert.equal(resetOrigin('https://one.example',undefined),null);
+});
+test('entry feedback never echoes backend diagnostics, even alongside familiar keywords', () => {
+  for(const message of ['SQLSTATE owner/private-document.pdf','Please wait 3 seconds owner/private-document.pdf','duplicate owner/private-document.pdf']) {
+    assert.doesNotMatch(formatAuthError(new Error(message)),/owner|SQLSTATE/);
+    assert.equal(friendlyEntryError(new Error(message),'Could not submit.'),'Could not submit.');
+  }
+});

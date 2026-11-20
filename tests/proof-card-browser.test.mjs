@@ -56,6 +56,20 @@ test('mobile proof card states and transitions', async t => {
       assert.equal(await card.locator('input').count(),0); assert.deepEqual(writes,[]);
       await replace.click();
     }
+    if(state==='pending-empty') {
+      await page.getByRole('button',{name:'Edit details',exact:true}).last().click();
+      const pw=page.getByLabel('Current password');
+      await pw.waitFor();
+      await page.getByLabel('Recovery email',{exact:true}).fill('qa@example.test');
+      await page.getByRole('button',{name:'Save',exact:true}).click();
+      assert.equal(await pw.evaluate(el=>el.validity.valueMissing),true);
+      await pw.fill('demo-only');
+      if(process.env.RECOVERY_SCREENSHOT) {
+        await pw.evaluate(el=>el.closest('form').scrollIntoView({block:'center'}));
+        await page.screenshot({path:process.env.RECOVERY_SCREENSHOT});
+      }
+      await page.getByRole('button',{name:'Cancel',exact:true}).click();
+    }
     // State 4: every initial state converges on the compact pending card.
     await pdf.setInputFiles({name:'new-proof.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-test')});
     await page.getByText('Proof uploaded. Waiting for review.').waitFor();

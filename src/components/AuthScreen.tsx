@@ -1,4 +1,5 @@
-import {graduateError, minPasswordLength, passwordError} from '../utils/entryRules';
+import {formatAuthError} from '../utils/entryErrors';
+import {minPasswordLength, passwordError} from '../utils/entryRules';
 import {StaffPathPicker,type StaffPath} from './StaffVerification';
 import {studentProof,staffProof,graduateClass,proofTypes} from '../utils/proof';
 import React, { useEffect, useRef, useState } from 'react';
@@ -31,42 +32,6 @@ import { DepartmentPicker } from './DepartmentPicker';
 
 type AuthMode = 'login' | 'signup' | 'forgot';
 type LevelSelection = AcademicLevel | 'graduate' | '';
-
-function formatAuthError(err: unknown): string {
-  const raw = err instanceof Error ? err.message : String(err);
-  const lower = raw.toLowerCase();
-  if (/invalid graduation year|graduation year is required|graduate status/.test(lower)) return graduateError;
-  if (lower.includes('already registered') || lower.includes('already exists') || lower.includes('duplicate')) {
-    return 'An account with this Matric Number / Staff ID already exists. Try signing in instead.';
-  }
-  if (lower.includes('invalid email') || lower.includes('unable to validate email')) {
-    return 'Please enter a valid email address or Matric Number / Staff ID.';
-  }
-  if (lower.includes('invalid login credentials')) {
-    return 'Incorrect Matric Number, Staff ID, phone number, email, or password.';
-  }
-  if (lower.includes('email not confirmed')) {
-    return 'Please confirm your email address via the verification link in your inbox before signing in.';
-  }
-  if (lower.includes('password should be at least') || lower.includes('weak')) {
-    return 'Password must be at least 8 characters.';
-  }
-  if (lower.includes('please wait') && (lower.includes('second') || lower.includes('minute'))) {
-    return raw;
-  }
-  if (lower.includes('rate limit') || lower.includes('too many')) {
-    return 'Too many attempts. Please wait a moment and try again.';
-  }
-  if (
-    lower.includes('failed to fetch') ||
-    lower.includes('networkerror') ||
-    lower.includes('network request failed') ||
-    lower.includes('load failed')
-  ) {
-    return 'Network error. Please check your internet connection and try again.';
-  }
-  return raw;
-}
 
 // Mixed login/reset fields also accept email. Keep ambiguous text verbatim until blur.
 function entryIdentifier(value: string, idOnly = false, finished = false) {
@@ -497,7 +462,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                 <div>
                   <label htmlFor="idNumber" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {mode === 'login'
-                      ? 'Matric number, staff ID, registered phone or sign-in email'
+                      ? 'Matric number, staff ID or sign-in email'
                       : accountType === 'staff'
                         ? 'Staff ID'
                         : 'Matric Number'}
@@ -591,7 +556,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       </p>
                     </div>
 
-                    {/* Phone number (optional — also works as a sign-in option) */}
+                    {/* Phone number (optional — for recovery) */}
                     <div>
                       <label htmlFor="phone" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                         Phone Number <span className="font-normal text-slate-500 dark:text-slate-400">(Optional)</span>
@@ -609,7 +574,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                         />
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                        You can also sign in with this phone number later.
+                        You can use this number to request a password reset.
                       </p>
                     </div>
 

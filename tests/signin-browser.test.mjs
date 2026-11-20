@@ -19,6 +19,7 @@ test('Sign In submits a six-character password to Auth without browser validatio
       received.push(JSON.parse(body));
       return res.writeHead(400).end(JSON.stringify({message:'Invalid login credentials'}));
     }
+    if (req.url === '/rest/v1/rpc/resolve_login') return res.end(JSON.stringify('legacy-mapping@example.test'));
     res.end('null');
   });
   auth.listen(0,'127.0.0.1'); await once(auth,'listening');
@@ -34,6 +35,12 @@ test('Sign In submits a six-character password to Auth without browser validatio
   await page.route('**/*',route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await page.goto(`http://127.0.0.1:${server.httpServer.address().port}`);
   const pw = page.locator('#password');
+  await page.getByLabel('Matric number, staff ID or sign-in email').fill('08031234567');
+  await pw.fill('123456');
+  await page.locator('form button[type=submit]').click();
+  await page.getByRole('alert').filter({hasText:'Please enter a valid matric number'}).waitFor();
+  assert.equal(received.length,0);
+  await page.reload();
   await page.locator('#idNumber').fill('UG25/QAT/9101');
   assert.equal(await pw.getAttribute('minlength'),null);
   assert.equal(await pw.evaluate(el=>el.required),true);
@@ -45,5 +52,6 @@ test('Sign In submits a six-character password to Auth without browser validatio
   await page.locator('form button[type=submit]').click();
   await page.getByRole('alert').filter({hasText:/incorrect/i}).waitFor();
   assert.equal(received.length,1);
+  assert.equal(received[0].email,'legacy-mapping@example.test');
   assert.equal(received[0].password,'123456');
 });
