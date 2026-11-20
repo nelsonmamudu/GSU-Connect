@@ -15,6 +15,7 @@ import {
 } from '../types';
 
 export interface SignUpInput {
+  captchaToken?: string;
   fullName: string;
   idNumber: string;
   accountType: AccountType;
@@ -347,6 +348,7 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
     email: authEmail,
     password: input.password,
     options: {
+      captchaToken: input.captchaToken,
       emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
       data: signupMetadata,
     },
@@ -400,7 +402,7 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
  */
 export async function verifyOwnPassword(
   currentPassword: string,
-  action = 'continuing'
+  action = 'continuing', captchaToken?: string
 ): Promise<void> {
   if (!currentPassword) {
     throw new Error('Please enter your current password.');
@@ -412,7 +414,7 @@ export async function verifyOwnPassword(
   if (userData.user.email) {
     const { error: verifyErr } = await supabase.auth.signInWithPassword({
       email: userData.user.email,
-      password: currentPassword,
+      password: currentPassword, options:{captchaToken},
     });
     if (verifyErr) {
       throw new Error('Password is incorrect.');
@@ -420,11 +422,11 @@ export async function verifyOwnPassword(
   }
 }
 
-export async function signInUser(identifier: string, password: string): Promise<void> {
+export async function signInUser(identifier: string, password: string, captchaToken?: string): Promise<void> {
   const authEmail = await resolveLoginEmail(identifier);
   const { error } = await supabase.auth.signInWithPassword({
     email: authEmail,
-    password,
+    password, options:{captchaToken},
   });
 
   if (error) {
@@ -440,7 +442,7 @@ export async function signInUser(identifier: string, password: string): Promise<
  * returns success so the form cannot be used to probe for registered
  * accounts.
  */
-export async function requestPasswordReset(identifier: string): Promise<void> {
+export async function requestPasswordReset(identifier: string, captchaToken?: string): Promise<void> {
   if (/[\x00-\x1F\x7F]/.test(identifier)) {
     throw new Error('Please enter a valid Matric Number, Staff ID, phone number, or email.');
   }
@@ -464,7 +466,7 @@ export async function requestPasswordReset(identifier: string): Promise<void> {
   });
 
   const { error } = await supabase.functions.invoke('password-reset', {
-    body: { identifier: trimmed },
+    body: { identifier: trimmed, captchaToken },
   });
   if (error) {
     const status = (error as { context?: { status?: number } })?.context?.status;
@@ -482,13 +484,13 @@ export async function requestPasswordReset(identifier: string): Promise<void> {
  */
 export async function updateRecoveryEmail(
   newEmail: string,
-  currentPassword: string
+  currentPassword: string, captchaToken?: string
 ): Promise<void> {
   const clean = newEmail.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
     throw new Error('Please enter a valid email address.');
   }
-  await verifyOwnPassword(currentPassword, 'updating your recovery email');
+  await verifyOwnPassword(currentPassword, 'updating your recovery email',captchaToken);
   const { error } = await supabase.rpc('set_recovery_email', { new_email: clean });
   if (error) {
     throw new Error(error.message);

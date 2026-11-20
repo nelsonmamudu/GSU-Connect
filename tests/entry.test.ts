@@ -88,3 +88,19 @@ test('password-reset generates recovery links through the Auth admin API', () =>
   assert.doesNotMatch(source, /\.auth\s*\.generateLink\s*\(/);
   assert.match(source, /\.auth\s*\.admin\s*\.generateLink\s*\(/);
 });
+
+import {verifyTurnstile} from '../supabase/functions/password-reset/turnstile';
+test('reset CAPTCHA fails closed and only accepts explicit siteverify success', async () => {
+  const unused = () => {throw Error('unexpected network call');};
+  for (const input of [undefined, '', 1, 'x'.repeat(2049)]) assert.equal(await verifyTurnstile(input,'test',unused),false);
+  assert.equal(await verifyTurnstile('token',undefined,unused),false);
+  assert.equal(await verifyTurnstile('token','secret',async (url,options)=>{
+    assert.equal(url,'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+    assert.equal(options?.method,'POST');
+    assert.deepEqual(Object.fromEntries(options?.body as URLSearchParams),{secret:'secret',response:'token'});
+    return Response.json({success:true});
+  }),true);
+  for (const response of [Response.json({success:false}),Response.json({success:'true'}),Response.json({success:true},{status:503}),new Response('broken')])
+    assert.equal(await verifyTurnstile('token','secret',async()=>response),false);
+  assert.equal(await verifyTurnstile('token','secret',async()=>{throw Error('offline')}),false);
+});

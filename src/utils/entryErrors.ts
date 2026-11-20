@@ -1,7 +1,7 @@
 import {graduateError} from './entryRules';
 
 // Only exact, application-owned copy may pass through; never append backend detail.
-const allowed = new Set([graduateError,
+const allowed = new Set([graduateError, 'Please complete the security check, then try again.',
   "An account with this Matric Number / Staff ID already exists. Try signing in instead.",
   "Attach proof of staff status or choose email or vouching.",
   "Attach your selected proof of staff status, or choose email or vouching.",
@@ -48,6 +48,7 @@ export function friendlyEntryError(err: unknown, fallback: string): string {
 export function formatAuthError(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err);
   const lower = raw.toLowerCase();
+  if (/captcha|turnstile/.test(lower)) return 'Please complete the security check, then try again.';
   if (/invalid graduation year|graduation year is required|graduate status/.test(lower)) return graduateError;
   if (lower.includes('already registered') || lower.includes('already exists') || lower.includes('duplicate')) {
     return 'An account with this Matric Number / Staff ID already exists. Try signing in instead.';

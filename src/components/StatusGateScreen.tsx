@@ -1,3 +1,4 @@
+import {useTurnstile} from './Turnstile';
 import {updateRecoveryEmail} from '../services/authService';
 import {friendlyEntryError} from '../utils/entryErrors';
 import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
@@ -158,6 +159,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const [loadingRecovery, setLoadingRecovery] = useState(true);
   const [editingRecovery, setEditingRecovery] = useState(false);
   const [recoveryInput, setRecoveryInput] = useState('');
+  const recoveryCheck = useTurnstile('recovery');
   const [recoveryPassword, setRecoveryPassword] = useState('');
   const [savingRecovery, setSavingRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
@@ -285,7 +287,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     setSavingRecovery(true);
     setRecoveryError(null);
     try {
-      await updateRecoveryEmail(clean, recoveryPassword);
+      await updateRecoveryEmail(clean, recoveryPassword, recoveryCheck.consume());
       setRecoveryEmail(clean);
       setEditingRecovery(false); setRecoveryPassword('');
       setFeedback({
@@ -664,6 +666,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     placeholder="e.g. yourname@gmail.com"
                     className="w-full min-w-0 min-h-[38px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
                   />
+                  {recoveryCheck.widget}
                   <div className="flex justify-end gap-2">
                   <button
                     type="submit"

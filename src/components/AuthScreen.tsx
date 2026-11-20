@@ -1,3 +1,4 @@
+import {useTurnstile} from './Turnstile';
 import {formatAuthError} from '../utils/entryErrors';
 import {minPasswordLength, passwordError} from '../utils/entryRules';
 import {StaffPathPicker,type StaffPath} from './StaffVerification';
@@ -45,6 +46,7 @@ interface AuthScreenProps {
 
 export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [mode, setMode] = useState<AuthMode>(new URLSearchParams(location.search).has('invite')?'signup':'login');
+  const challenge = useTurnstile(mode);
   const [staffPath,setStaffPath]=useState<StaffPath>('email');
   const [accountType, setAccountType] = useState<AccountType>('student');
   const [fullName, setFullName] = useState('');
@@ -202,9 +204,9 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
 
     try {
       if (mode === 'login') {
-        await signInUser(idNumber, password);
+        await signInUser(idNumber, password, challenge.consume());
       } else if (mode === 'forgot') {
-        await requestPasswordReset(forgotIdentifier);
+        await requestPasswordReset(forgotIdentifier, challenge.consume());
         setForgotSent(true);
       } else {
         if(accountType==='staff' && ['id','document'].includes(staffPath) && !idCardFile)throw new Error('Attach your selected proof of staff status, or choose email or vouching.');
@@ -234,6 +236,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               : (level as AcademicLevel);
 
         await signUpUser({
+          captchaToken:challenge.consume(),
           fullName,
           idNumber,
           accountType,
@@ -622,6 +625,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   </div>
                 )}
 
+                {challenge.widget}
                 <button
                   type="submit"
                   disabled={submitting}
@@ -714,6 +718,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                     </div>
                   )}
 
+                  {challenge.widget}
                   <button
                     type="submit"
                     disabled={submitting}

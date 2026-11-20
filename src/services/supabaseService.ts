@@ -1583,7 +1583,7 @@ export async function fetchOwnRecoveryEmail(): Promise<string> {
 
 export async function changeOwnPassword(
   currentPassword: string,
-  newPassword: string
+  newPassword: string, captchaToken?: string
 ): Promise<void> {
   if (!currentPassword) {
     throw new Error('Please enter your current password.');
@@ -1595,7 +1595,7 @@ export async function changeOwnPassword(
     throw new Error('New password must be different from your current password.');
   }
 
-  await verifyOwnPassword(currentPassword, 'changing your password');
+  await verifyOwnPassword(currentPassword, 'changing your password',captchaToken);
 
   const { error: updateErr } = await supabase.auth.updateUser({
     password: newPassword,
@@ -1612,9 +1612,9 @@ export async function changeOwnPassword(
  * momentary access to an unlocked device — cannot wipe the account.
  */
 export async function requestOwnAccountDeletion(
-  password: string
+  password: string, captchaToken?: string
 ): Promise<'deleted' | 'manual_required'> {
-  await verifyOwnPassword(password, 'deleting your account');
+  await verifyOwnPassword(password, 'deleting your account',captchaToken);
 
   const { error } = await supabase.rpc('delete_own_account');
   if (!error) {
