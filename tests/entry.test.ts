@@ -44,7 +44,7 @@ test('only Class of 2026 is graduate; 500 is available only for sufficiently lon
   validateGraduate('student','Class of 2026',true,2026);
   validateGraduate('student','500',false);
   for (const args of [['Class of 2025',true,2025],['Class of 2026',false,undefined],['500',true,2026]] as const) {
-    assert.throws(()=>validateGraduate('student',args[0],args[1],args[2]),{message:graduateError});
+    assert.throws(()=>validateGraduate('student',args[0],args[1],args[2]),{message:graduateError()});
   }
   assert.equal(levelsForDuration(4).includes('500'),false);
   assert.equal(levelsForDuration(5).includes('500'),true);

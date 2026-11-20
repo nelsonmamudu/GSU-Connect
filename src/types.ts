@@ -81,7 +81,17 @@ export interface MyAccountStatus {
   expires_at: string | null;
 }
 export type AccountType = 'student' | 'staff';
-export type AcademicLevel = '100' | '200' | '300' | '400' | '500' | '600' | 'Staff' | 'Class of 2026';
+/** Cohort label for a graduate applicant, e.g. "Class of 2026". */
+export type GraduateLevel = `Class of ${number}`;
+export type AcademicLevel =
+  | '100'
+  | '200'
+  | '300'
+  | '400'
+  | '500'
+  | '600'
+  | 'Staff'
+  | GraduateLevel;
 export type ChatType = 'general' | 'department' | 'custom' | 'dm';
 export type CustomGroupScope = 'all' | 'department' | 'deptLevel' | 'invited';
 export type ReportReason =

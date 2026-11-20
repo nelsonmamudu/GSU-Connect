@@ -2,7 +2,6 @@ export const studentProof =
   'Student proof: course registration form, acknowledgement slip, or GSU portal dashboard screenshot';
 export const staffProof = 'Proof of Staff Status';
 export const proofTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-export const graduateClass = 2026;
 
 // Only explicit labels: a course list, level, session, or faculty is not a department.
 export function extractProofFields(text: string, departments: string[]) {

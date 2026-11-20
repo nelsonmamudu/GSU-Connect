@@ -2,7 +2,20 @@ import {useTurnstile} from './Turnstile';
 import {formatAuthError} from '../utils/entryErrors';
 import {minPasswordLength, passwordError} from '../utils/entryRules';
 import {StaffPathPicker,type StaffPath} from './StaffVerification';
-import {studentProof,staffProof,graduateClass,proofTypes} from '../utils/proof';
+import {studentProof,staffProof,proofTypes} from '../utils/proof';
+import {
+  getGraduationClassYear,
+  graduationLevelLabel,
+  setGraduationClassYear,
+} from '../utils/graduationClass';
+import { ProofDropzone } from './ProofDropzone';
+import { PasswordStrengthMeter } from './PasswordStrengthMeter';
+import { Alert } from './ui/Alert';
+import { Button } from './ui/Button';
+import { Field } from './ui/Field';
+import { Input } from './ui/Input';
+import { Stepper } from './ui/Stepper';
+import { errorTextClass } from './ui/styles';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
@@ -10,29 +23,65 @@ import {
   Eye,
   EyeOff,
   GraduationCap,
-  IdCard,
   KeyRound,
   Lock,
   Mail,
   Phone,
   ShieldCheck,
   UserCheck,
-  X,
 } from 'lucide-react';
-import { requestPasswordReset, signInUser, signUpUser } from '../services/supabaseService';
+import {
+  fetchEntryConfig,
+  fetchSessionEndYear,
+  requestPasswordReset,
+  signInUser,
+  signUpUser,
+} from '../services/supabaseService';
 import { supabase } from '../lib/supabase';
 import {
   AcademicLevel,
   AccountType,
   DepartmentItem,
-  formatFileSize,
   levelsForDuration,
   MAX_ID_CARD_BYTES,
 } from '../types';
 import { DepartmentPicker } from './DepartmentPicker';
+import { trackFunnel } from '../services/funnel';
 
 type AuthMode = 'login' | 'signup' | 'forgot';
 type LevelSelection = AcademicLevel | 'graduate' | '';
+type SignupStep = 1 | 2 | 3;
+type FieldName =
+  | 'fullName'
+  | 'idNumber'
+  | 'department'
+  | 'level'
+  | 'email'
+  | 'phone'
+  | 'password'
+  | 'confirmPassword'
+  | 'proof'
+  | 'forgotIdentifier';
+type FieldErrors = Partial<Record<FieldName, string>>;
+
+const SIGNUP_STEPS: { value: SignupStep; label: string; heading: string; hint: string }[] = [
+  { value: 1, label: 'Proof', heading: 'Start with your ID', hint: 'Upload a photo or PDF — we’ll fill in what we can.' },
+  { value: 2, label: 'Details', heading: 'Your details', hint: 'Check the details we read and fill in anything missing.' },
+  { value: 3, label: 'Account', heading: 'Your account', hint: 'This is how you’ll sign in and recover your account.' },
+];
+
+const FIELD_ELEMENT_ID: Record<FieldName, string> = {
+  fullName: 'fullName',
+  idNumber: 'idNumber',
+  department: 'department-picker',
+  level: 'student-level-group',
+  email: 'email',
+  phone: 'phone',
+  password: 'password',
+  confirmPassword: 'confirmPassword',
+  proof: 'proof-upload',
+  forgotIdentifier: 'forgotIdentifier',
+};
 
 // Mixed login/reset fields also accept email. Keep ambiguous text verbatim until blur.
 function entryIdentifier(value: string, idOnly = false, finished = false) {
@@ -44,8 +93,40 @@ interface AuthScreenProps {
   departments: DepartmentItem[];
 }
 
+function ModeSwitch({
+  mode,
+  onChange,
+}: {
+  mode: 'login' | 'signup';
+  onChange: (mode: 'login' | 'signup') => void;
+}) {
+  return (
+    <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6">
+      {(['login', 'signup'] as const).map((key) => (
+        <Button
+          key={key}
+          type="button"
+          variant="ghost"
+          size="lg"
+          aria-pressed={mode === key}
+          onClick={() => onChange(key)}
+          className={
+            mode === key
+              ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
+          }
+        >
+          {key === 'login' ? 'Sign In' : 'Create Account'}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
 export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [mode, setMode] = useState<AuthMode>(new URLSearchParams(location.search).has('invite')?'signup':'login');
+  const [step, setStep] = useState<SignupStep>(1);
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const challenge = useTurnstile(mode);
   const [staffPath,setStaffPath]=useState<StaffPath>('email');
   const [accountType, setAccountType] = useState<AccountType>('student');
@@ -57,6 +138,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [phone, setPhone] = useState('');
   const [idCardFile, setIdCardFile] = useState<File | null>(null);
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -71,6 +153,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     setIdCardFile(null);
     return () => scan.current?.abort();
   }, [accountType, mode]);
+  useEffect(() => {
+    trackFunnel('auth_view', { mode });
+  }, [mode]);
+  useEffect(() => {
+    if (mode === 'signup') trackFunnel('signup_step_reached', { step });
+  }, [mode, step]);
   useEffect(() => {
     let active = true;
     if (/^[a-f0-9-]{36}$/i.test(inviteToken)) {
@@ -88,38 +176,38 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const [sessionLabel, setSessionLabel] = useState('');
   const [forgotIdentifier, setForgotIdentifier] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
-  const idCardInputRef = useRef<HTMLInputElement | null>(null);
 
-  const graduationClassYear = graduateClass;
-
-  // Load the current academic session end year (e.g. 2027 -> "2026/2027", Graduate Class of 2026).
+  // The graduate class year is server configuration; the session label is a
+  // display hint. `entry_config` answers both. Before that migration exists we
+  // fall back to the older `session_end_year` RPC for the label only, so the
+  // class year keeps its shipped default rather than being guessed.
   useEffect(() => {
     let active = true;
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const loadSessionEndYear = async (allowRetry: boolean) => {
-      try {
-        const { data, error: rpcError } = await supabase.rpc('session_end_year');
-        if (!active) return;
-        if (!rpcError) {
-          const endYear = Number(data);
-          if (Number.isFinite(endYear) && endYear > 2000) {
-
-            setSessionLabel(`${endYear - 1}/${endYear}`);
-            return;
-          }
-        }
-      } catch {
-        // Fall through to optional retry
+    const loadConfig = async (allowRetry: boolean) => {
+      const config = await fetchEntryConfig();
+      if (!active) return;
+      if (config) {
+        setGraduationClassYear(config.graduationClassYear);
+        if (config.sessionLabel) setSessionLabel(config.sessionLabel);
+        return;
       }
-      if (active && allowRetry) {
+      // Older deployments without entry_config: label only, never guess the year.
+      const endYear = await fetchSessionEndYear();
+      if (!active) return;
+      if (endYear) {
+        setSessionLabel(`${endYear - 1}/${endYear}`);
+        return;
+      }
+      if (allowRetry) {
         retryTimer = setTimeout(() => {
-          void loadSessionEndYear(false);
+          void loadConfig(false);
         }, 1500);
       }
     };
 
-    void loadSessionEndYear(true);
+    void loadConfig(true);
 
     return () => {
       active = false;
@@ -149,10 +237,79 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [department, accountType]);
 
-  const handleSelectIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    e.target.value = '';
-    if (!file) return;
+  const clearFieldError = (name: FieldName) =>
+    setFieldErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
+
+  const applyErrors = (next: FieldErrors) => {
+    setFieldErrors(next);
+    const first = Object.keys(next)[0] as FieldName | undefined;
+    if (!first) return;
+    const el = document.getElementById(FIELD_ELEMENT_ID[first]);
+    if (el) {
+      el.focus();
+      el.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  };
+
+  const validateProof = (): FieldErrors => {
+    if (accountType === 'staff' && (staffPath === 'id' || staffPath === 'document') && !idCardFile) {
+      return { proof: 'Attach your selected proof of staff status, or choose email or vouching.' };
+    }
+    return {};
+  };
+
+  const validateIdentity = (): FieldErrors => {
+    const next: FieldErrors = {};
+    if (fullName.trim().length < 2) next.fullName = 'Please enter your full name.';
+    if (idNumber.trim().length < 3) {
+      next.idNumber = accountType === 'staff' ? 'Enter your Staff ID.' : 'Enter your Matric Number.';
+    }
+    if (department.trim().length < 2) {
+      next.department =
+        accountType === 'staff' ? 'Please select your department or office.' : 'Please select your department.';
+    }
+    if (accountType === 'student' && !level) next.level = 'Please select your level.';
+    return next;
+  };
+
+  const validateAccount = (): FieldErrors => {
+    const next: FieldErrors = {};
+    const cleanEmail = email.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      next.email = 'Please enter a valid recovery email.';
+    }
+    if (phone.trim()) {
+      const digits = phone.replace(/\D/g, '');
+      if (digits.length < 10 || digits.length > 15) {
+        next.phone = 'Please enter a valid phone number (e.g. 0803 123 4567).';
+      }
+    }
+    if (password.length < minPasswordLength) next.password = 'Password must be at least 8 characters.';
+    if (password !== confirmPassword) next.confirmPassword = 'Passwords do not match.';
+    return next;
+  };
+
+  const validateLogin = (): FieldErrors => {
+    const next: FieldErrors = {};
+    if (idNumber.trim().length < 3) next.idNumber = 'Enter your Matric Number or Staff ID.';
+    if (!password) next.password = 'Enter your password.';
+    return next;
+  };
+
+  const validateForgot = (): FieldErrors => {
+    const next: FieldErrors = {};
+    if (forgotIdentifier.trim().length < 3) {
+      next.forgotIdentifier = 'Enter your Matric Number, Staff ID or registered phone number.';
+    }
+    return next;
+  };
+
+  const handleProofFile = async (file: File) => {
     if (file.size > MAX_ID_CARD_BYTES) {
       setError('File exceeds the 3 MB limit. Please choose a smaller photo or PDF.');
       return;
@@ -163,7 +320,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
       return;
     }
     setError(null);
+    clearFieldError('proof');
     setIdCardFile(file);
+    trackFunnel('signup_proof_selected', {
+      bytes: file.size,
+      type: file.type,
+      accountType,
+      staffPath,
+    });
     scan.current?.abort();
     const controller = new AbortController();
     scan.current = controller;
@@ -200,6 +364,18 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const next =
+      mode === 'login'
+        ? validateLogin()
+        : mode === 'forgot'
+          ? validateForgot()
+          : { ...validateProof(), ...validateIdentity(), ...validateAccount() };
+    if (Object.keys(next).length > 0) {
+      applyErrors(next);
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -232,7 +408,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           accountType === 'staff'
             ? 'Staff'
             : isGraduateSelected
-              ? 'Class of 2026'
+              ? graduationLevelLabel()
               : (level as AcademicLevel);
 
         await signUpUser({
@@ -251,18 +427,27 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           ...(isGraduateSelected
             ? {
                 isGraduate: true,
-                graduationClassYear,
+                graduationClassYear: getGraduationClassYear(),
               }
             : {}),
+        });
+        trackFunnel('signup_submitted', {
+          accountType,
+          staffPath,
+          level: submittedLevel,
+          hasProof: Boolean(idCardFile),
+          recoveryEmail: Boolean(email.trim()),
+          phone: Boolean(phone.trim()),
         });
         try { sessionStorage.setItem('gsu_signup_recovery', email.trim().toLowerCase()); } catch { /* ignore */ }
         // Signup and a usable session are separate outcomes (e.g. auth configuration changes).
         if (!(await supabase.auth.getSession()).data.session) {
-          setMode('login');setPassword('');
+          setMode('login');setPassword('');setStep(1);setFieldErrors({});
           setSignupNotice('Sign in to finish verification. Creating an account alone does not submit it for review.');
         }
       }
     } catch (err) {
+      trackFunnel('auth_error', { mode, message: formatAuthError(err) });
       setError(formatAuthError(err));
     } finally {
       setSubmitting(false);
@@ -273,8 +458,288 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
     if (next === 'signup') setIdNumber(v => v.toUpperCase());
     setMode(next);
     setError(null);
+    setSignupNotice('');
     setForgotSent(false);
+    setStep(1);
+    setFieldErrors({});
   };
+
+  const handleContinue = () => {
+    const next = step === 1 ? validateProof() : validateIdentity();
+    if (Object.keys(next).length > 0) {
+      applyErrors(next);
+      return;
+    }
+    trackFunnel('signup_step_completed', { step });
+    setStep((prev) => (prev === 1 ? 2 : 3));
+  };
+
+  const stepHeading = SIGNUP_STEPS.find((s) => s.value === step);
+  const stepperSteps = SIGNUP_STEPS.map((s) => ({ key: s.value, label: s.label }));
+
+  const renderProofSection = () => (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{stepHeading?.heading}</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{stepHeading?.hint}</p>
+      </div>
+
+      <div>
+        <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">I am a:</span>
+        <div className="grid grid-cols-2 gap-2">
+          {(['student', 'staff'] as const).map((type) => (
+            <Button
+              key={type}
+              type="button"
+              variant="outline"
+              size="lg"
+              aria-pressed={accountType === type}
+              onClick={() => {
+                setAccountType(type);
+                setError(null);
+                clearFieldError('proof');
+              }}
+              className={
+                accountType === type
+                  ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-600 text-emerald-900 dark:text-emerald-200'
+                  : 'bg-white dark:bg-slate-800/70'
+              }
+            >
+              {type === 'student' ? 'Student' : 'Lecturer or Staff'}
+            </Button>
+          ))}
+        </div>
+      </div>
+
+      {accountType==='student' && inviteToken && (
+        <Alert variant="success">
+          {inviteDept ? `Class rep invitation: ${inviteDept}. Review is still required.` : 'Unconfirmed invitation. You can register normally.'}
+        </Alert>
+      )}
+      {accountType==='staff' && (
+        <StaffPathPicker value={staffPath} onChange={v=>{setStaffPath(v);setIdCardFile(null);scan.current?.abort();setOcrHint('');clearFieldError('proof');}}/>
+      )}
+
+      {(accountType==='student' || staffPath==='id' || staffPath==='document') ? (
+        <ProofDropzone
+          file={idCardFile}
+          onFile={(file) => {
+            if (!file) {
+              scan.current?.abort();
+              setOcrHint('');
+              setIdCardFile(null);
+              return;
+            }
+            void handleProofFile(file);
+          }}
+          accept={accountType==='staff' && staffPath==='id' ? proofTypes.filter(t=>t.startsWith('image/')) : proofTypes}
+          error={fieldErrors.proof}
+          title={accountType === 'staff' ? staffProof : studentProof}
+          required={accountType === 'staff'}
+          note={ocrHint || 'Only you and authorized reviewers can access your proof.'}
+        />
+      ) : (
+        <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 text-left space-y-1">
+          <div className="flex items-start gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
+            <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">Verify after sign-in</p>
+          </div>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+            {staffPath === 'email'
+              ? 'We’ll email a confirmation link to your @gsu.edu.ng inbox after you create your account.'
+              : 'After sign-in, ask a verified staff member in your department to confirm your affiliation.'}
+          </p>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderDetailsSection = () => (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{stepHeading?.heading}</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{stepHeading?.hint}</p>
+      </div>
+
+      <Field label="Full Name" htmlFor="fullName" error={fieldErrors.fullName}>
+        <Input
+          id="fullName"
+          type="text"
+          minLength={2}
+          maxLength={100}
+          value={fullName}
+          autoComplete="name"
+          onChange={(e) => { setFullName(e.target.value); clearFieldError('fullName'); }}
+          placeholder="e.g. Amina Bello Musa"
+        />
+      </Field>
+
+      <Field
+        label={accountType === 'staff' ? 'Staff ID' : 'Matric Number'}
+        htmlFor="idNumber"
+        error={fieldErrors.idNumber}
+      >
+        <Input
+          id="idNumber"
+          type="text"
+          minLength={3}
+          maxLength={120}
+          value={idNumber}
+          autoCapitalize="characters"
+          autoComplete="username"
+          className="font-mono"
+          onChange={(e) => setIdNumber(entryIdentifier(e.target.value, true))}
+          onBlur={(e) => setIdNumber(entryIdentifier(e.target.value, true, true))}
+          placeholder={accountType === 'staff' ? 'e.g. GSU/STF/1042' : 'e.g. UG21/CS/1001'}
+        />
+      </Field>
+
+      <div className="grid grid-cols-1 gap-3">
+        <Field
+          label={accountType === 'staff' ? 'Department or Office' : 'Department'}
+          htmlFor="department-picker"
+          error={fieldErrors.department}
+        >
+          <DepartmentPicker
+            id="department-picker"
+            departments={departments}
+            value={department}
+            onChange={(v) => { setDepartment(v); clearFieldError('department'); }}
+            customOptionLabel={
+              accountType === 'staff'
+                ? 'Other (Type department or office)'
+                : 'Other (Type your department)'
+            }
+            customPlaceholder={
+              accountType === 'staff'
+                ? 'e.g. Registry, Bursary, ICT Directorate'
+                : 'Enter your department name (e.g. Environmental Management)'
+            }
+          />
+        </Field>
+
+        {accountType === 'student' && (
+          <div>
+            <fieldset
+              id="student-level-group"
+              tabIndex={-1}
+              aria-invalid={Boolean(fieldErrors.level)}
+              aria-describedby={fieldErrors.level ? 'level-error' : undefined}
+              className="outline-none"
+            >
+              <legend className="text-xs font-semibold mb-2">Student level</legend>
+              <div className="grid grid-cols-3 gap-2">
+                {[...availableLevels, 'graduate' as const].map(value => (
+                  <label key={value} className={`flex items-center gap-2 rounded-xl border px-2 py-2 text-sm ${value==='graduate'?'col-span-full':''} ${level===value?'border-emerald-600':'border-slate-200'}`}>
+                    <input type="radio" name="student-level" value={value} checked={level===value} onChange={()=>{setLevel(value);clearFieldError('level');}} />
+                    {value==='graduate' ? `Graduate — ${graduationLevelLabel()} only` : `${value} Level`}
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+            {fieldErrors.level && (
+              <p id="level-error" className={errorTextClass}>{fieldErrors.level}</p>
+            )}
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
+              Select your actual level{sessionLabel ? ` for ${sessionLabel}` : ''}, not the level on an older document.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderAccountSection = () => (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">{stepHeading?.heading}</h3>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">{stepHeading?.hint}</p>
+      </div>
+
+      <Field
+        label="Recovery email"
+        htmlFor="email"
+        error={fieldErrors.email}
+        hint="Reset links go to this inbox. Use your matric number or staff ID to sign in."
+      >
+        <Input
+          id="email"
+          type="email"
+          maxLength={120}
+          value={email}
+          autoComplete="email"
+          leadingIcon={Mail}
+          onChange={(e) => { setEmail(e.target.value); clearFieldError('email'); }}
+          placeholder="e.g. yourname@gmail.com"
+        />
+      </Field>
+
+      <Field
+        label="Phone Number"
+        optional
+        htmlFor="phone"
+        error={fieldErrors.phone}
+        hint="You can use this number to request a password reset."
+      >
+        <Input
+          id="phone"
+          type="tel"
+          maxLength={20}
+          value={phone}
+          autoComplete="tel"
+          leadingIcon={Phone}
+          onChange={(e) => { setPhone(e.target.value); clearFieldError('phone'); }}
+          placeholder="e.g. 0803 123 4567"
+        />
+      </Field>
+
+      <Field
+        label="Password"
+        htmlFor="password"
+        error={fieldErrors.password}
+        hint="Use at least 8 characters with a mix of cases, numbers and symbols."
+      >
+        <Input
+          id="password"
+          type={showPassword ? 'text' : 'password'}
+          minLength={minPasswordLength}
+          value={password}
+          autoComplete="new-password"
+          leadingIcon={Lock}
+          onChange={(e) => { setPassword(e.target.value); clearFieldError('password'); }}
+          placeholder="Enter your password"
+          trailing={
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+              className="min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
+          }
+        />
+        <PasswordStrengthMeter value={password} className="mt-2" />
+      </Field>
+
+      <Field
+        label="Confirm Password"
+        htmlFor="confirmPassword"
+        error={fieldErrors.confirmPassword}
+      >
+        <Input
+          id="confirmPassword"
+          type={showPassword ? 'text' : 'password'}
+          minLength={minPasswordLength}
+          value={confirmPassword}
+          autoComplete="new-password"
+          leadingIcon={Lock}
+          onChange={(e) => { setConfirmPassword(e.target.value); clearFieldError('confirmPassword'); }}
+          placeholder="Repeat your password"
+        />
+      </Field>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
@@ -325,337 +790,125 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         <div className="lg:col-span-7 w-full max-w-md mx-auto lg:max-w-none bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 sm:p-8">
           {mode !== 'forgot' ? (
             <>
-              {/* Segmented mode switcher */}
-              <div className="grid grid-cols-2 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl mb-6">
-                <button
-                  type="button"
-                  onClick={() => switchMode('login')}
-                  className={`min-h-[44px] rounded-xl text-sm font-semibold transition-colors whitespace-nowrap cursor-pointer ${
-                    mode === 'login'
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  Sign In
-                </button>
-                <button
-                  type="button"
-                  onClick={() => switchMode('signup')}
-                  className={`min-h-[44px] rounded-xl text-sm font-semibold transition-colors whitespace-nowrap cursor-pointer ${
-                    mode === 'signup'
-                      ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-xs'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
-                  }`}
-                >
-                  Create Account
-                </button>
-              </div>
+              <ModeSwitch mode={mode === 'signup' ? 'signup' : 'login'} onChange={(next) => switchMode(next)} />
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              {mode === 'signup' && (
+                <Stepper
+                  steps={stepperSteps}
+                  current={step}
+                  label="Signup progress"
+                  className="mb-6"
+                  onSelect={(key) => setStep(key as SignupStep)}
+                />
+              )}
+
+              <form onSubmit={handleSubmit} noValidate className="space-y-4">
                 {mode === 'signup' && (
                   <>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-200/70 dark:border-emerald-900/60 rounded-xl px-3.5 py-2.5 leading-relaxed">
+                    <Alert variant="success">
                       Staff accounts are reviewed by an admin. Student accounts are reviewed by an authorized reviewer in their department or by an admin.
-                    </p>
+                    </Alert>
 
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        I am a:
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAccountType('student');
-                            setError(null);
-                          }}
-                          className={`min-h-[44px] rounded-xl border text-sm font-medium transition-colors cursor-pointer ${
-                            accountType === 'student'
-                              ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-600 text-emerald-900 dark:text-emerald-200'
-                              : 'bg-white dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
-                          }`}
-                        >
-                          Student
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setAccountType('staff');
-                            setError(null);
-                          }}
-                          className={`min-h-[44px] rounded-xl border text-sm font-medium transition-colors cursor-pointer ${
-                            accountType === 'staff'
-                              ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-600 text-emerald-900 dark:text-emerald-200'
-                              : 'bg-white dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-600'
-                          }`}
-                        >
-                          Lecturer or Staff
-                        </button>
-                      </div>
-                    </div>
+                    {step === 1 && renderProofSection()}
+                    {step === 2 && renderDetailsSection()}
+                    {step === 3 && renderAccountSection()}
+                  </>
+                )}
 
-                    {accountType==='student' && inviteToken && <p role="status">{inviteDept ? `Class rep invitation: ${inviteDept}. Review is still required.` : 'Unconfirmed invitation. You can register normally.'}</p>}
-                    {accountType==='staff' && <StaffPathPicker value={staffPath} onChange={v=>{setStaffPath(v);setIdCardFile(null);scan.current?.abort();setOcrHint('');}}/>}
-                    {(accountType==='student' || staffPath==='id' || staffPath==='document') && (
-                    <div className="rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 p-3.5 space-y-2">
-                      <div className="flex items-start gap-2">
-                        <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                        <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
-                          {accountType === 'staff'
-                            ? staffProof : studentProof}{' '}
-                          <span className="font-normal text-slate-500 dark:text-slate-400">{accountType==='staff'?'(Required)':'(Your submission enters the review queue only after you upload proof)'}</span>
-                        </span>
-                      </div>
-                      <input
-                        ref={idCardInputRef}
-                        type="file"
-                        accept={(accountType==='staff' && staffPath==='id'?proofTypes.filter(t=>t.startsWith('image/')):proofTypes).join(',')}
-                        onChange={handleSelectIdCard}
-                        className="hidden"
-                      />
-                      <div>
-                        {idCardFile ? (
-                          <button
-                            type="button"
-                            onClick={() => {scan.current?.abort();setOcrHint('');setIdCardFile(null);}}
-                            className="text-[11px] font-semibold text-red-600 dark:text-red-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
-                          >
-                            <X className="w-3.5 h-3.5" />
-                            <span>Remove</span>
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => idCardInputRef.current?.click()}
-                            className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-600 text-[11px] font-semibold text-slate-700 dark:text-slate-200 cursor-pointer"
-                          >
-                            Choose File
-                          </button>
-                        )}
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        {idCardFile
-                          ? `Selected: ${idCardFile.name} (${formatFileSize(idCardFile.size)})`
-                          : 'JPEG, PNG, WebP or PDF, up to 3 MB. Redact unrelated personal information.'}
-                      </p>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        {ocrHint || 'Only you and authorized reviewers can access your proof.'}
-                      </p>
-                    </div>
+                {mode === 'signup' ? (
+                  <div className="flex items-center gap-2.5 pt-1">
+                    {step > 1 && (
+                      <Button type="button" variant="outline" size="lg" onClick={() => setStep((prev) => (prev === 3 ? 2 : 1))}>
+                        Back
+                      </Button>
                     )}
-                    <div>
-                      <label htmlFor="fullName" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        Full Name
-                      </label>
-                      <input
-                        id="fullName"
-                        type="text"
-                        required
-                        minLength={2}
-                        maxLength={100}
-                        value={fullName}
-                        onChange={(e) => setFullName(e.target.value)}
-                        placeholder="e.g. Amina Bello Musa"
-                        className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-                      />
-                    </div>
-                  </>
-                )}
-
-                {mode==='login' && signupNotice && <p role="status">{signupNotice}</p>}
-                <div>
-                  <label htmlFor="idNumber" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    {mode === 'login'
-                      ? 'Matric number or staff ID'
-                      : accountType === 'staff'
-                        ? 'Staff ID'
-                        : 'Matric Number'}
-                  </label>
-                  <input
-                    id="idNumber"
-                    type="text"
-                    required
-                    minLength={3}
-                    maxLength={120}
-                    value={idNumber}
-                    aria-describedby={mode === 'login' ? 'login-id-help' : undefined}
-                    autoCapitalize={mode === 'signup' ? 'characters' : 'none'}
-                    onChange={(e) => setIdNumber(entryIdentifier(e.target.value, mode === 'signup'))}
-                    onBlur={(e) => setIdNumber(entryIdentifier(e.target.value, mode === 'signup', true))}
-                    placeholder={
-                      mode === 'login'
-                        ? 'e.g. UG21/CS/1001'
-                        : accountType === 'staff'
-                          ? 'e.g. GSU/STF/1042'
-                          : 'e.g. UG21/CS/1001'
-                    }
-                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm font-mono focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-                  />
-                  {mode === 'login' && <p id="login-id-help" className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
-                    Your registered phone number is for password recovery, not sign-in.
-                  </p>}
-                </div>
-
-                {mode === 'signup' && (
+                    {step < 3 ? (
+                      <Button type="button" size="lg" full onClick={handleContinue}>
+                        Continue
+                      </Button>
+                    ) : (
+                      <>
+                        {error && <Alert variant="error">{error}</Alert>}
+                        {challenge.widget}
+                        <Button type="submit" size="lg" full loading={submitting} loadingLabel="Creating account…">
+                          Submit Registration
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ) : (
                   <>
-                    <div className="grid grid-cols-1 gap-3">
-                      <div>
-                        <label htmlFor="department-picker" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                          {accountType === 'staff' ? 'Department or Office' : 'Department'}
-                        </label>
-                        <DepartmentPicker
-                          id="department-picker"
-                          departments={departments}
-                          value={department}
-                          onChange={setDepartment}
-                          customOptionLabel={
-                            accountType === 'staff'
-                              ? 'Other (Type department or office)'
-                              : 'Other (Type your department)'
-                          }
-                          customPlaceholder={
-                            accountType === 'staff'
-                              ? 'e.g. Registry, Bursary, ICT Directorate'
-                              : 'Enter your department name (e.g. Environmental Management)'
-                          }
-                        />
+                    {mode==='login' && signupNotice && (
+                      <Alert variant="success">{signupNotice}</Alert>
+                    )}
+                    <Field
+                      label="Matric number or staff ID"
+                      htmlFor="idNumber"
+                      error={fieldErrors.idNumber}
+                      hint={
+                        mode === 'login'
+                          ? 'Your registered phone number is for password recovery, not sign-in.'
+                          : undefined
+                      }
+                    >
+                      <Input
+                        id="idNumber"
+                        type="text"
+                        minLength={3}
+                        maxLength={120}
+                        value={idNumber}
+                        autoCapitalize="none"
+                        autoComplete="username"
+                        className="font-mono"
+                        onChange={(e) => setIdNumber(entryIdentifier(e.target.value, false))}
+                        onBlur={(e) => setIdNumber(entryIdentifier(e.target.value, false, true))}
+                        placeholder="e.g. UG21/CS/1001"
+                      />
+                    </Field>
+
+                    <Field label="Password" htmlFor="password" error={fieldErrors.password}>
+                      <Input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        autoComplete="current-password"
+                        leadingIcon={Lock}
+                        onChange={(e) => { setPassword(e.target.value); clearFieldError('password'); }}
+                        placeholder="Enter your password"
+                        trailing={
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            aria-label={showPassword ? 'Hide password' : 'Show password'}
+                            className="min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                          >
+                            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        }
+                      />
+                    </Field>
+
+                    {error && <Alert variant="error">{error}</Alert>}
+
+                    {challenge.widget}
+                    <Button type="submit" size="lg" full loading={submitting} loadingLabel="Signing in…">
+                      Sign In
+                    </Button>
+
+                    {mode === 'login' && (
+                      <div className="text-center pt-1">
+                        <button
+                          type="button"
+                          onClick={() => switchMode('forgot')}
+                          className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer inline-flex items-center gap-1.5"
+                        >
+                          <KeyRound className="w-3.5 h-3.5" />
+                          Forgot your password?
+                        </button>
                       </div>
-
-                      {accountType === 'student' && (
-                        <div>
-                          <fieldset>
-                            <legend className="text-xs font-semibold mb-2">Student level</legend>
-                            <div className="grid grid-cols-3 gap-2">
-                              {[...availableLevels, 'graduate' as const].map(value => (
-                                <label key={value} className={`flex items-center gap-2 rounded-xl border px-2 py-2 text-sm ${value==='graduate'?'col-span-full':''} ${level===value?'border-emerald-600':'border-slate-200'}`}>
-                                  <input type="radio" name="student-level" value={value} checked={level===value} onChange={()=>setLevel(value)} />
-                                  {value==='graduate' ? `Graduate — Class of ${graduationClassYear} only` : `${value} Level`}
-                                </label>
-                              ))}
-                            </div>
-                          </fieldset>
-                          <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                            Select your actual level{sessionLabel ? ` for ${sessionLabel}` : ''}, not the level on an older document.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Email (compulsory — password reset links go here) */}
-                    <div>
-                      <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        Recovery email
-                      </label>
-                      <div className="relative">
-                        <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                        <input
-                          id="email"
-                          type="email"
-                          required
-                          maxLength={120}
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          placeholder="e.g. yourname@gmail.com"
-                          className="w-full min-h-[44px] pl-10 pr-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-                        />
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                        Reset links go to this inbox. Use your matric number or staff ID to sign in.
-                      </p>
-                    </div>
-
-                    {/* Phone number (optional — for recovery) */}
-                    <div>
-                      <label htmlFor="phone" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        Phone Number <span className="font-normal text-slate-500 dark:text-slate-400">(Optional)</span>
-                      </label>
-                      <div className="relative">
-                        <Phone className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                        <input
-                          id="phone"
-                          type="tel"
-                          maxLength={20}
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          placeholder="e.g. 0803 123 4567"
-                          className="w-full min-h-[44px] pl-10 pr-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-                        />
-                      </div>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                        You can use this number to request a password reset.
-                      </p>
-                    </div>
-
+                    )}
                   </>
-                )}
-
-                <div>
-                  <label htmlFor="password" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      required
-                      minLength={mode === 'signup' ? minPasswordLength : undefined}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Enter your password"
-                      className="w-full min-h-[44px] pl-10 pr-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-1 top-1/2 -translate-y-1/2 min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  {mode === 'signup' && (
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                      Password must be at least 8 characters.
-                    </p>
-                  )}
-                </div>
-
-                {error && (
-                  <div
-                    role="alert"
-                    className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-3.5 py-3 text-xs text-red-800 dark:text-red-300 leading-relaxed"
-                  >
-                    {error}
-                  </div>
-                )}
-
-                {challenge.widget}
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full min-h-[48px] rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-semibold text-sm transition-colors cursor-pointer"
-                >
-                  {submitting
-                    ? mode === 'login'
-                      ? 'Signing in...'
-                      : 'Creating account...'
-                    : mode === 'login'
-                      ? 'Sign In'
-                      : 'Submit Registration'}
-                </button>
-
-                {mode === 'login' && (
-                  <div className="text-center pt-1">
-                    <button
-                      type="button"
-                      onClick={() => switchMode('forgot')}
-                      className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer inline-flex items-center gap-1.5"
-                    >
-                      <KeyRound className="w-3.5 h-3.5" />
-                      Forgot your password?
-                    </button>
-                  </div>
                 )}
               </form>
             </>
@@ -693,43 +946,33 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   </div>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div>
-                    <label htmlFor="forgotIdentifier" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Matric number, staff ID or registered phone number
-                    </label>
-                    <input
+                <form onSubmit={handleSubmit} noValidate className="space-y-4">
+                  <Field
+                    label="Matric number, staff ID or registered phone number"
+                    htmlFor="forgotIdentifier"
+                    error={fieldErrors.forgotIdentifier}
+                  >
+                    <Input
                       id="forgotIdentifier"
                       type="text"
-                      required
                       minLength={3}
                       maxLength={120}
                       value={forgotIdentifier}
                       autoCapitalize="none"
-                      onChange={(e) => setForgotIdentifier(entryIdentifier(e.target.value))}
+                      autoComplete="username"
+                      className="font-mono"
+                      onChange={(e) => { setForgotIdentifier(entryIdentifier(e.target.value)); clearFieldError('forgotIdentifier'); }}
                       onBlur={(e) => setForgotIdentifier(entryIdentifier(e.target.value, false, true))}
                       placeholder="e.g. UG21/CS/1001"
-                      className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm font-mono focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
                     />
-                  </div>
+                  </Field>
 
-                  {error && (
-                    <div
-                      role="alert"
-                      className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-3.5 py-3 text-xs text-red-800 dark:text-red-300 leading-relaxed"
-                    >
-                      {error}
-                    </div>
-                  )}
+                  {error && <Alert variant="error">{error}</Alert>}
 
                   {challenge.widget}
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="w-full min-h-[48px] rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-semibold text-sm transition-colors cursor-pointer"
-                  >
-                    {submitting ? 'Sending...' : 'Send Reset Link'}
-                  </button>
+                  <Button type="submit" size="lg" full loading={submitting} loadingLabel="Sending…">
+                    Send Reset Link
+                  </Button>
                 </form>
               )}
             </div>
@@ -793,69 +1036,48 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="newPassword" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              New Password
-            </label>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                id="newPassword"
-                type={showPassword ? 'text' : 'password'}
-                required
-                minLength={minPasswordLength}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Minimum 8 characters"
-                className="w-full min-h-[44px] pl-10 pr-12 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-1 top-1/2 -translate-y-1/2 min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
-              >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
+          <Field label="New Password" htmlFor="newPassword" error={undefined}>
+            <Input
+              id="newPassword"
+              type={showPassword ? 'text' : 'password'}
+              required
+              minLength={minPasswordLength}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Minimum 8 characters"
+              leadingIcon={Lock}
+              trailing={
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="min-w-[40px] min-h-[40px] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              }
+            />
+          </Field>
+          <PasswordStrengthMeter value={password} />
 
-          <p className="text-xs text-slate-500">Password must be at least 8 characters.</p>
-          <div>
-            <label htmlFor="confirmPassword" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Confirm New Password
-            </label>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-              <input
-                id="confirmPassword"
-                type={showPassword ? 'text' : 'password'}
-                required
-                minLength={minPasswordLength}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Repeat your new password"
-                className="w-full min-h-[44px] pl-10 pr-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
-              />
-            </div>
-          </div>
+          <Field label="Confirm New Password" htmlFor="confirmPassword" error={undefined}>
+            <Input
+              id="confirmPassword"
+              type={showPassword ? 'text' : 'password'}
+              required
+              minLength={minPasswordLength}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Repeat your new password"
+              leadingIcon={Lock}
+            />
+          </Field>
 
-          {error && (
-            <div
-              role="alert"
-              className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-3.5 py-3 text-xs text-red-800 dark:text-red-300 leading-relaxed"
-            >
-              {error}
-            </div>
-          )}
+          {error && <Alert variant="error">{error}</Alert>}
 
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full min-h-[48px] rounded-2xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white font-semibold text-sm transition-colors cursor-pointer"
-          >
-            {submitting ? 'Updating...' : 'Update Password'}
-          </button>
+          <Button type="submit" size="lg" full loading={submitting} loadingLabel="Updating…">
+            Update Password
+          </Button>
         </form>
       </div>
     </div>

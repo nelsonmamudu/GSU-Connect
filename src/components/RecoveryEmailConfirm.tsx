@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { Alert } from './ui/Alert';
+import { Button } from './ui/Button';
+import { trackFunnel } from '../services/funnel';
 
 // Reads #recovery-confirm=<64-hex-token> from the hash, keeps the token in
 // sessionStorage so it survives a sign-in round trip, and lets the signed-in
@@ -72,6 +75,7 @@ export function RecoveryEmailConfirm() {
       } catch {
         // ignore
       }
+      trackFunnel('recovery_email_confirmed');
       setToken('');
       setStatus('done');
       setMessage('Recovery email confirmed. This inbox is now your verified recovery address.');
@@ -90,23 +94,18 @@ export function RecoveryEmailConfirm() {
       <p className="font-semibold text-slate-900 dark:text-slate-100">Confirm your recovery email</p>
       {status === 'done' ? (
         <>
-          <p role="status" className="text-emerald-700 dark:text-emerald-400 font-medium">{message}</p>
-          <button type="button" onClick={discard} className="min-h-[44px] px-4 rounded-xl bg-emerald-700 text-white font-semibold">Done</button>
+          <Alert variant="success">{message}</Alert>
+          <Button type="button" onClick={discard}>Done</Button>
         </>
       ) : (
         <>
           <p>Tap confirm to link this inbox to your account. Your current recovery email stays active until this succeeds.</p>
-          {status === 'error' && <p role="alert" className="text-red-600 dark:text-red-400">{message}</p>}
+          {status === 'error' && <Alert variant="error">{message}</Alert>}
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={confirm}
-              disabled={status === 'busy'}
-              className="min-h-[44px] px-4 rounded-xl bg-emerald-700 disabled:opacity-60 text-white font-semibold"
-            >
-              {status === 'busy' ? 'Confirming…' : 'Confirm recovery email'}
-            </button>
-            <button type="button" onClick={discard} className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-medium">Not now</button>
+            <Button type="button" onClick={confirm} loading={status === 'busy'} loadingLabel="Confirming…">
+              Confirm recovery email
+            </Button>
+            <Button type="button" variant="outline" onClick={discard}>Not now</Button>
           </div>
         </>
       )}

@@ -5,6 +5,11 @@ import { friendlyEntryError } from '../utils/entryErrors';
 import { maskEmail } from '../utils/maskEmail';
 import { fetchMyRecoveryStatus, requestRecoveryEmailVerification, isReauthRequired, functionsErrorCode, reauthRequiredError, signOutUser } from '../services/authService';
 import { fetchOwnRecoveryEmail } from '../services/supabaseService';
+import { trackFunnel } from '../services/funnel';
+import { Alert } from './ui/Alert';
+import { Button } from './ui/Button';
+import { Field } from './ui/Field';
+import { Input } from './ui/Input';
 
 // Shown to every signed-in account until the SERVER reports a verified
 // binding for this account (my_recovery_status RPC; auth.uid() only, returns
@@ -74,6 +79,10 @@ export function RecoveryEmailPrompt() {
     };
   }, []);
 
+  useEffect(() => {
+    if (mode !== 'hidden') trackFunnel('recovery_prompt_shown', { mode });
+  }, [mode]);
+
   if (mode === 'hidden') return null;
 
   const snooze = () => {
@@ -88,6 +97,7 @@ export function RecoveryEmailPrompt() {
     // Clear the signup stash after a successful send: the address now lives
     // only in the pending challenge / verified binding server-side.
     forgetSignupKey();
+    trackFunnel('recovery_email_sent', { mode });
     setMessage(`Verification link sent to ${masked}. It expires in 60 minutes — check your spam folder.`);
     setMode('sent');
     setPassword('');
@@ -155,56 +165,56 @@ export function RecoveryEmailPrompt() {
 
       {reauthRequired ? (
         <>
-          <p role="alert" className="text-amber-800 dark:text-amber-300">
+          <Alert variant="warn">
             For your security, sign in again before changing your verified recovery address — the current session is too old to make this change.
-          </p>
+          </Alert>
           <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => { void signOutUser('local'); }}
-              className="min-h-[44px] px-4 rounded-xl bg-emerald-700 text-white font-semibold"
-            >
+            <Button type="button" onClick={() => { void signOutUser('local'); }}>
               Sign in again
-            </button>
-            <button type="button" onClick={() => setReauthRequired(false)} className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-medium">
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setReauthRequired(false)}>
               Dismiss
-            </button>
+            </Button>
           </div>
         </>
       ) : mode === 'sent' ? (
         <>
-          <p role="status" className="text-emerald-800 dark:text-emerald-300">{message}</p>
-          <button type="button" onClick={() => { forgetSignupKey(); snooze(); }} className="min-h-[44px] px-4 rounded-xl bg-emerald-700 text-white font-semibold">Done</button>
+          <Alert variant="success">{message}</Alert>
+          <Button type="button" onClick={() => { forgetSignupKey(); snooze(); }}>Done</Button>
         </>
       ) : mode === 'change' ? (
         <form onSubmit={(e) => { e.preventDefault(); void changeAddress(); }} className="space-y-2">
           <p>Use a different inbox. Your current recovery email stays active until you confirm the new one.</p>
-          <input
-            type="email"
-            required
-            aria-label="New recovery email"
-            placeholder="you@example.com"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-sm focus:outline-none focus:border-emerald-600"
-          />
-          <input
-            type="password"
-            required
-            autoComplete="current-password"
-            aria-label="Current password"
-            placeholder="Your current password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-sm focus:outline-none focus:border-emerald-600"
-          />
+          <Field label="New recovery email" htmlFor="recovery-new-email">
+            <Input
+              id="recovery-new-email"
+              type="email"
+              required
+              placeholder="you@example.com"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+            />
+          </Field>
+          <Field label="Current password" htmlFor="recovery-current-password">
+            <Input
+              id="recovery-current-password"
+              type="password"
+              required
+              autoComplete="current-password"
+              placeholder="Your current password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Field>
           {changeCheck.widget}
-          {message && <p role="alert" className="text-red-600 dark:text-red-400">{message}</p>}
+          {message && <Alert variant="error">{message}</Alert>}
           <div className="flex gap-2">
-            <button type="submit" disabled={busy} className="min-h-[44px] px-4 rounded-xl bg-emerald-700 disabled:opacity-60 text-white font-semibold">
-              {busy ? 'Sending…' : 'Send verification link'}
-            </button>
-            <button type="button" onClick={() => { setMode(signupEmail ? 'signup' : 'login'); setMessage(''); }} className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-medium">Back</button>
+            <Button type="submit" loading={busy} loadingLabel="Sending…">
+              Send verification link
+            </Button>
+            <Button type="button" variant="outline" onClick={() => { setMode(signupEmail ? 'signup' : 'login'); setMessage(''); }}>
+              Back
+            </Button>
           </div>
         </form>
       ) : (
@@ -216,19 +226,19 @@ export function RecoveryEmailPrompt() {
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">Check your spam folder — the link expires in 60 minutes.</p>
           {resendCheck.widget}
-          {message && <p role="alert" className="text-red-600 dark:text-red-400">{message}</p>}
+          {message && <Alert variant="error">{message}</Alert>}
           <div className="flex flex-wrap gap-2">
             {resendTarget && (
-              <button type="button" onClick={resend} disabled={busy} className="min-h-[44px] px-4 rounded-xl bg-emerald-700 disabled:opacity-60 text-white font-semibold">
-                {busy ? 'Sending…' : 'Resend link'}
-              </button>
+              <Button type="button" onClick={resend} loading={busy} loadingLabel="Sending…">
+                Resend link
+              </Button>
             )}
-            <button type="button" onClick={() => { setMode('change'); setMessage(''); }} className="min-h-[44px] px-4 rounded-xl border border-emerald-700 dark:border-emerald-500 text-emerald-800 dark:text-emerald-300 font-semibold">
+            <Button type="button" variant="secondary" onClick={() => { setMode('change'); setMessage(''); }}>
               {shownMasked ? 'Correct address' : 'Add one now'}
-            </button>
-            <button type="button" onClick={() => { forgetSignupKey(); snooze(); }} className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-medium">
+            </Button>
+            <Button type="button" variant="outline" onClick={() => { forgetSignupKey(); snooze(); }}>
               Later
-            </button>
+            </Button>
           </div>
         </>
       )}

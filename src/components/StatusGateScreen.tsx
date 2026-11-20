@@ -8,17 +8,18 @@ import {takeEntryIssue} from '../services/entryFeedback';
 import { mapProfileRowToAppUser } from '../services/supabaseService';
 import React, { useEffect, useRef, useState } from 'react';
 import {
+  CheckCircle2,
   ChevronDown,
   Clock,
   Edit3,
   IdCard,
   LogOut,
   ShieldAlert,
-  Upload,
   XCircle,
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
+  getSignedIdCardUrl,
   signOutUser,
   updateUserLastSeen,
   uploadIdCardFile,
@@ -28,10 +29,21 @@ import {
   AcademicLevel,
   AppUser,
   DepartmentItem,
+  formatFileSize,
   formatLevelLabel,
   levelsForDuration,
 } from '../types';
 import { DepartmentPicker } from './DepartmentPicker';
+import { ProofDropzone } from './ProofDropzone';
+import { Alert } from './ui/Alert';
+import { Badge } from './ui/Badge';
+import { Button } from './ui/Button';
+import { Field } from './ui/Field';
+import { Input } from './ui/Input';
+import { Select } from './ui/Select';
+import { errorTextClass } from './ui/styles';
+import { trackFunnel } from '../services/funnel';
+import { graduationLevelLabel, isGraduateLevel } from '../utils/graduationClass';
 
 interface StatusGateScreenProps {
   user: AppUser;
@@ -49,6 +61,49 @@ function toTitleCase(name: string): string {
     .join(' ');
 }
 
+function TimelineRow({
+  done,
+  current,
+  label,
+  hint,
+}: {
+  done: boolean;
+  current?: boolean;
+  label: string;
+  hint?: string;
+}) {
+  return (
+    <li className="flex items-start gap-2.5">
+      <span
+        aria-hidden="true"
+        className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+          done
+            ? 'bg-emerald-600 text-white'
+            : current
+              ? 'border-2 border-emerald-600'
+              : 'border-2 border-slate-300 dark:border-slate-600'
+        }`}
+      >
+        {done && <CheckCircle2 className="w-3 h-3" />}
+      </span>
+      <div className="min-w-0">
+        <p
+          className={`text-xs font-semibold ${
+            done || current
+              ? 'text-slate-900 dark:text-slate-100'
+              : 'text-slate-500 dark:text-slate-400'
+          }`}
+        >
+          {label}
+        </p>
+        {hint && (
+          <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">{hint}</p>
+        )}
+      </div>
+    </li>
+  );
+}
+
 export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   user,
   authUser,
@@ -64,12 +119,20 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
   const [uploadStep, setUploadStep] = useState('');
-  const [retrySubmit, setRetrySubmit] = useState(false);
+  const [submitFailed, setSubmitFailed] = useState(false);
+  const [compressionNote, setCompressionNote] = useState('');
+  const [proofPreviewUrl, setProofPreviewUrl] = useState<string | null>(null);
+  const [proofPreviewLoading, setProofPreviewLoading] = useState(false);
 
 
   const [checkMessage, setCheckMessage] = useState('');
   const [checking, setChecking] = useState(false);
   const checkSeq = useRef(0);
+  const lastStatus = useRef(user.status);
+  useEffect(() => {
+    trackFunnel('status_gate_view', { status: user.status, hasIdCard });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user.uid]);
   const check = React.useCallback(
     async (manual = false) => {
       const seq = ++checkSeq.current;
@@ -82,6 +145,10 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         if (error || !data || data.id !== user.uid) throw Error('Unavailable');
         if (seq !== checkSeq.current) return;
         const profile = mapProfileRowToAppUser(data);
+        if (profile.status !== lastStatus.current) {
+          trackFunnel('status_change', { from: lastStatus.current, to: profile.status });
+          lastStatus.current = profile.status;
+        }
         onChecked(profile);
         setResubmitted(false);
         if (!profile.idCardPath) setUploadedFileName(null);
@@ -204,6 +271,36 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     };
   }, [authUser]);
 
+  // Signed, short-lived preview of the attached proof (owner-only via RLS).
+  useEffect(() => {
+    let active = true;
+    if (!user.idCardPath) {
+      setProofPreviewUrl(null);
+      setProofPreviewLoading(false);
+      return;
+    }
+    const load = async () => {
+      setProofPreviewLoading(true);
+      try {
+        const url = await getSignedIdCardUrl(user.idCardPath!);
+        if (active) setProofPreviewUrl(url);
+      } catch {
+        if (active) setProofPreviewUrl(null);
+      } finally {
+        if (active) setProofPreviewLoading(false);
+      }
+    };
+    void load();
+    // Signed URLs are short-lived; refresh so the preview doesn't break.
+    const timer = window.setInterval(() => {
+      if (active) void load();
+    }, 90_000);
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [user.idCardPath]);
+
   const isSuspended = user.status === 'suspended';
   const isRejected = user.status === 'rejected';
   const isPending = user.status === 'pending';
@@ -214,7 +311,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const selectedDuration =
     departments.find((d) => d.name.toLowerCase() === editDepartment.trim().toLowerCase())
       ?.durationYears ?? 4;
-  const availableLevels:AcademicLevel[] = [...levelsForDuration(selectedDuration),'Class of 2026'];
+  const availableLevels:AcademicLevel[] = [...levelsForDuration(selectedDuration),graduationLevelLabel()];
 
   useEffect(() => {
     if (editingDetails && editLevel && !availableLevels.includes(editLevel)) {
@@ -307,7 +404,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     const {error} = await supabase.rpc('resubmit_signup');
     if (error) throw error;
     setResubmitted(true);
-    setRetrySubmit(false);
+    setSubmitFailed(false);
   };
   const finishUpload = async () => {
     setChoosingReplacement(false);
@@ -317,33 +414,60 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const submitOnly = async () => {
     setUploadingIdCard(true);
     setFeedback(null);
-    try { await submitAttached(); await finishUpload(); }
-    catch { setFeedback({type:'error', text:'Could not submit. Your proof is attached. Retry submission without uploading it again.'}); }
+    try {
+      await submitAttached();
+      setChoosingReplacement(false);
+      setFeedback({type:'info', text:'Resubmitted — your request is back in the review queue.'});
+      await check();
+    }
+    catch { setSubmitFailed(true); setFeedback({type:'error', text:'Your proof is attached, but we couldn’t resubmit it yet. Tap “Retry submission”.'}); }
     finally { setUploadingIdCard(false); setUploadStep(''); }
   };
-  const handleUploadIdCard = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const original = e.target.files?.[0];
-    e.target.value = '';
-    if (!original) { noFile(e.currentTarget.accept); return; }
+  const handleProofFile = async (original: File) => {
     setUploadingIdCard(true);
     setFeedback(null);
+    setCompressionNote('');
     let stage = 'prepare';
+    trackFunnel('proof_upload_started', {
+      rejected: isRejected,
+      staffPath,
+      bytes: original.size,
+      type: original.type,
+    });
     try {
       setUploadStep('Preparing file…');
       const file = await prepareReviewProof(original);
+      if (file.size < original.size) {
+        setCompressionNote(`Photo resized to ${formatFileSize(file.size)} for review.`);
+      }
       stage = 'upload'; setUploadStep('Uploading…');
       await uploadIdCardFile(user.uid,file,isLecturerRequest?staffPath:undefined, () => {
         stage = 'attach'; setUploadStep('Attaching proof…');
       });
       setHasIdCard(true);
       setUploadedFileName(proofFileName(original.name));
-      if (isRejected) { stage = 'submit'; setRetrySubmit(true); await submitAttached(); }
-      await finishUpload();
+      trackFunnel('proof_upload_succeeded', {
+        rejected: isRejected,
+        staffPath,
+        bytes: file.size,
+        type: file.type,
+      });
+      if (isRejected) {
+        stage = 'submit';
+        await submitAttached();
+        setChoosingReplacement(false);
+        setFeedback({type:'info', text:'Replacement submitted — your request is back in the review queue.'});
+        await check();
+      } else {
+        await finishUpload();
+      }
     } catch (err) {
-      const text = stage === 'submit' ? 'Could not submit. Your proof is attached. Retry submission without uploading it again.'
+      trackFunnel('proof_upload_failed', { stage, message: String(err) });
+      const text = stage === 'submit' ? 'Your proof is attached, but we couldn’t resubmit it yet. Tap “Retry submission”.'
         : stage === 'attach' ? 'Could not attach proof. Please try again.'
         : stage === 'upload' ? 'Upload failed. Please try again.'
         : friendlyEntryError(err, 'Could not prepare this file. Choose another photo or PDF.');
+      if (stage === 'submit') setSubmitFailed(true);
       setFeedback({type:'error',text});
     } finally { setUploadingIdCard(false); setUploadStep(''); }
   };
@@ -362,14 +486,15 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
     ? 'Account Suspended'
     : isRejected
       ? 'Registration Not Approved'
-      : hasIdCard===null ? 'Verification Status' : !hasIdCard ? 'Finish Verification' : isLecturerRequest
+      : hasIdCard===null ? 'Checking your status…' : !hasIdCard ? 'Finish Verification' : isLecturerRequest
         ? 'Pending Admin Verification'
         : 'Waiting for Approval';
 
   const attachedFileName = uploadedFileName || proofFileName(user.idCardPath);
 
-  const needsReplacement = isRejected && !resubmitted && !retrySubmit;
+  const needsReplacement = isRejected && !resubmitted && !submitFailed;
   const showPickers = !attachedFileName || needsReplacement || choosingReplacement;
+  const attachedIsPdf = (user.idCardPath || '').toLowerCase().endsWith('.pdf');
 
   const description = isSuspended
     ? 'Your GSU Connect account has been suspended by an administrator due to a moderation review. You cannot read or send messages while suspended.'
@@ -377,12 +502,12 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
       ? (isLecturerRequest ? 'An admin could not verify your staff registration. Check the reason or contact support.' : 'Check the rejection reason below. You can edit your department and level, then upload replacement proof to resubmit for review.')
       : hasIdCard===null ? 'Check whether your proof has reached the review queue.' : hasIdCard ? 'Your proof has been submitted.' : 'Your account exists. Complete verification below to enter the review queue.';
 
-  const statusBadgeClass =
+  const statusBadgeTone =
     user.status === 'approved'
-      ? 'bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300'
+      ? 'emerald'
       : isRejected || isSuspended
-        ? 'bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300'
-        : 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300';
+        ? 'red'
+        : 'amber';
 
   return (
     <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex items-center justify-center px-4 py-10">
@@ -400,23 +525,42 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           <p role="status" className="rounded-xl bg-amber-50 p-3 font-semibold text-amber-900">Upload proof to enter the review queue.</p>
         )}
         {isPending && (
-          <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 px-4 py-3 text-left space-y-1">
+          <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 px-4 py-3.5 text-left space-y-3">
             <p className="text-xs font-bold text-slate-900 dark:text-slate-100">What happens next</p>
-            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-              {hasIdCard ? (isLecturerRequest ? 'An admin will review your staff submission.' : 'An authorized reviewer will check your submission.') : 'You can return later. Your account cannot enter the workspace before approval.'}
+            <ol className="space-y-2">
+              <TimelineRow done label="Account created" />
+              <TimelineRow
+                done={Boolean(hasIdCard)}
+                current={!hasIdCard}
+                label={hasIdCard ? 'Proof submitted' : 'Proof needed'}
+                hint={hasIdCard ? undefined : 'Upload a photo or PDF to enter the review queue.'}
+              />
+              <TimelineRow
+                done={false}
+                current={Boolean(hasIdCard)}
+                label="Review decision"
+                hint={isLecturerRequest ? 'An admin will review your staff submission.' : 'An authorized reviewer will check your submission.'}
+              />
+            </ol>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              Most requests are reviewed within 24–48 hours. This page updates automatically once a decision is made.
             </p>
           </div>
         )}
 
-        <button type="button" disabled={checking} onClick={()=>void check(true)} className="min-h-[44px] font-semibold text-emerald-700">Check status</button>
-        <p role="status">{checkMessage}</p>
+        <div className="flex flex-col items-center gap-1.5">
+          <Button type="button" variant="outline" onClick={()=>void check(true)} loading={checking} loadingLabel="Checking…">
+            Check status
+          </Button>
+          <p role="status" className="text-xs text-slate-500 dark:text-slate-400 text-center">{checkMessage}</p>
+        </div>
         {(isRejected || isSuspended) && (
           <div className="space-y-2.5 text-left">
             {user.rejectionReason && (
-              <div className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 px-4 py-3 text-xs text-red-800 dark:text-red-200 space-y-0.5">
-                <p className="font-bold">Reason provided:</p>
-                <p>{user.rejectionReason}</p>
-              </div>
+              <Alert variant="error">
+                <span className="font-bold">Reason provided:</span>
+                <span className="block">{user.rejectionReason}</span>
+              </Alert>
             )}
             <p className="text-xs text-slate-600 dark:text-slate-300 text-center leading-relaxed">
               Think this is a mistake? Contact support at{' '}
@@ -441,6 +585,24 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 <div className="min-w-0 space-y-1">
                   {attachedFileName ? (
                     <>
+                      {proofPreviewUrl && !attachedIsPdf ? (
+                        <img
+                          src={proofPreviewUrl}
+                          alt="Preview of attached proof"
+                          className="mt-1 h-28 w-28 rounded-xl border border-slate-200 dark:border-slate-700 object-cover"
+                        />
+                      ) : proofPreviewUrl && attachedIsPdf ? (
+                        <a
+                          href={proofPreviewUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 hover:underline"
+                        >
+                          <IdCard className="w-3.5 h-3.5" /> Open PDF
+                        </a>
+                      ) : proofPreviewLoading ? (
+                        <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">Loading preview…</p>
+                      ) : null}
                       <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug break-all">
                         {attachedFileName}
                       </p>
@@ -461,25 +623,39 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                   )}
                 </div>
               </div>
-              {showPickers ? <div className="flex flex-col gap-2 shrink-0">
-                {(isLecturerRequest && staffPath==='id' ? ['image/*'] : ['image/*','application/pdf']).map(accept => (
-                  <label key={accept} className="relative flex items-center justify-center gap-2 min-h-[44px] px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus-within:ring-2 focus-within:ring-emerald-600">
-                    <Upload className="w-4 h-4" />{accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
-                    <input type="file" accept={accept} disabled={uploadingIdCard}
-                      aria-label={accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
-                      ref={node => { if (node) node.oncancel = () => noFile(accept); }} onChange={handleUploadIdCard}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                  </label>
-                ))}
-                {choosingReplacement && !needsReplacement && <button type="button" disabled={uploadingIdCard}
-                  onClick={() => { setChoosingReplacement(false); setFeedback(null); }}
-                  className="text-sm underline text-emerald-700">Cancel</button>}
-              </div> : !retrySubmit && <button type="button" disabled={uploadingIdCard}
-                onClick={() => { setChoosingReplacement(true); setFeedback(null); }}
-                className="min-h-[44px] shrink-0 rounded-xl border px-4 text-sm font-semibold">Replace file</button>}
+              {!showPickers && (submitFailed ? (
+                <Button type="button" loading={uploadingIdCard} onClick={() => void submitOnly()}>
+                  Retry submission
+                </Button>
+              ) : (
+                <Button type="button" variant="outline" disabled={uploadingIdCard}
+                  onClick={() => { setChoosingReplacement(true); setFeedback(null); }}>
+                  Replace file
+                </Button>
+              ))}
             </div>
+            {showPickers && (
+              <div className="space-y-2">
+                <ProofDropzone
+                  file={null}
+                  onFile={(file) => { if (file) void handleProofFile(file); }}
+                  accept={isLecturerRequest && staffPath === 'id' ? ['image/*'] : ['image/*', 'application/pdf']}
+                  disabled={uploadingIdCard}
+                  title={isRejected ? 'Upload a replacement' : 'Upload proof of status'}
+                  required
+                  chooseLabel={isRejected ? 'Choose replacement' : 'Choose photo or PDF'}
+                  onCancel={() => noFile(isLecturerRequest && staffPath === 'id' ? 'image/*' : 'image/*,application/pdf')}
+                />
+                {choosingReplacement && !needsReplacement && (
+                  <Button type="button" variant="ghost" disabled={uploadingIdCard}
+                    onClick={() => { setChoosingReplacement(false); setFeedback(null); }}>
+                    Cancel
+                  </Button>
+                )}
+              </div>
+            )}
             {uploadStep && <p role="status" className="text-sm font-semibold">{uploadStep}</p>}
-            {retrySubmit && isRejected && !uploadingIdCard && <button type="button" className="min-h-[44px] font-semibold text-emerald-700" onClick={() => void submitOnly()}>Retry submission</button>}
+            {compressionNote && <p role="status" className="text-[11px] text-slate-500 dark:text-slate-400">{compressionNote}</p>}
             {showPickers && <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
               Private verification file. Deleted within 24 hours after approval; replaced copies too.
             </p>}
@@ -487,16 +663,9 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
         )}
 
         {feedback && (
-          <div
-            role={feedback.type === 'error' ? 'alert' : 'status'}
-            className={`rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed text-left ${
-              feedback.type === 'error'
-                ? 'bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 text-red-800 dark:text-red-300'
-                : 'bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 text-emerald-900 dark:text-emerald-200'
-            }`}
-          >
+          <Alert variant={feedback.type === 'error' ? 'error' : 'success'}>
             {feedback.text}
-          </div>
+          </Alert>
         )}
 
         <div className="bg-slate-50 dark:bg-slate-800/70 rounded-2xl p-4 text-left space-y-2.5 text-sm border border-slate-100 dark:border-slate-700/80">
@@ -536,14 +705,11 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     {formatLevelLabel(displayLevel, user.is_alumni)}
                   </span>
                   {canEditStudentDetails && (
-                    <button
-                      type="button"
-                      onClick={handleOpenEditDetails}
-                      className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 cursor-pointer"
-                    >
+                    <Button type="button" variant="ghost" size="sm" onClick={handleOpenEditDetails}
+                      className="text-emerald-700 dark:text-emerald-400 hover:bg-transparent px-2">
                       <Edit3 className="w-3 h-3" />
                       <span>Edit details</span>
-                    </button>
+                    </Button>
                   )}
                 </div>
               </div>
@@ -553,69 +719,47 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               onSubmit={handleSaveDetails}
               className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-3 space-y-3"
             >
-              <div>
-                <label
-                  htmlFor="edit-pending-department"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
-                >
-                  Department
-                </label>
+              <Field label="Department" htmlFor="edit-pending-department">
                 <DepartmentPicker
                   id="edit-pending-department"
                   departments={departments}
                   value={editDepartment}
                   onChange={setEditDepartment}
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label
-                  htmlFor="edit-pending-level"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
-                >
-                  Level
-                </label>
+              <Field label="Level" htmlFor="edit-pending-level">
                 <div className="relative">
-                  <select
+                  <Select
                     id="edit-pending-level"
                     value={editLevel}
                     onChange={(e) => setEditLevel(e.target.value as AcademicLevel | '')}
-                    className="appearance-none w-full min-h-[44px] px-3.5 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-medium tabular-nums focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors cursor-pointer"
+                    className="appearance-none w-full pr-10 font-medium tabular-nums"
                   >
                     <option value="">Select level</option>
                     {availableLevels.map((lvl) => (
                       <option key={lvl} value={lvl}>
-                        {lvl==='Class of 2026'?'Class of 2026':`${lvl} Level`}
+                        {isGraduateLevel(lvl)?lvl:`${lvl} Level`}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                   <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
-              </div>
+              </Field>
 
-              {detailsError && (
-                <p className="text-xs text-red-700 dark:text-red-300">{detailsError}</p>
-              )}
+              {detailsError && <Alert variant="error">{detailsError}</Alert>}
 
               <div className="flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  disabled={savingDetails}
+                <Button type="button" variant="outline" size="sm" disabled={savingDetails}
                   onClick={() => {
                     setEditingDetails(false);
                     setDetailsError(null);
-                  }}
-                  className="min-h-[36px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-60"
-                >
+                  }}>
                   Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={savingDetails}
-                  className="min-h-[36px] px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer disabled:opacity-60"
-                >
-                  {savingDetails ? 'Saving...' : 'Save'}
-                </button>
+                </Button>
+                <Button type="submit" size="sm" loading={savingDetails} loadingLabel="Saving…">
+                  Save
+                </Button>
               </div>
             </form>
           )}
@@ -638,25 +782,27 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 </span>
               )}
               {!editingRecovery && authUser && !loadingRecovery && (
-                <button
-                  type="button"
-                  onClick={handleOpenEditRecovery}
-                  className="justify-self-start text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 shrink-0 cursor-pointer"
-                >
+                <Button type="button" variant="ghost" size="sm" onClick={handleOpenEditRecovery}
+                  className="justify-self-start text-emerald-700 dark:text-emerald-400 hover:bg-transparent px-2">
                   <Edit3 className="w-3 h-3" />
                   <span>Edit details</span>
-                </button>
+                </Button>
               )}
             </div>
             {editingRecovery && (
               <form onSubmit={handleSaveRecovery} className="space-y-2 pt-0.5">
-                <div className="space-y-2">
-                  <label className="block text-xs font-semibold">Current password
-                    <input type="password" autoComplete="current-password" required value={recoveryPassword}
-                      onChange={e=>setRecoveryPassword(e.target.value)} className="block w-full rounded-xl border p-2 mt-1" />
-                  </label>
-                  <label htmlFor="status-recovery-email" className="block text-xs font-semibold">Recovery email</label>
-                  <input
+                <Field label="Current password" htmlFor="status-recovery-password">
+                  <Input
+                    id="status-recovery-password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={recoveryPassword}
+                    onChange={e=>setRecoveryPassword(e.target.value)}
+                  />
+                </Field>
+                <Field label="Recovery email" htmlFor="status-recovery-email" error={recoveryError ?? undefined}>
+                  <Input
                     id="status-recovery-email"
                     type="email"
                     required
@@ -664,61 +810,49 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     value={recoveryInput}
                     onChange={(e) => setRecoveryInput(e.target.value)}
                     placeholder="e.g. yourname@gmail.com"
-                    className="w-full min-w-0 min-h-[38px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
                   />
-                  {recoveryCheck.widget}
-                  <div className="flex justify-end gap-2">
-                  <button
-                    type="submit"
-                    disabled={savingRecovery}
-                    className="min-h-[38px] px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-semibold cursor-pointer disabled:opacity-60 shrink-0"
-                  >
-                    {savingRecovery ? '...' : 'Save'}
-                  </button>
-                  <button
-                    type="button"
-                    disabled={savingRecovery}
+                </Field>
+                {recoveryCheck.widget}
+                <div className="flex justify-end gap-2">
+                  <Button type="submit" size="sm" loading={savingRecovery} loadingLabel="Saving…">
+                    Save
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" disabled={savingRecovery}
                     onClick={() => {
                       setEditingRecovery(false); setRecoveryPassword('');
                       setRecoveryError(null);
-                    }}
-                    className="min-h-[38px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer disabled:opacity-60 shrink-0"
-                  >
+                    }}>
                     Cancel
-                  </button>
-                  </div>
+                  </Button>
                 </div>
-                {recoveryError && (
-                  <p className="text-[11px] text-red-700 dark:text-red-300">{recoveryError}</p>
-                )}
               </form>
             )}
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              Password reset links are sent here.
+              Password reset links are sent here. You’ll be asked to verify this inbox after approval.
             </p>
           </div>
 
           <div className="flex justify-between items-center gap-3">
             <span className="text-slate-500 dark:text-slate-400">Status</span>
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${statusBadgeClass}`}
-            >
-              {isPending && hasIdCard===null?'Unconfirmed':isPending && !hasIdCard?'Incomplete':user.status}
-            </span>
+            <Badge tone={statusBadgeTone} className="capitalize px-2.5">
+              {hasIdCard===null?'Checking…':isPending && !hasIdCard?'Incomplete':user.status}
+            </Badge>
           </div>
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="outline"
+          size="lg"
+          full
           onClick={async () => {
             await updateUserLastSeen(user.uid).catch(() => undefined);
             await signOutUser();
           }}
-          className="w-full min-h-[48px] rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
         >
           <LogOut className="w-4 h-4" />
           <span>Sign Out</span>
-        </button>
+        </Button>
       </div>
     </div>
   );

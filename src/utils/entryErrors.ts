@@ -1,7 +1,7 @@
 import {graduateError} from './entryRules';
 
 // Only exact, application-owned copy may pass through; never append backend detail.
-const allowed = new Set([graduateError, 'Please complete the security check, then try again.',
+const allowed = new Set(['Please complete the security check, then try again.',
   "An account with this Matric Number / Staff ID already exists. Try signing in instead.",
   "Attach proof of staff status or choose email or vouching.",
   "Attach your selected proof of staff status, or choose email or vouching.",
@@ -40,9 +40,18 @@ const allowed = new Set([graduateError, 'Please complete the security check, the
   "Verification file exceeds the 3 MB limit. Please choose a smaller file.",
   "Verification file exceeds the 3 MB limit. Please pick a smaller image.",
 ]);
+/**
+ * Exact-match allowlist. The graduate message is configuration-dependent, so it
+ * is compared against the currently configured year rather than frozen into the
+ * set at module load.
+ */
+export function isAllowedEntryError(msg: string): boolean {
+  return allowed.has(msg) || msg === graduateError();
+}
+
 export function friendlyEntryError(err: unknown, fallback: string): string {
   const msg = err instanceof Error ? err.message : '';
-  return allowed.has(msg) ? msg : fallback;
+  return isAllowedEntryError(msg) ? msg : fallback;
 }
 
 export class ClientCooldownError extends Error {
@@ -56,7 +65,7 @@ export function formatAuthError(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err);
   const lower = raw.toLowerCase();
   if (/captcha|turnstile/.test(lower)) return 'Please complete the security check, then try again.';
-  if (/invalid graduation year|graduation year is required|graduate status/.test(lower)) return graduateError;
+  if (/invalid graduation year|graduation year is required|graduate status/.test(lower)) return graduateError();
   if (lower.includes('already registered') || lower.includes('already exists') || lower.includes('duplicate')) {
     return 'An account with this Matric Number / Staff ID already exists. Try signing in instead.';
   }
