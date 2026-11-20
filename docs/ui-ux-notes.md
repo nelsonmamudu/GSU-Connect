@@ -789,14 +789,21 @@ deliberately left.
 - **Admin empty states** all use `EmptyState` and each offers a next action
   (clear search, create a group, review approved accounts).
 
-### 8.3 Contrast sweep
+### 8.3 Keyboard focus
+
+421 hand-rolled `<button>`s had no focus style of their own — keyboard users could
+not see where they were. `index.css` now supplies a 2px ring to any button, link,
+summary, input, select or textarea that does not already carry a Tailwind ring,
+driven by a `--color-focus` variable that swaps under `.dark`.
+
+### 8.4 Contrast sweep
 
 `text-slate-400` in light mode (~3.0:1 on white) and `dark:text-slate-500`
 (~3.2:1 on slate-900) both failed the 4.5:1 body bar. 127 and 81 sites moved one
 step. Placeholders were left alone. Decorative `text-slate-300` icons and
 separators were left alone — they carry no information.
 
-### 8.4 Deliberately not done
+### 8.5 Deliberately not done
 
 - **The token layer and the palette.** §3 asks for tokens by role with dark mode
   as a token swap. That is one job with the palette choice, not two — doing it
