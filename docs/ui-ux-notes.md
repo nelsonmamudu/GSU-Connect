@@ -416,7 +416,7 @@ These are the gaps worth closing first. Nothing here has been changed.
 
 ---
 
-## 5. Trends layer (secondary — use with care)
+## 5. Secondary sources — trends and commentary (use with care)
 
 Source: "Top 2026 App Design Trends" (Codex Community, `youtu.be/VNDq1Q_W1Bs`). The
 retrieved transcript is truncated partway through the second topic, carries no timecodes,
@@ -448,6 +448,41 @@ hours" ETA) is a real problem and not a wording nit.
   progress; it never decorates.
 - Design how a user attaches or amends a message. The source cuts off here; the specifics
   were not recoverable.
+
+### 5.2 The peak-end rule, restated (secondary — largely a duplicate)
+
+Source: "The Tiny Design Rule Behind Top 1% Apps" (Tim Gabe, `youtu.be/11h4H3TAGkM`).
+Truncated during the first example; the promised checklist was not in the retrieved
+excerpt, so the six points below are the guide's own interpretation, not the video's.
+
+**This mostly restates `peak-end-rule` in §2a/§3.** The pattern library's version is richer —
+it carries the reverse case, where a payment failure on the final step drops remembered
+satisfaction from 85 to 22 — and that is the one to build from. Only the increments are
+recorded here.
+
+- **Attribution.** The mechanism is Daniel Kahneman's peak-end rule. Worth knowing because
+  it is a *memory* effect, not a satisfaction effect: it describes what people recall, not
+  what they experienced moment to moment. Do not use it to justify making the present
+  moment worse.
+- **Friction in the middle is survivable.** The Disney example — long waits in the sun,
+  walking between attractions, expensive food, still remembered fondly because the peaks and
+  the ending were engineered. The lesson is about *where to spend effort*, not permission
+  to be sloppy. Effort spread evenly across every step is wasted next to one real peak and
+  one real ending.
+- **Guardrails (the genuinely useful part):**
+  - Choose a peak that delivers **real user value** — a completed task, a useful outcome.
+    Do not manufacture an artificial reward.
+  - End by confirming the result, explaining **what happens next**, and giving one clear,
+    low-friction next action.
+  - **Peak-end is not an excuse to add avoidable friction** or to conceal poor usability.
+  - Validate the chosen peak and ending with real users; do not assume they matter to
+    everyone.
+
+**Applied to our flows.** The peak of sign-up is not the form — it is the moment the
+applicant learns they are *in* and what happens next. The end of the pending gate is the
+approval or rejection screen, and that is what gets remembered. The rejection path is where
+the peak-end risk is highest: a hostile or cryptic rejection is the last thing a user takes
+away from the whole application.
 
 ---
 
