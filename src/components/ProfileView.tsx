@@ -952,7 +952,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <span className="font-semibold text-slate-800 dark:text-slate-100">
               Restricted &amp; private info:
             </span>{' '}
-            Only you and authorized reviewers can see your registration ID. Class reps and department helpers review student submissions only; staff submissions go to admins. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Verification ID cards are deleted after approval.
+            Only you and authorized reviewers can see your registration ID. Class reps and department helpers review student submissions only; staff submissions go to admins. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Verification ID cards are deleted within 24 hours after approval.
           </p>
         </div>
       </div>
@@ -1385,7 +1385,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </p>
                 <p>
                   <strong className="text-slate-800 dark:text-slate-100">Data Retention:</strong>{' '}
-                  Verification ID documents are deleted after your account is approved. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
+                  Verification ID documents are deleted within 24 hours after your account is approved. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
                 </p>
                 <p>
                   <strong className="text-slate-800 dark:text-slate-100">Your NDPA Rights:</strong>{' '}

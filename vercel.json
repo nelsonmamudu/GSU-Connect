@@ -29,5 +29,10 @@
       ]
     }
   ],
-  "crons": []
+  "crons": [
+    {
+      "path": "/api/proof-cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ]
 }

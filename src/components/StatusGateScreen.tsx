@@ -465,7 +465,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               </button>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-              Private verification file. Replaced copies are also scheduled for deletion after approval.
+              Private verification file. Deleted within 24 hours after approval; replaced copies too.
             </p>
           </div>
         )}
