@@ -53,4 +53,4 @@ assert.equal(await rows(`select * from public_profiles where id='${student}'`),f
 await sql('reset role');await sql(`delete from chat_members where user_id='${owner}'`);await as(10);
 assert.equal(await rows('select * from messages'),false);assert.equal(await rows("select * from storage.objects where bucket_id='chat-files'"),false);
 console.log('50/50 matrix checks passed; staff visibility, enrollment guard, privileged RPC, suspension and stale-session checks passed.');
-await (await import('./entry-flow.mjs')).testEntry(db);await (await import('./owner-staff.mjs')).testOwnerStaff(db);await db.close();
+await (await import('./entry-flow.mjs')).testEntry(db);await (await import('./owner-staff.mjs')).testOwnerStaff(db);await (await import('./approval-scope.mjs')).testApprovalScope(db);await db.close();

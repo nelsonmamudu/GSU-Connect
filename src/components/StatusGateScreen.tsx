@@ -206,7 +206,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const isSuspended = user.status === 'suspended';
   const isRejected = user.status === 'rejected';
   const isPending = user.status === 'pending';
-  const isPendingStudent = isPending && user.accountType === 'student';
+  const canEditStudentDetails = (isPending || isRejected) && user.accountType === 'student';
   const isLecturerRequest =
     user.accountType === 'staff' || user.requestedRole === 'lecturer';
 
@@ -361,7 +361,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const description = isSuspended
     ? 'Your GSU Connect account has been suspended by an administrator due to a moderation review. You cannot read or send messages while suspended.'
     : isRejected
-      ? (isLecturerRequest ? 'An admin could not verify your staff registration. Check the reason or contact support.' : 'Your registration could not be verified. Check the reason or contact your class rep or admin.')
+      ? (isLecturerRequest ? 'An admin could not verify your staff registration. Check the reason or contact support.' : 'Check the rejection reason below. You can edit your department and level, then upload replacement proof to resubmit for review.')
       : hasIdCard===null ? 'Check whether your proof has reached the review queue.' : hasIdCard ? 'Your proof has been submitted.' : 'Your account exists. Complete verification below to enter the review queue.';
 
   const statusBadgeClass =
@@ -383,6 +383,9 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{description}</p>
         </div>
 
+        {isPending && !isLecturerRequest && hasIdCard === false && (
+          <p role="status" className="rounded-xl bg-amber-50 p-3 font-semibold text-amber-900">Upload proof to enter the review queue.</p>
+        )}
         {isPending && (
           <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 px-4 py-3 text-left space-y-1">
             <p className="text-xs font-bold text-slate-900 dark:text-slate-100">What happens next</p>
@@ -519,7 +522,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                   <span className="font-medium text-slate-900 dark:text-slate-100 text-right">
                     {formatLevelLabel(displayLevel, user.is_alumni)}
                   </span>
-                  {isPendingStudent && (
+                  {canEditStudentDetails && (
                     <button
                       type="button"
                       onClick={handleOpenEditDetails}

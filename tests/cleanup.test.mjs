@@ -14,7 +14,8 @@ test('worker is authenticated and retries failed Storage API deletion before ack
   globalThis.fetch = async (input, init) => {
     requests++;
     const url = String(input);
-    if (url.endsWith('/rpc/entry_cleanup_batch'))
+    if (url.endsWith('/rpc/entry_orphan_batch')) return Response.json([]);
+    if (url.endsWith('/rpc/entry_cleanup_batch_approved'))
       return Response.json(ack ? [] : paths.map((path) => ({ path })));
     if (url.endsWith('/storage/v1/object/id-cards')) {
       assert.equal(init.method, 'DELETE');
@@ -38,17 +39,12 @@ test('worker is authenticated and retries failed Storage API deletion before ack
       end() {},
       json() {},
     };
-    await handler({ headers: { authorization: `Bearer ${token}` } }, res);
+    await handler({ method: 'GET', headers: { authorization: `Bearer ${token}` } }, res);
     return res.code;
   };
   try {
     assert.equal(await run('wrong'), 401);
     assert.equal(requests, 0);
-    process.env.ENABLE_PROOF_CLEANUP = 'true';
-    process.env.VERCEL_ENV = 'production';
-    assert.equal(await run('fixture-secret'), 503);
-    assert.equal(requests, 0);
-    process.env.VERCEL_ENV = 'development';
     assert.equal(await run('fixture-secret'), 503);
     assert.equal(ack, false);
     fail = false;

@@ -433,7 +433,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                         <span className="text-xs font-semibold text-slate-900 dark:text-slate-100 leading-snug">
                           {accountType === 'staff'
                             ? staffProof : studentProof}{' '}
-                          <span className="font-normal text-slate-500 dark:text-slate-400">{accountType==='staff'?'(Required)':'(Required for review; upload now or later)'}</span>
+                          <span className="font-normal text-slate-500 dark:text-slate-400">{accountType==='staff'?'(Required)':'(Your submission enters the review queue only after you upload proof)'}</span>
                         </span>
                       </div>
                       <input
