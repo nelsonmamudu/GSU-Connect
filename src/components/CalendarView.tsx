@@ -295,7 +295,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('all')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'all'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-soft'
               }`}
             >
@@ -306,7 +306,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('mine')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'mine'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-soft'
               }`}
             >
@@ -317,7 +317,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('exams')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'exams'
-                  ? 'bg-white dark:bg-surface text-danger shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-danger shadow-resting'
                   : 'text-ink-body dark:text-ink-soft'
               }`}
             >
@@ -608,7 +608,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
       {/* Create / Edit Entry Modal */}
       {modalOpen && canManage && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 {editingEvent ? 'Update Timetable Entry' : 'New Timetable / Event Entry'}

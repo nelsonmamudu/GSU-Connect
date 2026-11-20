@@ -124,7 +124,7 @@ export const DepartmentPicker: React.FC<DepartmentPickerProps> = ({
       </button>
 
       {open && (
-        <div className="absolute z-40 left-0 right-0 mt-1 bg-surface rounded-2xl border border-line shadow-lg overflow-hidden">
+        <div className="absolute z-40 left-0 right-0 mt-1 bg-surface rounded-2xl border border-line shadow-overlay overflow-hidden">
           <div className="p-2 border-b border-line bg-sunken/60">
             <div className="relative">
               <Search className="w-4 h-4 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />

@@ -127,7 +127,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             onClick={() => setFilter('all')}
             className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'all'
-                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-resting'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -138,7 +138,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             onClick={() => setFilter('department')}
             className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'department'
-                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-resting'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -313,7 +313,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
 
       {composerOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-lg bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">New Announcement</h3>
               <button

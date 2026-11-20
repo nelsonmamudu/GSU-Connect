@@ -684,7 +684,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
     >
       <audio ref={remoteAudioRef} autoPlay playsInline className="hidden" />
 
-      <div className="w-full max-w-sm rounded-3xl bg-slate-900 border border-slate-800 p-7 text-center text-white shadow-2xl space-y-6">
+      <div className="w-full max-w-sm rounded-3xl bg-slate-900 border border-slate-800 p-7 text-center text-white shadow-overlay space-y-6">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-widest text-success">
             <PhoneIncoming className="w-3.5 h-3.5" />
@@ -778,7 +778,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 disabled={accepting}
                 onClick={handleDeclineCall}
                 aria-label="Decline call"
-                className="w-15 h-15 rounded-full bg-danger hover:bg-danger disabled:opacity-60 text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="w-15 h-15 rounded-full bg-danger hover:bg-danger disabled:opacity-60 text-white flex items-center justify-center shadow-overlay transition-transform active:scale-95 cursor-pointer"
               >
                 <PhoneOff className="w-6 h-6" />
               </button>
@@ -791,7 +791,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 disabled={accepting}
                 onClick={handleAnswerCall}
                 aria-label="Accept call"
-                className="w-15 h-15 rounded-full bg-brand hover:bg-brand disabled:opacity-60 text-on-brand flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="w-15 h-15 rounded-full bg-brand hover:bg-brand disabled:opacity-60 text-on-brand flex items-center justify-center shadow-overlay transition-transform active:scale-95 cursor-pointer"
               >
                 <Phone className="w-6 h-6" />
               </button>
@@ -826,7 +826,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 type="button"
                 onClick={handleEndCall}
                 aria-label="End voice call"
-                className="w-14 h-14 rounded-full bg-danger hover:bg-danger text-white flex items-center justify-center shadow-lg transition-transform active:scale-95 cursor-pointer"
+                className="w-14 h-14 rounded-full bg-danger hover:bg-danger text-white flex items-center justify-center shadow-overlay transition-transform active:scale-95 cursor-pointer"
               >
                 <PhoneOff className="w-6 h-6" />
               </button>

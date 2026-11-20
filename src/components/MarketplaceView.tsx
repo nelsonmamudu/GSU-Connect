@@ -375,7 +375,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               onClick={() => setScopeTab('all')}
               className={`min-h-[38px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'all'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-soft hover:text-ink'
               }`}
             >
@@ -386,7 +386,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               onClick={() => setScopeTab('mine')}
               className={`min-h-[38px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'mine'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-soft hover:text-ink'
               }`}
             >
@@ -745,7 +745,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
       {/* Post / Edit Listing Modal */}
       {postOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 {editingListing ? 'Edit Marketplace Listing' : 'Post Marketplace Listing'}
@@ -1003,7 +1003,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-overlay"
           >
             {selectedListing.imageData && !brokenImages.has(selectedListing.id) && (
               <div className="relative bg-slate-950 max-h-[52dvh] flex items-center justify-center">

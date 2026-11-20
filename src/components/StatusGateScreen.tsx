@@ -511,7 +511,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
 
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line shadow-sm p-6 sm:p-8 text-center space-y-5">
+      <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line shadow-resting p-6 sm:p-8 text-center space-y-5">
         <div className={`w-14 h-14 rounded-2xl mx-auto flex items-center justify-center ${iconTone}`}>
           <Icon className="w-7 h-7" />
         </div>

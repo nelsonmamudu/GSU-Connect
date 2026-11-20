@@ -348,7 +348,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('all')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'all'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -359,7 +359,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('dept')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'dept'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -370,7 +370,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('staff')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'staff'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -381,7 +381,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('study')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
                 segment === 'study'
-                  ? 'bg-brand text-on-brand shadow-2xs'
+                  ? 'bg-brand text-on-brand shadow-resting'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >

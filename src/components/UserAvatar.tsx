@@ -116,7 +116,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   if (preset) {
     return (
       <div
-        className={`relative overflow-hidden shrink-0 ${sizeClass} ${roundedClass} bg-gradient-to-br ${preset.gradientClass} text-white flex items-center justify-center shadow-2xs ${className}`}
+        className={`relative overflow-hidden shrink-0 ${sizeClass} ${roundedClass} bg-gradient-to-br ${preset.gradientClass} text-white flex items-center justify-center shadow-resting ${className}`}
         aria-label={`${name || 'GSU Member'} avatar`}
       >
         {renderPresetAvatarIcon(preset.iconKey, iconSizeClass)}

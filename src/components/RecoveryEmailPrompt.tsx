@@ -159,7 +159,7 @@ export function RecoveryEmailPrompt() {
     <div
       role="dialog"
       aria-label={title}
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,26rem)] rounded-2xl border border-success-line bg-surface shadow-xl p-4 text-sm text-ink-soft space-y-2"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,26rem)] rounded-2xl border border-success-line bg-surface shadow-overlay p-4 text-sm text-ink-soft space-y-2"
     >
       <p className="font-semibold text-ink">{title}</p>
 

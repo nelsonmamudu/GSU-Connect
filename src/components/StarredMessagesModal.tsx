@@ -80,7 +80,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
       aria-label="Starred Messages"
       className="fixed inset-0 z-50 bg-slate-900/55 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
-      <div className="w-full sm:max-w-lg max-h-[88dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden">
+      <div className="w-full sm:max-w-lg max-h-[88dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl shadow-overlay overflow-hidden">
         <div className="px-5 py-4 border-b border-line flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-9 h-9 rounded-2xl bg-warn-bg dark:bg-warn-bg/60 text-warn flex items-center justify-center shrink-0">
@@ -147,7 +147,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
             filtered.map((item) => (
               <div
                 key={item.messageId}
-                className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 space-y-2.5 shadow-2xs"
+                className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 space-y-2.5 shadow-resting"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 flex-1">

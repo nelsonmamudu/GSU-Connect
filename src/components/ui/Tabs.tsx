@@ -50,7 +50,7 @@ export function Tabs<T extends string>({
               onClick={() => onChange(tab.key)}
               className={`min-h-[44px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 whitespace-nowrap inline-flex items-center gap-1.5 ${focusRing} ${
                 active
-                  ? 'bg-surface text-ink shadow-2xs'
+                  ? 'bg-surface text-ink shadow-resting'
                   : 'text-ink-soft hover:text-ink'
               }`}
             >

@@ -1509,7 +1509,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           }`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-2xs transition-transform ${
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-resting transition-transform ${
                               user.is_exempt ? 'translate-x-5.5' : 'translate-x-1'
                             }`}
                           />
@@ -1875,7 +1875,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {/* Add / Edit Department Modal */}
       {deptModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 {editingDept ? 'Edit Department' : 'Add Department'}
@@ -1992,7 +1992,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           aria-label="Reject sign-up request"
           className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 Reject Sign-up Request
@@ -2055,7 +2055,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg bg-surface border border-line/80 dark:border-line rounded-3xl p-5 space-y-4 shadow-2xl"
+            className="w-full max-w-lg bg-surface border border-line/80 dark:border-line rounded-3xl p-5 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 min-w-0">
@@ -2117,7 +2117,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           aria-label="Confirm expire alumni account"
           className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 Expire Alumni Account
@@ -2175,7 +2175,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           }
           className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 {pendingUserChange.kind === 'role'
@@ -2257,7 +2257,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           aria-label="Confirm delete department"
           className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
                 Delete Department

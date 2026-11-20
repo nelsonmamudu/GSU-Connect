@@ -205,7 +205,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl shadow-2xl"
+        className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl shadow-overlay"
       >
         {/* Top Bar */}
         <div className="sticky top-0 z-10 px-5 py-3.5 bg-white/95 dark:bg-surface/95 backdrop-blur-sm border-b border-line flex items-center justify-between">

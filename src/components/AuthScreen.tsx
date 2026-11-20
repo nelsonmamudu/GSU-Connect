@@ -112,7 +112,7 @@ function ModeSwitch({
           onClick={() => onChange(key)}
           className={
             mode === key
-              ? 'bg-white dark:bg-surface text-ink shadow-xs'
+              ? 'bg-white dark:bg-surface text-ink shadow-resting'
               : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
           }
         >
@@ -829,7 +829,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         {/* Left campus introduction panel */}
         <div className="lg:col-span-5 space-y-5 text-center lg:text-left px-2">
           <div className="inline-flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-brand text-on-brand flex items-center justify-center shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-brand text-on-brand flex items-center justify-center shadow-resting">
               <GraduationCap className="w-6 h-6" />
             </div>
             <div className="text-left">
@@ -869,7 +869,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
         </div>
 
         {/* Right authentication card */}
-        <div className="lg:col-span-7 w-full max-w-md mx-auto lg:max-w-none bg-surface rounded-3xl border border-line/80 dark:border-line shadow-sm p-6 sm:p-8">
+        <div className="lg:col-span-7 w-full max-w-md mx-auto lg:max-w-none bg-surface rounded-3xl border border-line/80 dark:border-line shadow-resting p-6 sm:p-8">
           {mode !== 'forgot' ? (
             <>
               <ModeSwitch mode={mode === 'signup' ? 'signup' : 'login'} onChange={(next) => switchMode(next)} />
@@ -1156,9 +1156,9 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
 
   return (
     <div className="min-h-screen bg-canvas flex flex-col justify-center px-4 py-8 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md mx-auto bg-surface rounded-3xl border border-line/80 dark:border-line shadow-sm p-6 sm:p-8">
+      <div className="w-full max-w-md mx-auto bg-surface rounded-3xl border border-line/80 dark:border-line shadow-resting p-6 sm:p-8">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bg-brand text-on-brand flex items-center justify-center shadow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-brand text-on-brand flex items-center justify-center shadow-resting">
             <KeyRound className="w-6 h-6" />
           </div>
           <div>

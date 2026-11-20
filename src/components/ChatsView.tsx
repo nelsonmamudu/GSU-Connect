@@ -2441,7 +2441,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             onClick={() => setSidebarMode('chats')}
             className={`flex-1 min-h-[40px] px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               sidebarMode === 'chats'
-                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-resting'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -2453,7 +2453,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             onClick={() => setSidebarMode('updates')}
             className={`flex-1 min-h-[40px] px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               sidebarMode === 'updates'
-                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-resting'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -2736,7 +2736,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
 
       {/* Right column: Active conversation */}
       <div
-        className={`relative lg:col-span-8 flex flex-col min-w-0 bg-white dark:bg-surface rounded-3xl border border-line/80 dark:border-line shadow-xs overflow-hidden ${
+        className={`relative lg:col-span-8 flex flex-col min-w-0 bg-white dark:bg-surface rounded-3xl border border-line/80 dark:border-line shadow-resting overflow-hidden ${
           activeChat ? 'flex h-[calc(100dvh-7.5rem)] lg:h-[calc(100dvh-6.5rem)]' : 'hidden lg:flex lg:h-[calc(100dvh-6.5rem)]'
         }`}
       >
@@ -3129,7 +3129,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             setLoadingOlderMessages(false);
                           }
                         }}
-                        className="min-h-[34px] px-4 rounded-full bg-surface border border-line hover:border-brand text-xs font-semibold text-ink-soft shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+                        className="min-h-[34px] px-4 rounded-full bg-surface border border-line hover:border-brand text-xs font-semibold text-ink-soft shadow-resting transition-colors cursor-pointer disabled:opacity-60"
                       >
                         {loadingOlderMessages ? 'Loading older...' : 'Load older messages'}
                       </button>
@@ -3148,7 +3148,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       new Date(msgDateMs).toDateString() !== new Date(prevMsgDateMs).toDateString());
                   const dateDividerNode = showDateDivider ? (
                     <div className="flex justify-center py-1.5">
-                      <span className="px-3 py-1 rounded-full bg-sunken/75 dark:bg-sunken/90 text-[11px] font-semibold text-ink-body dark:text-ink-soft shadow-2xs">
+                      <span className="px-3 py-1 rounded-full bg-sunken/75 dark:bg-sunken/90 text-[11px] font-semibold text-ink-body dark:text-ink-soft shadow-resting">
                         {formatDateDividerLabel(msgDateMs)}
                       </span>
                     </div>
@@ -3173,7 +3173,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               : ''
                           }`}
                         >
-                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface border border-line/80 dark:border-line shadow-2xs text-xs">
+                        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-surface border border-line/80 dark:border-line shadow-resting text-xs">
                           {isMissedOrDeclined ? (
                             <PhoneMissed className="w-3.5 h-3.5 text-danger shrink-0" />
                           ) : (
@@ -3332,7 +3332,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         {dragOffset > 14 && (
                           <div
                             aria-hidden="true"
-                            className="absolute -left-9 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-brand-subtle dark:bg-brand-subtle/70 text-brand flex items-center justify-center shadow-xs"
+                            className="absolute -left-9 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full bg-brand-subtle dark:bg-brand-subtle/70 text-brand flex items-center justify-center shadow-resting"
                           >
                             <Reply className="w-3.5 h-3.5" />
                           </div>
@@ -3347,7 +3347,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               idx === 0 ? 'top-full mt-1.5' : '-top-12'
                             } ${
                               isMine ? 'right-0' : 'left-0'
-                            } bg-white dark:bg-sunken border border-line dark:border-line rounded-2xl shadow-lg px-1.5 py-1 flex items-center gap-0.5`}
+                            } bg-white dark:bg-sunken border border-line dark:border-line rounded-2xl shadow-overlay px-1.5 py-1 flex items-center gap-0.5`}
                           >
                             {MESSAGE_REACTIONS.map(({ emoji, label }) => {
                               const selected = myReaction === emoji;
@@ -3421,7 +3421,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             swipeStartRef.current = null;
                             setSwipeOffset(null);
                           }}
-                          className={`rounded-2xl px-3.5 py-2.5 shadow-2xs select-text ${
+                          className={`rounded-2xl px-3.5 py-2.5 shadow-resting select-text ${
                             isMine
                               ? 'bg-brand text-on-brand rounded-br-md'
                               : 'bg-white dark:bg-sunken border border-line/80 dark:border-line text-ink rounded-bl-md'
@@ -4132,7 +4132,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     <div
                                       data-msg-menu="true"
                                       role="menu"
-                                      className={`absolute z-30 bottom-full mb-1.5 w-44 rounded-2xl bg-white dark:bg-surface border border-line dark:border-line shadow-xl py-1.5 text-ink dark:text-ink ${
+                                      className={`absolute z-30 bottom-full mb-1.5 w-44 rounded-2xl bg-white dark:bg-surface border border-line dark:border-line shadow-overlay py-1.5 text-ink dark:text-ink ${
                                         isMine ? 'right-0' : 'left-0'
                                       }`}
                                     >
@@ -4288,7 +4288,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               </button>
 
                               {isExpanded && (
-                                <div className="mt-1 max-w-xs rounded-xl bg-surface dark:bg-sunken border border-line/80 dark:border-line px-2.5 py-2 shadow-xs flex flex-wrap gap-1.5">
+                                <div className="mt-1 max-w-xs rounded-xl bg-surface dark:bg-sunken border border-line/80 dark:border-line px-2.5 py-2 shadow-resting flex flex-wrap gap-1.5">
                                   {msgReaders.map((reader) => (
                                     <span
                                       key={reader.uid}
@@ -4328,7 +4328,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   type="button"
                   onClick={jumpToBottom}
                   aria-label="Scroll to latest messages"
-                  className="absolute bottom-3 right-4 z-10 min-h-[38px] px-3 rounded-full bg-white/95 dark:bg-surface/95 border border-line shadow-lg text-xs font-semibold text-ink hover:bg-sunken inline-flex items-center gap-1.5 cursor-pointer"
+                  className="absolute bottom-3 right-4 z-10 min-h-[38px] px-3 rounded-full bg-white/95 dark:bg-surface/95 border border-line shadow-overlay text-xs font-semibold text-ink hover:bg-sunken inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <ChevronDown className="w-4 h-4 text-brand" />
                   <span>
@@ -4390,7 +4390,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             {attachmentMenuOpen && !isDmBlocked && (
               <div
                 data-attachment-area="true"
-                className="relative z-30 border-t border-line/80 dark:border-line bg-slate-950/95 dark:bg-canvas text-slate-100 px-4 pt-2.5 pb-4 rounded-t-3xl shadow-2xl"
+                className="relative z-30 border-t border-line/80 dark:border-line bg-slate-950/95 dark:bg-canvas text-slate-100 px-4 pt-2.5 pb-4 rounded-t-3xl shadow-overlay"
               >
                 <div className="w-10 h-1 rounded-full bg-slate-700 mx-auto mb-3" />
                 <div className="flex items-center justify-between mb-3 px-1">
@@ -4416,7 +4416,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     }}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-fuchsia-600 text-white shadow-lg shadow-violet-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-fuchsia-600 text-white shadow-overlay shadow-violet-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <ImageIcon className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Gallery</span>
@@ -4430,7 +4430,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     }}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-blue-600 text-white shadow-lg shadow-indigo-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-blue-600 text-white shadow-overlay shadow-indigo-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <FileText className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Document</span>
@@ -4445,7 +4445,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       }}
                       className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                     >
-                      <span className="w-13 h-13 rounded-full bg-gradient-to-br from-brand to-success text-white shadow-lg shadow-emerald-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                      <span className="w-13 h-13 rounded-full bg-gradient-to-br from-brand to-success text-white shadow-overlay shadow-emerald-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                         <BarChart3 className="w-5 h-5" />
                       </span>
                       <span className="text-xs font-medium text-slate-200">Poll</span>
@@ -4457,7 +4457,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={openEventCreator}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-warn to-orange-600 text-white shadow-lg shadow-amber-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-warn to-orange-600 text-white shadow-overlay shadow-amber-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <CalendarDays className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Event</span>
@@ -4468,7 +4468,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={openContactPicker}
                     className="flex flex-col items-center gap-1.5 py-2 rounded-2xl hover:bg-slate-900/90 transition-colors cursor-pointer group"
                   >
-                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-cyan-600 text-white shadow-lg shadow-sky-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
+                    <span className="w-13 h-13 rounded-full bg-gradient-to-br from-info to-cyan-600 text-white shadow-overlay shadow-sky-950/50 flex items-center justify-center group-active:scale-95 transition-transform">
                       <Contact className="w-5 h-5" />
                     </span>
                     <span className="text-xs font-medium text-slate-200">Contact</span>
@@ -4686,7 +4686,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={savingEdit || !draft.trim()}
                     aria-label="Save edited message"
                     title="Save edited message"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 disabled:opacity-50 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 disabled:opacity-50 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-resting"
                   >
                     <Check className="w-5 h-5" />
                   </button>
@@ -4695,7 +4695,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     type="submit"
                     aria-label="Send message"
                     title="Send message"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-resting"
                   >
                     <Send className="w-4 h-4 translate-x-[0.5px]" />
                   </button>
@@ -4709,7 +4709,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={sendingVoice}
                     aria-label="Record voice note"
                     title="Record voice note"
-                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 disabled:opacity-40 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-xs"
+                    className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-full bg-brand hover:bg-brand-strong active:scale-95 disabled:opacity-40 text-on-brand inline-flex items-center justify-center transition-all cursor-pointer shrink-0 shadow-resting"
                   >
                     <Mic className="w-5 h-5" />
                   </button>
@@ -4723,7 +4723,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       {/* Report Message Modal */}
       {reportingMessage && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">Report Message</h3>
               <button
@@ -4816,7 +4816,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       {/* Create Group Poll Modal */}
       {pollModalOpen && activeChat && activeChat.type !== 'dm' && (
         <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-brand" />
@@ -4933,7 +4933,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       {/* Gallery Image Preview & Caption Modal */}
       {imageDraft && activeChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <ImageIcon className="w-5 h-5 text-info shrink-0" />
@@ -5021,7 +5021,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       {/* Document Preview & Caption Modal */}
       {docDraft && activeChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 min-w-0">
                 <FileText className="w-5 h-5 text-info shrink-0" />
@@ -5089,7 +5089,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       {/* Share Event / Reminder Modal */}
       {eventModalOpen && activeChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-md max-h-[90dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <CalendarDays className="w-5 h-5 text-warn" />
@@ -5211,7 +5211,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
       {/* Share Verified GSU Contact Modal */}
       {contactModalOpen && activeChat && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-md max-h-[85dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-xl">
+          <div className="w-full sm:max-w-md max-h-[85dvh] flex flex-col bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 space-y-3 shadow-overlay">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Contact className="w-5 h-5 text-info" />
@@ -5297,7 +5297,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           aria-label="Delete message for everyone"
           className="fixed inset-0 z-50 bg-slate-900/50 dark:bg-canvas/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
         >
-          <div className="w-full sm:max-w-sm bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+          <div className="w-full sm:max-w-sm bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Trash2 className="w-5 h-5 text-danger" />
@@ -5384,7 +5384,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md h-full bg-surface border-l border-line shadow-2xl flex flex-col"
+            className="w-full max-w-md h-full bg-surface border-l border-line shadow-overlay flex flex-col"
           >
             <div className="p-4 sm:p-5 border-b border-line flex items-center justify-between gap-3">
               <div className="flex items-center gap-3 min-w-0">
@@ -5426,7 +5426,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   onClick={() => setGroupInfoTab(tab.id)}
                   className={`min-h-[38px] px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     groupInfoTab === tab.id
-                      ? 'bg-white dark:bg-sunken text-brand shadow-2xs border border-line/70 dark:border-line'
+                      ? 'bg-white dark:bg-sunken text-brand shadow-resting border border-line/70 dark:border-line'
                       : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                   }`}
                 >
@@ -5764,7 +5764,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <SignedChatImage
                 src={activeViewOnceModal.mediaData}
                 alt="View-once photo"
-                className="max-h-[72dvh] w-auto rounded-2xl object-contain shadow-2xl select-none"
+                className="max-h-[72dvh] w-auto rounded-2xl object-contain shadow-overlay select-none"
               />
             ) : activeViewOnceModal.kind === 'voice' && activeViewOnceModal.audioData ? (
               <div className="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-800 p-6 space-y-4">
@@ -5837,7 +5837,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             <SignedChatImage
               src={lightboxImage.src}
               alt={lightboxImage.fileName}
-              className="max-h-[78dvh] w-auto rounded-2xl object-contain shadow-2xl"
+              className="max-h-[78dvh] w-auto rounded-2xl object-contain shadow-overlay"
             />
             {lightboxImage.caption && (
               <p className="text-sm text-slate-200 text-center max-w-lg">
@@ -5885,7 +5885,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">

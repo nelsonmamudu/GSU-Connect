@@ -281,7 +281,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               onClick={() => setViewMode('feed')}
               className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 viewMode === 'feed'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -294,7 +294,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 onClick={() => setViewMode('queue')}
                 className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
                   viewMode === 'queue'
-                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-resting'
                     : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
@@ -312,7 +312,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               onClick={() => setViewMode('mine')}
               className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 viewMode === 'mine'
-                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-resting'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -327,7 +327,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   onClick={() => setSortBy('newest')}
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
                     sortBy === 'newest'
-                      ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-ink shadow-resting'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
@@ -338,7 +338,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   onClick={() => setSortBy('top')}
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
                     sortBy === 'top'
-                      ? 'bg-white dark:bg-surface text-brand shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-brand shadow-resting'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
@@ -629,7 +629,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
           <form
             onSubmit={handleSubmit}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between">
               <div>

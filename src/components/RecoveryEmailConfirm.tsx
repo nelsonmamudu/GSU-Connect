@@ -89,7 +89,7 @@ export function RecoveryEmailConfirm() {
     <div
       role="dialog"
       aria-label="Confirm recovery email"
-      className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,26rem)] rounded-2xl border border-line bg-surface shadow-xl p-4 text-sm text-ink-soft space-y-3"
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-[min(92vw,26rem)] rounded-2xl border border-line bg-surface shadow-overlay p-4 text-sm text-ink-soft space-y-3"
     >
       <p className="font-semibold text-ink">Confirm your recovery email</p>
       {status === 'done' ? (

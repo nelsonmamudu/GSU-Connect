@@ -126,7 +126,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-4xl max-h-[90dvh] bg-surface border border-line rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+        className="w-full max-w-4xl max-h-[90dvh] bg-surface border border-line rounded-3xl shadow-overlay flex flex-col overflow-hidden"
       >
         <div className="px-4 sm:px-5 py-3.5 border-b border-line/80 dark:border-line flex items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -175,7 +175,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             <img
               src={file.dataUrl}
               alt={file.fileName}
-              className="max-h-[72dvh] w-auto rounded-2xl object-contain shadow-lg"
+              className="max-h-[72dvh] w-auto rounded-2xl object-contain shadow-overlay"
             />
           ) : kind === 'pdf' ? (
             pdfObjectUrl ? (

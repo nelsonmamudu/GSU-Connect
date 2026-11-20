@@ -45,9 +45,11 @@ export const hintClass =
 export const errorTextClass = 'mt-1.5 text-xs font-medium text-danger';
 
 // One three-step elevation scale instead of a free-for-all of shadow sizes:
-// cards and inline panels rest, menus and popovers lift, modals float.
+// cards and inline panels rest, menus and popovers lift, modals float. The
+// utilities are defined in `index.css` so they swap under `.dark` like every
+// other token — a shadow that reads on white is invisible on the dark surface.
 export const elevation = {
-  resting: 'shadow-sm',
-  raised: 'shadow-md',
-  overlay: 'shadow-lg',
+  resting: 'shadow-resting',
+  raised: 'shadow-raised',
+  overlay: 'shadow-overlay',
 } as const;

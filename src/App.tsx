@@ -899,7 +899,7 @@ function MainApp() {
   if (accountExpiredGate) {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line p-7 sm:p-8 space-y-6 text-center shadow-xs">
+        <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line p-7 sm:p-8 space-y-6 text-center shadow-resting">
           <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-danger-bg dark:bg-danger-bg/60 text-danger">
             <AlertTriangle className="w-8 h-8" />
           </div>
@@ -958,7 +958,7 @@ function MainApp() {
   if (authUser && !currentUser && !isOnline) {
     return (
       <div className="min-h-screen bg-canvas flex flex-col items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line p-7 sm:p-8 space-y-5 text-center shadow-xs">
+        <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line p-7 sm:p-8 space-y-5 text-center shadow-resting">
           <div className="w-16 h-16 rounded-3xl mx-auto flex items-center justify-center bg-warn-bg dark:bg-warn-bg/60 text-warn">
             <WifiOff className="w-8 h-8" />
           </div>
@@ -1758,7 +1758,7 @@ function MainApp() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-[82vw] max-w-[320px] h-full bg-surface border-r border-line flex flex-col justify-between shadow-2xl"
+            className="w-[82vw] max-w-[320px] h-full bg-surface border-r border-line flex flex-col justify-between shadow-overlay"
           >
             <div className="flex-1 overflow-y-auto p-4 space-y-5">
               {/* Drawer Top Brand & Close */}

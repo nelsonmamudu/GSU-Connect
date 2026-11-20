@@ -720,7 +720,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-md bg-surface border border-line rounded-3xl p-5 shadow-2xl space-y-4"
+            className="w-full max-w-md bg-surface border border-line rounded-3xl p-5 shadow-overlay space-y-4"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -749,7 +749,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 }}
                 className={`flex-1 min-h-[38px] rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   composeType === 'text'
-                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-resting'
                     : 'text-ink-body dark:text-ink-muted'
                 }`}
               >
@@ -763,7 +763,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 }}
                 className={`flex-1 min-h-[38px] rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   composeType === 'image'
-                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-resting'
                     : 'text-ink-body dark:text-ink-muted'
                 }`}
               >
@@ -1014,7 +1014,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
             >
               {activeSlide.type === 'text' ? (
                 <div
-                  className="w-full min-h-[320px] max-h-[75vh] rounded-3xl p-8 flex items-center justify-center text-center shadow-2xl"
+                  className="w-full min-h-[320px] max-h-[75vh] rounded-3xl p-8 flex items-center justify-center text-center shadow-overlay"
                   style={{ backgroundColor: activeSlide.bgColor || STATUS_BG_COLORS[0].hex }}
                 >
                   <p className="text-xl sm:text-2xl font-bold leading-relaxed text-white whitespace-pre-wrap break-words">
@@ -1026,7 +1026,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   <img
                     src={activeSlide.imageData}
                     alt={activeSlide.text || 'Campus status photo'}
-                    className="max-h-[68vh] w-auto rounded-2xl object-contain shadow-2xl"
+                    className="max-h-[68vh] w-auto rounded-2xl object-contain shadow-overlay"
                   />
                   {activeSlide.text && (
                     <p className="px-4 py-2 rounded-2xl bg-black/60 text-sm text-white text-center max-w-md">
@@ -1073,7 +1073,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
             >
               <div
                 onClick={(e) => e.stopPropagation()}
-                className="w-full max-w-md bg-surface text-ink rounded-t-3xl p-5 max-h-[60vh] flex flex-col gap-3 shadow-2xl"
+                className="w-full max-w-md bg-surface text-ink rounded-t-3xl p-5 max-h-[60vh] flex flex-col gap-3 shadow-overlay"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">

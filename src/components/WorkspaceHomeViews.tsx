@@ -366,7 +366,7 @@ function HubFeature({
     <button
       type="button"
       onClick={onClick}
-      className="group flex min-h-[184px] flex-col rounded-2xl border border-line/80 bg-surface p-5 text-left transition-all hover:-translate-y-0.5 hover:border-success-line hover:shadow-lg hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 dark:border-line dark:focus-visible:ring-offset-slate-950"
+      className="group flex min-h-[184px] flex-col rounded-2xl border border-line/80 bg-surface p-5 text-left transition-all hover:-translate-y-0.5 hover:border-success-line hover:shadow-overlay hover:shadow-emerald-950/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus focus-visible:ring-offset-2 dark:border-line dark:focus-visible:ring-offset-slate-950"
     >
       <span className="grid h-10 w-10 place-items-center rounded-xl bg-brand-subtle text-brand dark:bg-brand-subtle/70"><Icon className="h-5 w-5" aria-hidden="true" /></span>
       <span className="mt-4 text-[10px] font-bold uppercase tracking-[0.14em] text-brand/70 dark:text-brand/80">{eyebrow}</span>

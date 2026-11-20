@@ -308,7 +308,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 onClick={() => setScopeTab(tab.id)}
                 className={`min-h-[36px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   scopeTab === tab.id
-                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-resting'
                     : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
@@ -637,7 +637,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
           <form
             onSubmit={handleCreateSubmit}
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -668,7 +668,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   onClick={() => setPostType('ride')}
                   className={`min-h-[40px] rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
                     postType === 'ride'
-                      ? 'bg-white dark:bg-surface text-brand shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-brand shadow-resting'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
@@ -680,7 +680,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   onClick={() => setPostType('errand')}
                   className={`min-h-[40px] rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
                     postType === 'errand'
-                      ? 'bg-white dark:bg-surface text-info shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-info shadow-resting'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >

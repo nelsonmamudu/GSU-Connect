@@ -531,7 +531,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 roundedClass="rounded-3xl"
                 fallbackClassName="bg-brand text-on-brand"
               />
-              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-slate-900 dark:bg-brand text-on-brand border-2 border-white dark:border-line flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+              <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-slate-900 dark:bg-brand text-on-brand border-2 border-white dark:border-line flex items-center justify-center shadow-resting group-hover:scale-105 transition-transform">
                 <Camera className="w-3.5 h-3.5" />
               </span>
             </button>
@@ -703,7 +703,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           }`}
         >
           <span
-            className={`inline-flex h-6 w-6 transform items-center justify-center rounded-full bg-white text-ink-soft shadow-xs transition-transform ${
+            className={`inline-flex h-6 w-6 transform items-center justify-center rounded-full bg-white text-ink-soft shadow-resting transition-transform ${
               isDark ? 'translate-x-7' : 'translate-x-1'
             }`}
           >
@@ -830,7 +830,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-xs transition-transform ${
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-resting transition-transform ${
                       enabled ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
@@ -1151,7 +1151,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-5 shadow-2xl"
+            className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-5 shadow-overlay"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -1242,7 +1242,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       }`}
                     >
                       <div
-                        className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${preset.gradientClass} text-white flex items-center justify-center shadow-xs shrink-0`}
+                        className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${preset.gradientClass} text-white flex items-center justify-center shadow-resting shrink-0`}
                       >
                         {renderPresetAvatarIcon(preset.iconKey, 'w-5 h-5')}
                       </div>
@@ -1274,7 +1274,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-md bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between">
               <h3 className="text-base font-bold text-ink">
@@ -1385,7 +1385,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-lg max-h-[85vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-lg max-h-[85vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between">
               <div>
@@ -1492,7 +1492,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="w-full sm:max-w-md bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-2xl"
+            className="w-full sm:max-w-md bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl p-5 sm:p-6 space-y-4 shadow-overlay"
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-danger">

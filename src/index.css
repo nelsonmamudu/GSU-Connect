@@ -147,3 +147,54 @@
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
+/*
+ * Elevation. Three tiers, defined once: cards and chips rest, popovers lift,
+ * sheets and modals float. Components read `shadow-resting` / `shadow-raised` /
+ * `shadow-overlay` rather than picking a size, so "how elevated is this?" has
+ * one answer.
+ *
+ * Dark mode gets its own values rather than a `dark:` class: a shadow on a dark
+ * surface has to be darker and wider to read at all, and the alpha that works on
+ * white is invisible on #1d1b17.
+ */
+@utility shadow-resting {
+  box-shadow:
+    0 1px 2px 0 rgb(29 27 23 / 0.06),
+    0 1px 3px 0 rgb(29 27 23 / 0.08);
+}
+
+@utility shadow-raised {
+  box-shadow:
+    0 2px 4px -1px rgb(29 27 23 / 0.08),
+    0 4px 8px -2px rgb(29 27 23 / 0.12);
+}
+
+@utility shadow-overlay {
+  box-shadow:
+    0 8px 16px -4px rgb(29 27 23 / 0.16),
+    0 20px 40px -12px rgb(29 27 23 / 0.24);
+}
+
+/*
+ * On a dark surface the same alpha disappears, so each tier gets a darker,
+ * wider value. Applied to the utilities directly (not through a token) because
+ * the values are geometry, not colour.
+ */
+@layer base {
+  html.dark {
+    .shadow-resting {
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+    }
+    .shadow-raised {
+      box-shadow:
+        0 2px 6px -1px rgb(0 0 0 / 0.55),
+        0 6px 12px -4px rgb(0 0 0 / 0.5);
+    }
+    .shadow-overlay {
+      box-shadow:
+        0 10px 24px -6px rgb(0 0 0 / 0.65),
+        0 24px 48px -16px rgb(0 0 0 / 0.75);
+    }
+  }
+}
