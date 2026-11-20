@@ -13,7 +13,6 @@ import {
   IdCard,
   MessageSquare,
   Plus,
-  RotateCcw,
   Search,
   Settings,
   ShieldCheck,
@@ -32,7 +31,6 @@ import {
   deleteCustomGroup,
   deleteDepartment,
   dismissReport,
-  flushApproveOrRejectKeepalive,
   getPendingUserIdCardSignedUrl,
   resolveReportDeleteMessage,
   resolveReportSuspendUser,
@@ -85,17 +83,6 @@ function reviewFailure(err: unknown): string {
   if (/fetch|network|offline/i.test(message)) return 'Could not reach the server. Check your connection and try again.';
   if (/rejection reason/i.test(message)) return 'Enter a reason for the rejection.';
   return message || 'The decision could not be confirmed. Refresh the request and try again.';
-}
-
-const DECISION_UNDO_DELAY_MS = 6000;
-
-interface QueuedSignupDecision {
-  user: AppUser;
-  decision: 'approved' | 'rejected';
-  assignedRole?: UserRole;
-  reason?: string;
-  expiresAt: number;
-  timerId: number;
 }
 
 export const AdminView: React.FC<AdminViewProps> = ({
@@ -170,15 +157,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [userBanner, setUserBanner] = useState<string | null>(null);
   const [userError, setUserError] = useState<string | null>(null);
 
-  // Delayed approve/reject undo queue state
-  const [queuedDecisions, setQueuedDecisions] = useState<QueuedSignupDecision[]>([]);
-  const [committingDecisionIds, setCommittingDecisionIds] = useState<Set<string>>(
-    () => new Set()
-  );
   const [committedDecisionIds, setCommittedDecisionIds] = useState<Set<string>>(
     () => new Set()
   );
-  const [toastNowMs, setToastNowMs] = useState<number>(() => Date.now());
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [decisionMessage, setDecisionMessage] = useState<{uid:string; text:string; error?:boolean} | null>(null);
+  const decisionLock = useRef(false);
 
   const [canDecide,setCanDecide]=useState(false);
   const [caseId,setCaseId]=useState(''),[caseStatus,setCaseStatus]=useState('pending'),[caseReason,setCaseReason]=useState('');
@@ -199,66 +183,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
   };
   const cohortPicker = (user: AppUser, standalone = false) => (
     <label className="flex flex-wrap items-center gap-2 text-xs">Confirm level for approval
-      <select value={selectedLevel(user)} onChange={e => setDraftLevels({...draftLevels,[user.uid]:e.target.value})}>
+      <select disabled={!!busyId || confirmId === user.uid} value={selectedLevel(user)} onChange={e => setDraftLevels({...draftLevels,[user.uid]:e.target.value})}>
         <option value="">Choose level</option>{levelChoices(user).map(v => <option key={v}>{v}</option>)}
       </select>
       {standalone && <button type="button" disabled={!selectedLevel(user)} onClick={() => void confirmLevel(user)}>Confirm level</button>}
     </label>
   );
   const bannerTimerRef = useRef<number | null>(null);
-  const queuedDecisionsRef = useRef<Map<string, QueuedSignupDecision>>(new Map());
-  const isMountedRef = useRef(true);
-
-  useEffect(() => {
-    isMountedRef.current = true;
-
-    const flushOnUnload = () => {
-      if (queuedDecisionsRef.current.size === 0) return;
-      const items = Array.from(queuedDecisionsRef.current.values());
-      queuedDecisionsRef.current.clear();
-      items.forEach((item) => {
-        window.clearTimeout(item.timerId);
-        flushApproveOrRejectKeepalive(
-          item.user,
-          item.decision,
-          item.assignedRole,
-          item.reason
-        );
-      });
-    };
-
-    window.addEventListener('beforeunload', flushOnUnload);
-
-    return () => {
-      isMountedRef.current = false;
-      window.removeEventListener('beforeunload', flushOnUnload);
-      if (bannerTimerRef.current) window.clearTimeout(bannerTimerRef.current);
-
-      if (queuedDecisionsRef.current.size > 0) {
-        const items = Array.from(queuedDecisionsRef.current.values());
-        queuedDecisionsRef.current.clear();
-        items.forEach((item) => {
-          window.clearTimeout(item.timerId);
-          void approveOrRejectUser(
-            item.user,
-            item.decision,
-            item.assignedRole,
-            item.reason
-          ).catch(() => undefined);
-        });
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    if (queuedDecisions.length === 0) return;
-    setToastNowMs(Date.now());
-    const intervalId = window.setInterval(() => {
-      setToastNowMs(Date.now());
-    }, 200);
-    return () => window.clearInterval(intervalId);
-  }, [queuedDecisions.length]);
-
   useEffect(() => {
     setCommittedDecisionIds((prev) => {
       if (prev.size === 0) return prev;
@@ -299,12 +230,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
     setInviteLink(link.href);
   }
   const scopedPending = useMemo(() => {
-    const hiddenIds = new Set<string>();
-    queuedDecisions.forEach((q) => hiddenIds.add(q.user.uid));
-    committingDecisionIds.forEach((id) => hiddenIds.add(id));
-    committedDecisionIds.forEach((id) => hiddenIds.add(id));
-
-    const visiblePending = pendingUsers.filter((u) => !hiddenIds.has(u.uid));
+    const visiblePending = pendingUsers.filter((u) => !committedDecisionIds.has(u.uid));
     if (isAdmin) return visiblePending;
     // Class reps & dept helpers can only view and approve students in their own department
     return visiblePending.filter(
@@ -317,8 +243,6 @@ export const AdminView: React.FC<AdminViewProps> = ({
     isAdmin,
     pendingUsers,
     currentUser.department,
-    queuedDecisions,
-    committingDecisionIds,
     committedDecisionIds,
   ]);
 
@@ -426,100 +350,35 @@ export const AdminView: React.FC<AdminViewProps> = ({
       ? 'lecturer'
       : 'student';
 
-  const commitQueuedDecision = async (uid: string) => {
-    const item = queuedDecisionsRef.current.get(uid);
-    if (!item) return;
-
-    window.clearTimeout(item.timerId);
-    queuedDecisionsRef.current.delete(uid);
-
-    if (isMountedRef.current) {
-      setQueuedDecisions(Array.from(queuedDecisionsRef.current.values()));
-      setCommittingDecisionIds((prev) => {
-        const next = new Set(prev);
-        next.add(uid);
-        return next;
-      });
-    }
-
-    try {
-      await approveOrRejectUser(
-        item.user,
-        item.decision,
-        item.assignedRole,
-        item.reason
-      );
-      if (isMountedRef.current) {
-        setCohortNotice(`${item.decision === 'approved' ? 'Approved' : 'Rejected'}: ${item.user.fullName}`);
-        setCommittedDecisionIds((prev) => {
-          const next = new Set(prev);
-          next.add(uid);
-          return next;
-        });
-      }
-    } catch (err) {
-      if (isMountedRef.current) {
-        setAdminError(`${item.user.fullName}: ${reviewFailure(err)}`);
-      }
-    } finally {
-      if (isMountedRef.current) {
-        setCommittingDecisionIds((prev) => {
-          if (!prev.has(uid)) return prev;
-          const next = new Set(prev);
-          next.delete(uid);
-          return next;
-        });
-      }
-    }
-  };
-
-  const handleDecision = (
-    user: AppUser,
-    decision: 'approved' | 'rejected',
-    reason?: string
-  ) => {
+  const handleDecision = async (user: AppUser, decision: 'approved' | 'rejected', reason?: string) => {
+    if (decisionLock.current) return;
+    decisionLock.current = true;
+    setBusyId(user.uid);
     setAdminError(null);
     setCohortNotice('');
-    const assignedRole =
-      isAdmin && decision === 'approved'
-        ? pendingRoleMap[user.uid] || getDefaultApprovalRole(user)
-        : undefined;
-    const cleanReason =
-      decision === 'rejected' ? reason?.trim() || undefined : undefined;
-
-    if (decision === 'rejected') {
-      setRejectTarget(null);
+    setRejectTarget(null);
+    let step = 'Confirming level';
+    try {
+      if (decision === 'approved' && user.accountType !== 'staff' && user.requestedRole !== 'lecturer') {
+        setDecisionMessage({uid:user.uid, text:'Confirming level…'});
+        const {error} = await supabase.rpc('confirm_review_level', {target:user.uid, confirmed_level:selectedLevel(user)});
+        if (error) throw error;
+      }
+      step = decision === 'approved' ? 'Saving approval' : 'Saving rejection';
+      setDecisionMessage({uid:user.uid, text:`${step}…`});
+      const role = isAdmin && decision === 'approved' ? pendingRoleMap[user.uid] || getDefaultApprovalRole(user) : undefined;
+      await approveOrRejectUser(user, decision, role, reason);
+      setCommittedDecisionIds(prev => new Set(prev).add(user.uid));
+      setCohortNotice(`${decision === 'approved' ? 'Approved' : 'Rejected'}: ${user.fullName}`);
+      setDecisionMessage(null);
       setRejectionReasonInput('');
+    } catch (err) {
+      setDecisionMessage({uid:user.uid, text:`${step} failed: ${reviewFailure(err)}`, error:true});
+    } finally {
+      setConfirmId(null);
+      decisionLock.current = false;
+      setBusyId(null);
     }
-
-    const existing = queuedDecisionsRef.current.get(user.uid);
-    if (existing) {
-      window.clearTimeout(existing.timerId);
-    }
-
-    const expiresAt = Date.now() + DECISION_UNDO_DELAY_MS;
-    const timerId = window.setTimeout(() => {
-      void commitQueuedDecision(user.uid);
-    }, DECISION_UNDO_DELAY_MS);
-
-    queuedDecisionsRef.current.set(user.uid, {
-      user,
-      decision,
-      assignedRole,
-      reason: cleanReason,
-      expiresAt,
-      timerId,
-    });
-    setToastNowMs(Date.now());
-    setQueuedDecisions(Array.from(queuedDecisionsRef.current.values()));
-  };
-
-  const handleUndoQueuedDecision = (uid: string) => {
-    const item = queuedDecisionsRef.current.get(uid);
-    if (!item) return;
-    window.clearTimeout(item.timerId);
-    queuedDecisionsRef.current.delete(uid);
-    setQueuedDecisions(Array.from(queuedDecisionsRef.current.values()));
   };
 
   const handleOpenIdCardPreview = async (user: AppUser) => {
@@ -1160,10 +1019,18 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       <span>View verification proof</span>
                     </button>)}
 
+                    {decisionMessage?.uid === user.uid && <p role={decisionMessage.error ? 'alert' : 'status'} className="text-sm font-semibold">{decisionMessage.text}</p>}
+                    {confirmId === user.uid ? <div className="rounded-xl border border-emerald-300 p-3 space-y-2">
+                      <p className="font-semibold">Approve {user.fullName} as {isLecturerReq ? 'staff' : selectedLevel(user)}?</p>
+                      <div className="flex gap-2">
+                        <button type="button" disabled={!!busyId} onClick={() => void handleDecision(user, 'approved')} className="rounded-xl bg-emerald-700 text-white px-4 min-h-[44px]">Confirm</button>
+                        <button type="button" disabled={!!busyId} onClick={() => setConfirmId(null)} className="px-4 min-h-[44px]">Cancel</button>
+                      </div>
+                    </div> : (
                     <div className="flex gap-2">
                       <button
                         type="button"
-                        disabled={busyId === user.uid}
+                        disabled={!!busyId}
                         onClick={() => {
                           setRejectTarget(user);
                           setRejectionReasonInput('');
@@ -1175,27 +1042,22 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </button>
                       <button
                         type="button"
-                        disabled={busyId === user.uid}
-                        onClick={async () => {
+                        disabled={!!busyId}
+                        onClick={() => {
                           setCohortNotice('');
-                          setAdminError(null);
                           if (!isLecturerReq && !selectedLevel(user)) {
-                            setAdminError("Choose the student's level first");
+                            setDecisionMessage({uid:user.uid, text:"Choose the student's level first", error:true});
                             return;
                           }
-                          if (!window.confirm(isLecturerReq ? `Approve ${user.fullName} after reviewing their evidence?` : `Confirm level ${selectedLevel(user)} and approve ${user.fullName}?`)) return;
-                          setBusyId(user.uid);
-                          try {
-                            if (isLecturerReq || await confirmLevel(user)) handleDecision(user, 'approved');
-                          } catch (err) { setAdminError(reviewFailure(err)); }
-                          finally { setBusyId(null); }
+                          setDecisionMessage(null);
+                          setConfirmId(user.uid);
                         }}
                         className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Check className="w-4 h-4" />
                         <span>Approve</span>
                       </button>
-                    </div>
+                    </div> )}
                   </div>
                 );
               })}
@@ -2311,67 +2173,6 @@ export const AdminView: React.FC<AdminViewProps> = ({
         </div>
       )}
 
-      {/* Delayed-Commit Undo Toasts */}
-      {queuedDecisions.length > 0 && (
-        <div
-          aria-live="polite"
-          className="fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-md flex flex-col gap-2"
-        >
-          {queuedDecisions.map((item) => {
-            const remainingMs = Math.max(0, item.expiresAt - toastNowMs);
-            const secondsLeft = Math.max(1, Math.ceil(remainingMs / 1000));
-            const progressPct = Math.min(
-              100,
-              Math.max(0, (remainingMs / DECISION_UNDO_DELAY_MS) * 100)
-            );
-            const isApproved = item.decision === 'approved';
-            return (
-              <div
-                key={item.user.uid}
-                role="status"
-                className="relative overflow-hidden bg-slate-900 dark:bg-slate-800 text-white border border-slate-700/80 rounded-2xl px-4 py-3 shadow-xl flex items-center justify-between gap-3"
-              >
-                <div className="min-w-0">
-                  <p className="text-xs font-medium truncate">
-                    {isApproved ? 'Approval queued for' : 'Rejection queued for'}{' '}
-                    <span className="font-semibold">{item.user.fullName}</span>.
-                  </p>
-                  <p className="text-[11px] text-slate-400 tabular-nums mt-0.5">
-                    Sending in {secondsLeft}s
-                  </p>
-                </div>
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleUndoQueuedDecision(item.user.uid)}
-                    className="min-h-[34px] px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Undo</span>
-                  </button>
-                  <button
-                    type="button"
-                    aria-label={`Dismiss and send ${item.decision} decision now`}
-                    onClick={() => {
-                      void commitQueuedDecision(item.user.uid);
-                    }}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white cursor-pointer"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-                <div
-                  aria-hidden="true"
-                  style={{ width: `${progressPct}%` }}
-                  className={`absolute bottom-0 left-0 h-0.5 transition-[width] duration-200 linear ${
-                    isApproved ? 'bg-emerald-500' : 'bg-rose-500'
-                  }`}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
     </div>
   );
 };
