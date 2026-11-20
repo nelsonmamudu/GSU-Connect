@@ -63,7 +63,7 @@ test('mobile proof card states and transitions', async t => {
     }
     if(status==='rejected' && attached===false) await card.getByText('Upload a replacement to resubmit').waitFor();
     if(status==='pending') {
-      await page.getByText('Most requests are reviewed within 24–48 hours.').waitFor();
+      await page.getByText('Review timing depends on admin availability').waitFor();
       await page.getByRole('heading',{name:'Review decision'}).waitFor();
     }
     if(process.env.PROOF_SCREENSHOTS && state!=='pending-empty') {

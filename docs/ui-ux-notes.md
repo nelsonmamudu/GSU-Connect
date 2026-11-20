@@ -746,3 +746,65 @@ table and add nothing new. §7 is the distilled pre-flight.
 9. Motion: 200-300ms entrances, exits ~40% faster, feedback under 100ms; nothing linear
    except spinners.
 10. Then run the browser suites — the proof-card assertions have never been executed.
+
+---
+
+## 8. Applied in code (2026-11-20, branch `arena/c3fb226e-gsu-connect`)
+
+Recorded so the next pass — the palette — knows what is already done and what was
+deliberately left.
+
+**Commits:** `74c71d5` (system + validation + gate copy), `f8d6c8b` (contrast),
+`a7e6118` (admin queue + double-submit).
+
+### 8.1 The shared layer (`src/components/ui/`)
+
+- `styles.ts` is now the single home of the class tokens: one radius scale
+  (4 / 8 / 12 / 16), one three-step `elevation` scale, one `focusRing`, and the
+  input/label/hint/error text classes. Nothing in the primitives hardcodes a
+  radius or a shadow any more.
+- Inputs and selects are **16px**. Anything smaller makes iOS Safari zoom the
+  page on focus — this was a live bug on every field in the app.
+- `Button` no longer sets `disabled` while busy. It keeps focus, sets
+  `aria-busy`/`aria-disabled`, and ignores presses. Both labels occupy the same
+  grid cell so a longer busy label cannot change the button's width.
+- New `Chip` / `ChipRow`: three distinct states, `aria-pressed`, tabular counts,
+  one scrolling row with an edge fade.
+- `Alert` pairs every tone with an icon; `Badge`, `Card`, `EmptyState`,
+  `Select`, `Stepper` and `Tabs` pick up the tokens, 44px targets and tabular
+  counts. `EmptyState` keeps a single slot for the next action.
+
+### 8.2 Behaviour
+
+- **Blur, then live** (§4.1). `AuthScreen` and `SetPasswordScreen` judge a field
+  on blur, then re-judge it live while it is touched or errored. Typing no longer
+  clears a message on every keystroke, and an untouched field stays quiet.
+- **Double-submit** is guarded by an `inFlight` ref on both auth submits, so a
+  second Enter or a double tap cannot file the request twice.
+- **Honest gate copy** (§4.4). The "24–48 hours" promise is gone; the page now
+  says review timing depends on admin availability and tells the user what to do.
+- **Admin queue**: truncated identity shows on hover, a missing recovery email
+  renders as a dash instead of disappearing, the acting row keeps focus while its
+  decision is in flight, and "load more" keeps its width.
+- **Admin empty states** all use `EmptyState` and each offers a next action
+  (clear search, create a group, review approved accounts).
+
+### 8.3 Contrast sweep
+
+`text-slate-400` in light mode (~3.0:1 on white) and `dark:text-slate-500`
+(~3.2:1 on slate-900) both failed the 4.5:1 body bar. 127 and 81 sites moved one
+step. Placeholders were left alone. Decorative `text-slate-300` icons and
+separators were left alone — they carry no information.
+
+### 8.4 Deliberately not done
+
+- **The token layer and the palette.** §3 asks for tokens by role with dark mode
+  as a token swap. That is one job with the palette choice, not two — doing it
+  now would be reworked the moment the colours change. `styles.ts` is the seam.
+- **Mobile bottom navigation.** Five tabs is the stated ceiling, so it passes,
+  but §5.5 prefers 3–4. Restructuring it is a product decision, not a styling
+  one — needs the user's call.
+- **390px / no-sideways-scroll verification.** Needs a browser; this sandbox has
+  no Chromium and `playwright-core` cannot download one. Static checks only.
+- **`tests/proof-card-browser.test.mjs`.** Updated for the new gate copy but
+  still never executed — it needs the user's Chromium.
