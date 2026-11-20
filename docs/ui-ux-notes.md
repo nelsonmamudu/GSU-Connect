@@ -405,8 +405,18 @@ These are the gaps worth closing first. Nothing here has been changed.
 
 1. **Validation timing.** We validate per step on Continue. The rule is **blur → then live**.
    Different model, and the rule is right for the email / matric / staff-ID fields.
-2. **Busy vs disabled.** Need to check whether submit buttons go `disabled` during a
-   request. Should be busy: spinner, focus held, `aria-busy`.
+2. **Busy vs disabled — partly there.** Verified 2026-11-20: `ui/Button.tsx` does
+   `aria-busy={loading}`, swaps in a `Spinner`, and replaces the label with `loadingLabel`
+   ("Creating account…", "Signing in…", "Confirming…", "Saving…"). That is most of the
+   `double-submit-guard` requirement. Two gaps:
+   - It also sets `disabled={disabled || loading}`, which drops the button from the tab
+     order and **loses focus** mid-request. The rule is busy, not disabled: hold focus,
+     spin, announce.
+   - The busy label is longer than the idle label, and only the four auth-screen buttons are
+     `full` width. Every non-full button (`StatusGateScreen` lines 627/760/817,
+     `RecoveryEmailPrompt` 212/232, `RecoveryEmailConfirm` 105) will **change width** when
+     the label swaps — the exact reflow `double-submit-guard` warns about. Fix is a locked
+     min-width or a short busy label.
 3. **Tokens.** `src/components/ui/` primitives are hand-rolled per component rather than
    driven by a primitive → semantic → component token layer. Also need to confirm our dark
    mode is a **token swap** rather than an inversion (`src/index.css`).
@@ -657,6 +667,57 @@ system decision rather than per-component decoration.
 
 **Verified against our code — see §4.6.** The app has no elevation scale at all.
 
+### 5.8 Videos 8-18 (secondary — consolidated pass; most excerpts truncated)
+
+Source: `youtube-guides-01-18-combined.txt`, which merges the individual guides for videos
+1-7 (already covered in §5.1-§5.7) with a first pass over 8-18. Video 14 returned no usable
+narration (music only); video 18 returned non-contiguous fragments from a long beginner
+course. Nothing below is a complete account of any of them.
+
+**Increments worth keeping**
+
+- **First-view quality beats quantity above the fold** (#9). The critique: 56px food photos
+  too small to create appetite; cramming six restaurants above the fold is not the goal;
+  filters and sort buried in two dropdowns holding 17 options; card text in near-identical
+  small grey so nothing has hierarchy. The first screen should make the user *want to
+  continue*, because they will scroll. Bears directly on the admin queue and on any list.
+- **Accurate action labels** (#15). The beginner example's button claimed the user would
+  earn tokens when the action actually claimed voting rewards — the label must match the
+  result. Same reel: a clear, simple graph beats a fancy one that is hard to read. Clarity
+  over effect.
+- **Role-based colour, built with HSL** (#12). Neutrals for structure (backgrounds, text,
+  borders), one brand colour for actions and character, semantic colours for states. Build
+  shades by varying lightness; saturation zero gives neutrals regardless of hue; check every
+  pair for contrast. Same conclusion as `design-tokens` / `color-accessibility`, but with a
+  method attached.
+- **Personalization by stage** (#16). The fitness example gives distinct screens to new,
+  repeat and highly engaged users. Keep it controllable, do not overwhelm newcomers, and do
+  not infer sensitive traits. We already segment by role (student / staff / admin) and by
+  lifecycle (applicant / pending / approved / rejected / suspended) — worth checking that
+  those screens actually differ usefully rather than only by what they hide.
+- **Niche depth** (#8). Design for a specific group's real needs instead of copying the
+  category template; the outlier example replaced text rows and checkboxes with coloured
+  time blocks and pictures for neurodivergent users. The caution is symmetrical: do not
+  apply a niche pattern to everyone without evidence.
+- **Premium is evidence, not polish** (#11). Looking polished and feeling premium are
+  different; users judge from evidence that the product is good. The three places that
+  evidence lives were not in the excerpt.
+- **Gestures need indicators and a non-gesture route** (#17). Within-page, between-page and
+  free swipe, with visible indicators that respond fluidly, natural easing and bounce, never
+  linear. A gesture must never be the only way to do something — same rule as `hover-trap`.
+- **Constraints are scaffolding, not a ban** (#18). Limit typefaces and colours while
+  learning so attention stays on usability, readability and device fit. The numbers in that
+  course (16-unit internal gap / 24-unit group gap, 8-unit radius, 12pt secondary text,
+  24×24 icon placeholders) are examples, not universal requirements — but they sit close to
+  `proximity-rule` (§3).
+
+**Verified against our code.** Safe area is already handled: `index.html` sets
+`viewport-fit=cover`, and `src/index.css:31` applies `padding-bottom:
+env(safe-area-inset-bottom)`. So #18's safe-area point is satisfied.
+
+**On the consolidated checklists.** The file's 10-point checklists largely restate §1's kit
+table and add nothing new. §7 is the distilled pre-flight.
+
 ---
 
 ## 6. How to use this later
@@ -669,3 +730,19 @@ system decision rather than per-component decoration.
    the most common miss.
 5. Verify at 390px, and re-run the browser suites (see the PR #26 notes: the proof-card
    assertions were rewritten and have never been executed).
+
+---
+
+## 7. Pre-flight checklist (consolidated, for when we apply)
+
+1. Name the module and its **six-or-fewer** patterns; list what was deliberately left out.
+2. Map the journey and its edge cases: none, skip, custom, error, completion.
+3. Every screen: loading, empty (**which of the four kinds?**), error (**with an exit**).
+4. Every field state designed: default, focus, error, success, disabled, loading.
+5. First view: one clear primary purpose, key controls discoverable, nothing crammed in.
+6. Targets ≥ 44px; safe area respected; no sideways scroll at 390.
+7. Colour: 4.5:1 body / 3:1 large; never colour alone.
+8. Copy: labels name the outcome, errors hand over the next step, no promises we cannot keep.
+9. Motion: 200-300ms entrances, exits ~40% faster, feedback under 100ms; nothing linear
+   except spinners.
+10. Then run the browser suites — the proof-card assertions have never been executed.
