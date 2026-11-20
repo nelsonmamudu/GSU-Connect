@@ -35,3 +35,28 @@ test('oversized phone image is compressed before the server size check; reject a
   assert.equal(await prepareReviewProof(photo, async () => compressed),compressed);
   await assert.rejects(prepareReviewProof(photo, async () => photo), /under 1 MB/);
 });
+
+import {validateGraduate, graduateError, passwordError, chooseLevelMessage, clearLevelWarning, levelDifference} from '../src/utils/entryRules';
+import {levelsForDuration} from '../src/types';
+
+test('only Class of 2026 is graduate; 500 is available only for sufficiently long programmes', () => {
+  validateGraduate('student','Class of 2026',true,2026);
+  validateGraduate('student','500',false);
+  for (const args of [['Class of 2025',true,2025],['Class of 2026',false,undefined],['500',true,2026]] as const) {
+    assert.throws(()=>validateGraduate('student',args[0],args[1],args[2]),{message:graduateError});
+  }
+  assert.equal(levelsForDuration(4).includes('500'),false);
+  assert.equal(levelsForDuration(5).includes('500'),true);
+});
+test('signup and reset password policy rejects seven and accepts eight characters', () => {
+  assert.equal(passwordError('1234567'),'Password must be at least 8 characters.');
+  assert.equal(passwordError('12345678'),'');
+});
+test('choosing a level clears only that card’s level warning and flags a changed level', () => {
+  const warning={uid:'student',text:chooseLevelMessage};
+  assert.equal(clearLevelWarning(warning,'student','300'),null);
+  assert.equal(clearLevelWarning(warning,'other','300'),warning);
+  assert.equal(clearLevelWarning(warning,'student',''),warning);
+  assert.equal(levelDifference('200','300'),'Differs from requested level 200');
+  assert.equal(levelDifference('200','200'),'');
+});

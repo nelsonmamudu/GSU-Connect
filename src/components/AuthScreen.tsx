@@ -1,10 +1,10 @@
+import {graduateError, minPasswordLength, passwordError} from '../utils/entryRules';
 import {StaffPathPicker,type StaffPath} from './StaffVerification';
 import {studentProof,staffProof,graduateClass,proofTypes} from '../utils/proof';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowLeft,
   CheckCircle2,
-  ChevronDown,
   Eye,
   EyeOff,
   GraduationCap,
@@ -35,6 +35,7 @@ type LevelSelection = AcademicLevel | 'graduate' | '';
 function formatAuthError(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err);
   const lower = raw.toLowerCase();
+  if (/invalid graduation year|graduation year is required|graduate status/.test(lower)) return graduateError;
   if (lower.includes('already registered') || lower.includes('already exists') || lower.includes('duplicate')) {
     return 'An account with this Matric Number / Staff ID already exists. Try signing in instead.';
   }
@@ -496,7 +497,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                 <div>
                   <label htmlFor="idNumber" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                     {mode === 'login'
-                      ? 'Matric Number, Staff ID, Phone, or Email'
+                      ? 'Matric number, staff ID, registered phone or sign-in email'
                       : accountType === 'staff'
                         ? 'Staff ID'
                         : 'Matric Number'}
@@ -524,8 +525,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
 
                 {mode === 'signup' && (
                   <>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div className={accountType === 'staff' ? 'sm:col-span-2' : ''}>
+                    <div className="grid grid-cols-1 gap-3">
+                      <div>
                         <label htmlFor="department-picker" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
                           {accountType === 'staff' ? 'Department or Office' : 'Department'}
                         </label>
@@ -549,28 +550,17 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
 
                       {accountType === 'student' && (
                         <div>
-                          <label htmlFor="level" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                            Level
-                          </label>
-                          <div className="relative">
-                            <select
-                              id="level"
-                              value={level}
-                              onChange={(e) => setLevel(e.target.value as LevelSelection)}
-                              className="appearance-none w-full min-h-[44px] px-3.5 pr-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 text-slate-900 dark:text-slate-100 text-sm font-medium tabular-nums focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-colors cursor-pointer"
-                            >
-                              <option value="">Select level</option>
-                              {availableLevels.map((lvl) => (
-                                <option key={lvl} value={lvl}>
-                                  {lvl} Level
-                                </option>
+                          <fieldset>
+                            <legend className="text-xs font-semibold mb-2">Student level</legend>
+                            <div className="grid grid-cols-3 gap-2">
+                              {[...availableLevels, 'graduate' as const].map(value => (
+                                <label key={value} className={`flex items-center gap-2 rounded-xl border px-2 py-2 text-sm ${value==='graduate'?'col-span-full':''} ${level===value?'border-emerald-600':'border-slate-200'}`}>
+                                  <input type="radio" name="student-level" value={value} checked={level===value} onChange={()=>setLevel(value)} />
+                                  {value==='graduate' ? `Graduate — Class of ${graduationClassYear} only` : `${value} Level`}
+                                </label>
                               ))}
-                              <option value="graduate">
-                                Graduate — Class of {graduationClassYear}
-                              </option>
-                            </select>
-                            <ChevronDown className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                          </div>
+                            </div>
+                          </fieldset>
                           <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
                             Select your actual level{sessionLabel ? ` for ${sessionLabel}` : ''}, not the level on an older document.
                           </p>
@@ -636,7 +626,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       id="password"
                       type={showPassword ? 'text' : 'password'}
                       required
-                      minLength={8}
+                      minLength={minPasswordLength}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="Enter your password"
@@ -653,7 +643,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   </div>
                   {mode === 'signup' && (
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                      Minimum 8 characters.
+                      Password must be at least 8 characters.
                     </p>
                   )}
                 </div>
@@ -790,8 +780,9 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters.');
+    const weakPassword = passwordError(password);
+    if (weakPassword) {
+      setError(weakPassword);
       return;
     }
     if (password !== confirmPassword) {
@@ -838,7 +829,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
                 id="newPassword"
                 type={showPassword ? 'text' : 'password'}
                 required
-                minLength={8}
+                minLength={minPasswordLength}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimum 8 characters"
@@ -855,6 +846,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
             </div>
           </div>
 
+          <p className="text-xs text-slate-500">Password must be at least 8 characters.</p>
           <div>
             <label htmlFor="confirmPassword" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
               Confirm New Password
@@ -865,7 +857,7 @@ export const SetPasswordScreen: React.FC<{ onComplete: () => void }> = ({ onComp
                 id="confirmPassword"
                 type={showPassword ? 'text' : 'password'}
                 required
-                minLength={8}
+                minLength={minPasswordLength}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Repeat your new password"

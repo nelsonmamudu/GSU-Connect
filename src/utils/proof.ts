@@ -1,5 +1,5 @@
 export const studentProof =
-  'Course registration form, acknowledgement slip, or GSU portal dashboard screenshot';
+  'Student proof: course registration form, acknowledgement slip, or GSU portal dashboard screenshot';
 export const staffProof = 'Proof of Staff Status';
 export const proofTypes = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
 export const graduateClass = 2026;

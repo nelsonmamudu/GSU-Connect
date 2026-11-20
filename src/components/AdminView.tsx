@@ -1,3 +1,4 @@
+import {chooseLevelMessage, clearLevelWarning, levelDifference} from '../utils/entryRules';
 import { supabase } from '../lib/supabase';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -183,7 +184,11 @@ export const AdminView: React.FC<AdminViewProps> = ({
   };
   const cohortPicker = (user: AppUser, standalone = false) => (
     <label className="flex flex-wrap items-center gap-2 text-xs">Confirm level for approval
-      <select disabled={!!busyId || confirmId === user.uid} value={selectedLevel(user)} onChange={e => setDraftLevels({...draftLevels,[user.uid]:e.target.value})}>
+      <select disabled={!!busyId || confirmId === user.uid} value={selectedLevel(user)} onChange={e => {
+        const value = e.target.value;
+        setDraftLevels({...draftLevels,[user.uid]:value});
+        setDecisionMessage(prev => clearLevelWarning(prev,user.uid,value));
+      }}>
         <option value="">Choose level</option>{levelChoices(user).map(v => <option key={v}>{v}</option>)}
       </select>
       {standalone && <button type="button" disabled={!selectedLevel(user)} onClick={() => void confirmLevel(user)}>Confirm level</button>}
@@ -979,7 +984,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </div>
                     </div>
 
-                    {!isLecturerReq && cohortPicker(user)}
+                    {!isLecturerReq && <><p className="text-sm font-medium">Student requested {user.level}</p>{cohortPicker(user)}</>}
                     {isAdmin && (
                       <div className="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/70 rounded-2xl px-3.5 py-2 border border-slate-100 dark:border-slate-700/80">
                         <label
@@ -1021,6 +1026,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
                     {decisionMessage?.uid === user.uid && <p role={decisionMessage.error ? 'alert' : 'status'} className="text-sm font-semibold">{decisionMessage.text}</p>}
                     {confirmId === user.uid ? <div className="rounded-xl border border-emerald-300 p-3 space-y-2">
+                      {!isLecturerReq && levelDifference(user.level,selectedLevel(user)) && <p className="text-sm font-medium text-amber-700">{levelDifference(user.level,selectedLevel(user))}</p>}
                       <p className="font-semibold">Approve {user.fullName} as {isLecturerReq ? 'staff' : selectedLevel(user)}?</p>
                       <div className="flex gap-2">
                         <button type="button" disabled={!!busyId} onClick={() => void handleDecision(user, 'approved')} className="rounded-xl bg-emerald-700 text-white px-4 min-h-[44px]">Confirm</button>
@@ -1046,7 +1052,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         onClick={() => {
                           setCohortNotice('');
                           if (!isLecturerReq && !selectedLevel(user)) {
-                            setDecisionMessage({uid:user.uid, text:"Choose the student's level first", error:true});
+                            setDecisionMessage({uid:user.uid, text:chooseLevelMessage, error:true});
                             return;
                           }
                           setDecisionMessage(null);
@@ -1885,7 +1891,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
               ({rejectTarget.idNumber})? Give a reason they will see on their Awaiting Approval page:
             </p>
 
-            <label className="text-xs">Quick reason <select defaultValue="" onChange={e=>setRejectionReasonInput(e.target.value)}><option value="">Write a reason or choose one</option>{['Document unreadable','Name or ID does not match','Wrong level selected'].map(v=><option key={v}>{v}</option>)}</select></label>
+            <label className="text-xs">Quick reason <select defaultValue="" onChange={e=>setRejectionReasonInput(e.target.value)}><option value="">Write a reason or choose one</option>{['Document unreadable',rejectTarget.accountType === 'staff' ? 'Name or staff ID does not match' : 'Name or matric number does not match','Wrong level selected'].map(v=><option key={v}>{v}</option>)}</select></label>
             <textarea
               rows={3}
               maxLength={300}
