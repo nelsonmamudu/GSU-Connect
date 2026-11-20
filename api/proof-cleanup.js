@@ -80,7 +80,13 @@ export default async function handler(req, res) {
     const code = [error?.code, error?.status].find(value =>
       Number.isSafeInteger(value) || (typeof value === 'string' && /^[A-Za-z0-9_-]{1,32}$/.test(value))
     ) ?? null;
-    console.error(JSON.stringify({ stage, code }));
-    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', stage, code });
+    const message = typeof error?.message === 'string' ? error.message : '';
+    let kind = 'other';
+    if (/invalid api key|jwt|apikey/i.test(message)) kind = 'invalid_key';
+    else if (/fetch failed|ENOTFOUND|ECONNREFUSED|ETIMEDOUT|network/i.test(message)) kind = 'network';
+    else if (error?.code === '42501' || /permission denied/i.test(message)) kind = 'permission';
+    else if (error?.code === '42883' || error?.code === 'PGRST202') kind = 'missing_function';
+    console.error(JSON.stringify({ stage, code, kind }));
+    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', stage, code, kind });
   }
 }
