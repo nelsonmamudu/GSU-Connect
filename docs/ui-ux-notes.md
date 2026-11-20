@@ -413,6 +413,13 @@ These are the gaps worth closing first. Nothing here has been changed.
 4. **The "24–48 hours" ETA copy** on the status gate. Under `microcopy` / `error-states`,
    copy should tell the user what to *do*, not make a promise we cannot keep.
 5. **Breadth discipline.** About six patterns per screen, not all of the above.
+6. **Shadows and gradients have no scale.** Verified 2026-11-20: `shadow-2xs` ×32,
+   `shadow-2xl` ×22, `shadow-xl` ×20, `shadow-lg` ×13, plus ad-hoc coloured shadows
+   (`shadow-emerald`, `shadow-violet`, `shadow-sky`, `shadow-indigo`, `shadow-amber`) and
+   nine gradients, against a `ui/` layer that uses a single `shadow-2xs`. There is no semantic
+   elevation token, so "how elevated is this?" is answered by whichever utility the author
+   happened to reach for. `shadow-elevation` and §5.7 point the same way: soft, layered,
+   defined once — never a hard default, and never per component.
 
 ---
 
@@ -612,6 +619,43 @@ endowed progress says a real head start lifts completion. They are compatible, a
 **earned versus fabricated**: a head start the user was genuinely given is honest; a bar that
 starts at 80% for no reason is not. Do not use the psychological finding as an excuse for the
 fabrication.
+
+### 5.7 User-flow escape hatches and effect discipline (secondary — 5 of 7 unavailable)
+
+Source: "7 UI/UX Mistakes That SCREAM You're a Beginner" (Kole Jain, `youtu.be/AH_ugxmLeUM`).
+A recipe-app redesign. The transcript covers mistake 1 fully and cuts off during mistake 2;
+mistakes 3-7 are not available.
+
+**Mistake 1 — user flow. The escape-hatch rule.**
+The example is an allergy screen with six presets and two missing paths: **no search for an
+allergy that is not listed, and no skip for a user with none.** Generalised:
+- Sketch the whole journey before polishing screens.
+- Every choice screen needs an **unlisted / custom** path.
+- Every choice screen needs a **none / skip** path *where the question may not apply*.
+- Check the small stuff: filter affordance, a save action, navigation links, hidden states,
+  and hover / micro-interaction feedback.
+- Review each screen **in its states**, not only the static default view.
+
+**Verified against our code.** `DepartmentPicker.tsx` already does this well — it has search
+plus "Other (Type your department)" as the unlisted path, and it syncs to a non-catalog value
+on load. The escape-hatch rule is satisfied there; the same audit is worth running on the
+level picker and any future choice screen. A skip/none path is *not* applicable to department
+or to proof — both genuinely always apply.
+
+**Mistake 2 — overusing effects.**
+- Too many shadows, glows and gradients read as cluttered and amateur.
+- If a gradient stays, keep it **within one hue family** (lighter and darker variants of one
+  colour). No gradient is usually the cleaner choice.
+- Harsh default drop shadows: **lighten the shadow colour and increase the blur**, or remove
+  it. Not merely lower the opacity.
+
+**Tension with `shadow-elevation` (§3), and how to hold it.** That pattern says build depth
+from three stacked shadows and tint the glow to the brand accent; this says light grey, more
+blur, or nothing. They are not really opposed — both reject the hard black default. The
+synthesis: **soft, layered and deliberate, never a hard opaque default**, and any tint is a
+system decision rather than per-component decoration.
+
+**Verified against our code — see §4.6.** The app has no elevation scale at all.
 
 ---
 
