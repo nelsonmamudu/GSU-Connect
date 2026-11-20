@@ -111,7 +111,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
                     className={`px-2 py-0.5 rounded-lg font-mono text-[11px] font-bold tabular-nums ${
                       countdown.expired
                         ? 'bg-danger text-danger-on'
-                        : 'bg-slate-900 dark:bg-sunken text-white'
+                        : 'bg-ink text-on-dark dark:bg-sunken dark:text-ink'
                     }`}
                   >
                     {countdown.label}
