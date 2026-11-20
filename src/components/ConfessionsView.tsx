@@ -382,7 +382,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 onClick={() => setCategoryFilter(cat)}
                 className={`min-h-[32px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                   active
-                    ? 'bg-brand border-brand text-white'
+                    ? 'bg-brand border-brand text-on-brand'
                     : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                 }`}
               >
@@ -492,7 +492,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                       onClick={() => handleUpvote(post)}
                       className={`min-h-[36px] px-3 rounded-xl border text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer tabular-nums ${
                         hasUpvoted
-                          ? 'bg-brand border-brand text-white'
+                          ? 'bg-brand border-brand text-on-brand'
                           : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-brand'
                       }`}
                     >
@@ -662,7 +662,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                     onClick={() => setCategory(cat)}
                     className={`min-h-[34px] px-3 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                       category === cat
-                        ? 'bg-brand border-brand text-white'
+                        ? 'bg-brand border-brand text-on-brand'
                         : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-soft dark:text-ink-soft'
                     }`}
                   >

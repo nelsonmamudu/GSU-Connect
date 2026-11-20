@@ -381,7 +381,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('study')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
                 segment === 'study'
-                  ? 'bg-brand text-white shadow-2xs'
+                  ? 'bg-brand text-on-brand shadow-2xs'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -531,7 +531,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                   onClick={() => setStudyLevelFilter(lvl)}
                   className={`min-h-[34px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                     studyLevelFilter === lvl
-                      ? 'bg-brand border-brand text-white'
+                      ? 'bg-brand border-brand text-on-brand'
                       : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft'
                   }`}
                 >
@@ -693,7 +693,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                           key={course}
                           className={`px-2 py-0.5 rounded-lg text-[11px] font-bold ${
                             isShared
-                              ? 'bg-brand text-white'
+                              ? 'bg-brand text-on-brand'
                               : 'bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft'
                           }`}
                         >

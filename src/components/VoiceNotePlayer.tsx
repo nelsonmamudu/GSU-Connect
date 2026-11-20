@@ -196,7 +196,7 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
         className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 transition-colors cursor-pointer ${
           inverted
             ? 'bg-white/20 hover:bg-white/30 text-white'
-            : 'bg-brand hover:bg-brand-strong text-white'
+            : 'bg-brand hover:bg-brand-strong text-on-brand'
         }`}
       >
         {isPlaying ? (

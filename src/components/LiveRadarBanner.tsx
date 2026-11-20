@@ -68,7 +68,7 @@ export const LiveRadarBanner: React.FC<LiveRadarBannerProps> = React.memo(
           ? 'bg-amber-600 text-white'
           : status === 'exam_countdown'
             ? 'bg-indigo-600 text-white'
-            : 'bg-brand text-white';
+            : 'bg-brand text-on-brand';
 
     return (
       <div className={`shrink-0 px-3 sm:px-5 py-2.5 border-b ${paletteClass}`}>

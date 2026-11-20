@@ -438,7 +438,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               onClick={toggleMyDeptLevel}
               className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1.5 border transition-colors cursor-pointer ${
                 isMyDeptLevelActive
-                  ? 'bg-brand border-brand text-white'
+                  ? 'bg-brand border-brand text-on-brand'
                   : 'bg-brand-subtle/80 dark:bg-brand-subtle/40 border-success-line dark:border-success-line text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/50'
               }`}
             >

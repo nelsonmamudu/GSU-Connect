@@ -475,7 +475,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 onClick={() => setTypeFilter(t)}
                 className={`min-h-[32px] px-3 rounded-xl text-[11px] font-semibold border transition-colors cursor-pointer ${
                   typeFilter === t
-                    ? 'bg-brand border-brand text-white'
+                    ? 'bg-brand border-brand text-on-brand'
                     : 'bg-white dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                 }`}
               >

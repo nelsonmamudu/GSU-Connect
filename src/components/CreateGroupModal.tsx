@@ -318,7 +318,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                         <div
                           className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${
                             checked
-                              ? 'bg-brand border-brand text-white'
+                              ? 'bg-brand border-brand text-on-brand'
                               : 'border-line dark:border-line bg-white dark:bg-sunken'
                           }`}
                         >

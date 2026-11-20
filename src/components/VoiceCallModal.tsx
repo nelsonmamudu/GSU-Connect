@@ -709,7 +709,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               avatarId={peerAvatarProps.avatarId}
               size="2xl"
               roundedClass="rounded-full"
-              fallbackClassName="bg-brand text-white"
+              fallbackClassName="bg-brand text-on-brand"
             />
           </div>
 

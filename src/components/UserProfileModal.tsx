@@ -232,7 +232,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 avatarId={targetUser.avatarId}
                 size="2xl"
                 roundedClass="rounded-3xl"
-                fallbackClassName="bg-brand text-white"
+                fallbackClassName="bg-brand text-on-brand"
               />
               <span
                 title={online ? 'Online' : 'Offline'}
@@ -303,7 +303,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 onClick={handleToggleBlock}
                 className={`min-h-[60px] px-2 py-2.5 rounded-2xl border flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-60 ${
                   iBlocked
-                    ? 'bg-brand hover:bg-brand-strong border-brand text-white'
+                    ? 'bg-brand hover:bg-brand-strong border-brand text-on-brand'
                     : 'bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/70 border-red-200/70 dark:border-red-900/70 text-red-700 dark:text-red-300'
                 }`}
               >
@@ -420,7 +420,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 onClick={handleToggleSuspend}
                 className={`w-full min-h-[42px] px-3.5 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-60 ${
                   statusValue === 'suspended'
-                    ? 'bg-brand hover:bg-brand-strong text-white'
+                    ? 'bg-brand hover:bg-brand-strong text-on-brand'
                     : 'bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-950/80 border border-red-200 dark:border-red-900/70 text-red-700 dark:text-red-300'
                 }`}
               >

@@ -3423,7 +3423,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           }}
                           className={`rounded-2xl px-3.5 py-2.5 shadow-2xs select-text ${
                             isMine
-                              ? 'bg-brand text-white rounded-br-md'
+                              ? 'bg-brand text-on-brand rounded-br-md'
                               : 'bg-white dark:bg-sunken border border-line/80 dark:border-line text-ink dark:text-ink rounded-bl-md'
                           }`}
                         >
@@ -3452,7 +3452,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             />
                             <span
                               className={`text-[11px] font-mono tabular-nums ${
-                                isMine ? 'text-emerald-200' : 'text-ink-muted dark:text-ink-muted'
+                                isMine ? 'text-on-brand' : 'text-ink-muted dark:text-ink-muted'
                               }`}
                             >
                               {formatShortTime(msg.createdAt)}
@@ -3461,7 +3461,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               <span
                                 className={`text-[10px] italic ${
                                   isMine
-                                    ? 'text-emerald-100/80'
+                                    ? 'text-on-brand/85'
                                     : 'text-ink-muted dark:text-ink-muted'
                                 }`}
                               >
@@ -3473,7 +3473,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 aria-label="Pinned in group"
                                 className={`w-3 h-3 ${
                                   isMine
-                                    ? 'text-emerald-100 fill-current'
+                                    ? 'text-on-brand fill-current'
                                     : 'text-brand dark:text-brand fill-current'
                                 }`}
                               />
@@ -3505,7 +3505,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               onClick={() => scrollToMessage(msg.replyToMessageId!)}
                               className={`w-full text-left rounded-xl px-2.5 py-1.5 mb-2 border transition-colors cursor-pointer ${
                                 isMine
-                                  ? 'bg-black/15 hover:bg-black/25 border-white/20 text-white'
+                                  ? 'bg-black/15 hover:bg-black/25 border-white/20 text-on-brand'
                                   : 'bg-sunken/90 hover:bg-sunken/70 dark:bg-surface/70 dark:hover:bg-surface border-line/90 dark:border-line text-ink dark:text-ink-soft'
                               }`}
                             >
@@ -3518,7 +3518,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               <p
                                 className={`text-xs line-clamp-2 break-words mt-0.5 ${
                                   isMine
-                                    ? 'text-emerald-50/90'
+                                    ? 'text-on-brand/90'
                                     : 'text-ink-body dark:text-ink-soft'
                                 }`}
                               >
@@ -3531,7 +3531,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             <p
                               className={`text-sm italic leading-relaxed ${
                                 isMine
-                                  ? 'text-emerald-100/80'
+                                  ? 'text-on-brand/85'
                                   : 'text-ink-muted dark:text-ink-muted'
                               }`}
                             >
@@ -3542,7 +3542,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               <div
                                 className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-dashed text-xs italic ${
                                   isMine
-                                    ? 'border-white/25 text-emerald-100/80'
+                                    ? 'border-on-brand/40 text-on-brand/85'
                                     : 'border-line dark:border-line text-ink-muted dark:text-ink-muted'
                                 }`}
                               >
@@ -3646,7 +3646,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 <span
                                   className={`truncate ${
                                     isMine
-                                      ? 'text-emerald-100/85'
+                                      ? 'text-on-brand/85'
                                       : 'text-ink-muted dark:text-ink-muted'
                                   }`}
                                 >
@@ -3666,7 +3666,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   }}
                                   className={`inline-flex items-center gap-1 font-semibold px-2 py-1 rounded-lg transition-colors shrink-0 cursor-pointer ${
                                     isMine
-                                      ? 'bg-white/15 hover:bg-white/25 text-white'
+                                      ? 'bg-white/15 hover:bg-white/25 text-on-brand'
                                       : 'bg-sunken dark:bg-sunken/80 hover:bg-sunken dark:hover:bg-sunken text-ink-soft dark:text-ink-soft'
                                   }`}
                                 >
@@ -3693,7 +3693,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     <div
                                       className={`w-10 h-10 rounded-lg shrink-0 flex flex-col items-center justify-center font-mono text-[10px] font-bold tracking-tight ${
                                         isMine
-                                          ? 'bg-white/20 text-white'
+                                          ? 'bg-on-brand/20 text-on-brand'
                                           : 'bg-indigo-100 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300'
                                       }`}
                                     >
@@ -3707,7 +3707,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       <p
                                         className={`text-[11px] font-mono mt-0.5 ${
                                           isMine
-                                            ? 'text-emerald-100/80'
+                                            ? 'text-on-brand/85'
                                             : 'text-ink-muted dark:text-ink-muted'
                                         }`}
                                       >
@@ -3739,7 +3739,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           title="Preview file"
                                           className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                                             isMine
-                                              ? 'bg-white/15 hover:bg-white/25 text-white'
+                                              ? 'bg-white/15 hover:bg-white/25 text-on-brand'
                                               : 'bg-white dark:bg-sunken border border-line dark:border-line text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                                           }`}
                                         >
@@ -3764,7 +3764,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         title="Download file"
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                                           isMine
-                                            ? 'bg-white/15 hover:bg-white/25 text-white'
+                                            ? 'bg-white/15 hover:bg-white/25 text-on-brand'
                                             : 'bg-white dark:bg-sunken border border-line dark:border-line text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                                         }`}
                                       >
@@ -3792,7 +3792,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 <div
                                   className={`w-8 h-8 rounded-lg shrink-0 flex items-center justify-center ${
                                     isMine
-                                      ? 'bg-white/20 text-white'
+                                      ? 'bg-on-brand/20 text-on-brand'
                                       : 'bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300'
                                   }`}
                                 >
@@ -3802,7 +3802,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   <p
                                     className={`text-[10px] font-semibold uppercase tracking-wide ${
                                       isMine
-                                        ? 'text-emerald-100/90'
+                                        ? 'text-on-brand/90'
                                         : 'text-amber-700 dark:text-amber-400'
                                     }`}
                                   >
@@ -3816,7 +3816,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               <div
                                 className={`text-xs space-y-1 ${
                                   isMine
-                                    ? 'text-emerald-50/95'
+                                    ? 'text-on-brand/95'
                                     : 'text-ink-soft dark:text-ink-soft'
                                 }`}
                               >
@@ -3836,7 +3836,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   <p
                                     className={`text-[11px] leading-relaxed pt-0.5 ${
                                       isMine
-                                        ? 'text-emerald-100/85'
+                                        ? 'text-on-brand/85'
                                         : 'text-ink-muted dark:text-ink-muted'
                                     }`}
                                   >
@@ -3875,7 +3875,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   roundedClass="rounded-full"
                                   fallbackClassName={
                                     isMine
-                                      ? 'bg-white/20 text-white'
+                                      ? 'bg-on-brand/20 text-on-brand'
                                       : 'bg-sky-100 dark:bg-sky-950/70 text-sky-800 dark:text-sky-200'
                                   }
                                 />
@@ -3891,7 +3891,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   <p
                                     className={`text-[11px] truncate mt-0.5 ${
                                       isMine
-                                        ? 'text-emerald-100/85'
+                                        ? 'text-on-brand/85'
                                         : 'text-ink-muted dark:text-ink-muted'
                                     }`}
                                   >
@@ -3907,7 +3907,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       <p
                                         className={`text-[10px] font-mono mt-0.5 ${
                                           isMine
-                                            ? 'text-emerald-100/80'
+                                            ? 'text-on-brand/85'
                                             : 'text-ink-muted dark:text-ink-muted'
                                         }`}
                                       >
@@ -3923,7 +3923,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   onClick={() => handleMessageSharedContact(msg)}
                                   className={`w-full min-h-[36px] rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60 ${
                                     isMine
-                                      ? 'bg-white/20 hover:bg-white/30 text-white'
+                                      ? 'bg-on-brand/20 hover:bg-white/30 text-on-brand'
                                       : 'bg-brand hover:bg-brand-strong text-white'
                                   }`}
                                 >
@@ -3959,7 +3959,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     <BarChart3
                                       className={`w-4 h-4 mt-0.5 shrink-0 ${
                                         isMine
-                                          ? 'text-emerald-200'
+                                          ? 'text-on-brand'
                                           : 'text-brand dark:text-brand'
                                       }`}
                                     />
@@ -4026,7 +4026,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   <p
                                     className={`text-[11px] ${
                                       isMine
-                                        ? 'text-emerald-100/85'
+                                        ? 'text-on-brand/85'
                                         : 'text-ink-muted dark:text-ink-muted'
                                     }`}
                                   >
@@ -4054,7 +4054,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   aria-label="Reply to message"
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isMine
-                                      ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
+                                      ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
                                       : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
                                   }`}
                                 >
@@ -4076,7 +4076,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         ? 'text-amber-300 bg-white/10'
                                         : 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40'
                                       : isMine
-                                        ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
+                                        ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
                                         : 'text-ink-muted dark:text-ink-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
                                   }`}
                                 >
@@ -4098,7 +4098,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   aria-expanded={isPickerOpen}
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isMine
-                                      ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
+                                      ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
                                       : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
                                   }`}
                                 >
@@ -4121,7 +4121,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     title="More actions"
                                     className={`inline-flex items-center justify-center py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                       isMine
-                                        ? 'text-emerald-200/85 hover:text-white hover:bg-white/10'
+                                        ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
                                         : 'text-ink-muted dark:text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                                     }`}
                                   >
@@ -4578,7 +4578,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={viewOnceVoice ? 'View Once enabled' : 'Enable View Once'}
                   className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-full border-2 border-dashed inline-flex items-center justify-center text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOnceVoice
-                      ? 'bg-brand border-brand text-white'
+                      ? 'bg-brand border-brand text-on-brand'
                       : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand'
                   }`}
                 >
@@ -4625,7 +4625,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={viewOnceVoice ? 'View Once enabled' : 'Enable View Once'}
                   className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-full border-2 border-dashed inline-flex items-center justify-center text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOnceVoice
-                      ? 'bg-brand border-brand text-white'
+                      ? 'bg-brand border-brand text-on-brand'
                       : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand'
                   }`}
                 >
@@ -4997,7 +4997,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={viewOncePhoto ? 'View Once enabled' : 'Send as View Once'}
                   className={`min-h-[44px] px-3 rounded-xl border-2 border-dashed inline-flex items-center gap-1.5 text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOncePhoto
-                      ? 'bg-brand border-brand text-white'
+                      ? 'bg-brand border-brand text-on-brand'
                       : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-brand'
                   }`}
                 >
@@ -5995,7 +5995,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     onClick={() => setRadarVenueDraft(presetVenue)}
                     className={`min-h-[28px] px-2.5 rounded-lg border text-[11px] font-medium transition-colors cursor-pointer ${
                       radarVenueDraft === presetVenue
-                        ? 'bg-brand border-brand text-white'
+                        ? 'bg-brand border-brand text-on-brand'
                         : 'bg-sunken dark:bg-sunken/80 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                     }`}
                   >

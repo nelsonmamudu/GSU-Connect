@@ -78,7 +78,7 @@ function TimelineRow({
         aria-hidden="true"
         className={`mt-0.5 w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
           done
-            ? 'bg-brand text-white'
+            ? 'bg-brand text-on-brand'
             : current
               ? 'border-2 border-brand'
               : 'border-2 border-line dark:border-line'

@@ -514,7 +514,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               }`}
               fallbackClassName={
                 myStatuses.length > 0
-                  ? 'bg-brand text-white'
+                  ? 'bg-brand text-on-brand'
                   : 'bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft'
               }
             />
@@ -625,7 +625,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     size="lg"
                     roundedClass="rounded-full"
                     className="ring-2 ring-emerald-500 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
-                    fallbackClassName="bg-brand text-white"
+                    fallbackClassName="bg-brand text-on-brand"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -899,7 +899,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   size="sm"
                   roundedClass="rounded-full"
                   className="w-9 h-9"
-                  fallbackClassName="bg-brand text-white"
+                  fallbackClassName="bg-brand text-on-brand"
                 />
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5 flex-wrap">
@@ -1108,7 +1108,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                           avatarId={viewer.avatarId}
                           size="sm"
                           roundedClass="rounded-full"
-                          fallbackClassName="bg-brand text-white"
+                          fallbackClassName="bg-brand text-on-brand"
                         />
                         <div className="flex-1 min-w-0">
                           <p className="text-xs font-semibold truncate">{viewer.fullName}</p>

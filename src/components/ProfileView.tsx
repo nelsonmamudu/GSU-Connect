@@ -529,7 +529,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 avatarId={currentUser.avatarId}
                 size="xl"
                 roundedClass="rounded-3xl"
-                fallbackClassName="bg-brand text-white"
+                fallbackClassName="bg-brand text-on-brand"
               />
               <span className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-slate-900 dark:bg-brand text-on-brand border-2 border-white dark:border-line flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
                 <Camera className="w-3.5 h-3.5" />
@@ -1180,7 +1180,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 avatarId={currentUser.avatarId}
                 size="2xl"
                 roundedClass="rounded-3xl"
-                fallbackClassName="bg-brand text-white"
+                fallbackClassName="bg-brand text-on-brand"
               />
               <div className="flex flex-wrap items-center justify-center gap-2">
                 <button

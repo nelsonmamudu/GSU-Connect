@@ -618,7 +618,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                   }
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     gpaState.targetCgpa === opt.value
-                      ? 'bg-brand text-white'
+                      ? 'bg-brand text-on-brand'
                       : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
                   }`}
                 >

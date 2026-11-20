@@ -1193,7 +1193,7 @@ function MainApp() {
               avatarId={currentUser.avatarId}
               size="md"
               roundedClass="rounded-xl"
-              fallbackClassName="bg-brand text-white"
+              fallbackClassName="bg-brand text-on-brand"
             />
             <div className="min-w-0 flex-1 space-y-0.5">
               <p className="text-xs font-bold text-ink truncate">
@@ -1789,7 +1789,7 @@ function MainApp() {
                   avatarId={currentUser.avatarId}
                   size="md"
                   roundedClass="rounded-xl"
-                  fallbackClassName="bg-brand text-white"
+                  fallbackClassName="bg-brand text-on-brand"
                 />
                 <div className="min-w-0 flex-1 space-y-0.5">
                   <div className="flex items-center gap-1.5 min-w-0">

@@ -351,7 +351,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 onClick={() => setRouteFilter(loc)}
                 className={`min-h-[32px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                   active
-                    ? 'bg-brand border-brand text-white'
+                    ? 'bg-brand border-brand text-on-brand'
                     : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                 }`}
               >
