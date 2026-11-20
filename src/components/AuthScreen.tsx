@@ -477,18 +477,22 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                     minLength={3}
                     maxLength={120}
                     value={idNumber}
+                    aria-describedby={mode === 'login' ? 'login-id-help' : undefined}
                     autoCapitalize={mode === 'signup' ? 'characters' : 'none'}
                     onChange={(e) => setIdNumber(entryIdentifier(e.target.value, mode === 'signup'))}
                     onBlur={(e) => setIdNumber(entryIdentifier(e.target.value, mode === 'signup', true))}
                     placeholder={
                       mode === 'login'
-                        ? 'Your identifier'
+                        ? 'e.g. UG21/CS/1001'
                         : accountType === 'staff'
                           ? 'e.g. GSU/STF/1042'
                           : 'e.g. UG21/CS/1001'
                     }
                     className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm font-mono focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
                   />
+                  {mode === 'login' && <p id="login-id-help" className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
+                    Use your matric number or staff ID if you’re unsure of your sign-in email. Your recovery inbox is for reset links.
+                  </p>}
                 </div>
 
                 {mode === 'signup' && (
@@ -539,7 +543,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                     {/* Email (compulsory — password reset links go here) */}
                     <div>
                       <label htmlFor="email" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                        Email Address
+                        Recovery email
                       </label>
                       <div className="relative">
                         <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -555,7 +559,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                         />
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
-                        Use an email you can access for password recovery.
+                        Reset links go to this inbox. Adding it does not make it your sign-in email.
                       </p>
                     </div>
 
@@ -671,8 +675,8 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                   Reset your password
                 </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
-                  Enter your Matric Number, Staff ID, phone number, or email. We will send
-                  a reset link to the email on your account.
+                  Enter an account identifier below, not the inbox where you receive reset links.
+                  If you’re unsure of your sign-in email, use your matric number or staff ID.
                 </p>
               </div>
 
@@ -683,7 +687,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                     <p className="font-semibold">Check your inbox</p>
                     <p className="text-xs mt-1">
                       If an account exists for that ID, a password reset link has been sent
-                      to the email on file. The link expires in 1 hour. Check your spam
+                      to the recovery email on file. The link expires in 1 hour. Check your spam
                       folder if you do not see it.
                     </p>
                   </div>
@@ -692,7 +696,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
                     <label htmlFor="forgotIdentifier" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                      Matric Number, Staff ID, Phone, or Email
+                      Matric number, staff ID, registered phone number or sign-in email
                     </label>
                     <input
                       id="forgotIdentifier"
@@ -704,7 +708,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
                       autoCapitalize="none"
                       onChange={(e) => setForgotIdentifier(entryIdentifier(e.target.value))}
                       onBlur={(e) => setForgotIdentifier(entryIdentifier(e.target.value, false, true))}
-                      placeholder="Your identifier"
+                      placeholder="e.g. UG21/CS/1001"
                       className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/80 text-slate-900 dark:text-slate-100 placeholder:text-slate-500 dark:placeholder:text-slate-500 text-sm font-mono focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
                     />
                   </div>

@@ -69,7 +69,7 @@ test('proof viewer displays only the filename without the storage UUID prefix', 
 });
 
 import {resetOrigin} from '../supabase/functions/password-reset/redirect';
-import {friendlyEntryError, formatAuthError} from '../src/utils/entryErrors';
+import {ClientCooldownError, friendlyEntryError, formatAuthError} from '../src/utils/entryErrors';
 test('reset mail requires an exact configured HTTPS origin', () => {
   const allowed = 'https://one.example, https://two.example';
   assert.equal(resetOrigin('https://two.example/',allowed),'https://two.example/');
@@ -103,4 +103,10 @@ test('reset CAPTCHA fails closed and only accepts explicit siteverify success', 
   for (const response of [Response.json({success:false}),Response.json({success:'true'}),Response.json({success:true},{status:503}),new Response('broken')])
     assert.equal(await verifyTurnstile('token','secret',async()=>response),false);
   assert.equal(await verifyTurnstile('token','secret',async()=>{throw Error('offline')}),false);
+});
+
+test('sign-in shows the local cooldown without echoing backend messages', () => {
+  assert.equal(formatAuthError(new ClientCooldownError(1)), 'Please wait about 1 second before trying again.');
+  assert.equal(formatAuthError(new ClientCooldownError(117)), 'Please wait about 117 seconds before trying again.');
+  assert.doesNotMatch(formatAuthError(new Error('Please wait 42 seconds: private detail')), /42|private detail/);
 });
