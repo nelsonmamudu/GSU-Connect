@@ -175,6 +175,11 @@ Deno.serve(async (req: Request): Promise<Response> => {
       );
     }
 
+    if (!await verifyTurnstile((parsedBody as {captchaToken?:unknown}).captchaToken, Deno.env.get('TURNSTILE_SECRET_KEY'))) {
+      await waitResponseFloor(startedAt);
+      return genericSuccess();
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     const brevoKey = Deno.env.get('BREVO_API_KEY');
@@ -242,11 +247,6 @@ Deno.serve(async (req: Request): Promise<Response> => {
       const safeAppUrl = resetOrigin(appUrl, Deno.env.get('ALLOWED_APP_ORIGINS'));
       if (!safeAppUrl) {
         console.error('password-reset: invalid APP_URL configuration');
-        await waitResponseFloor(startedAt);
-        return genericSuccess();
-      }
-
-      if (!await verifyTurnstile((parsedBody as {captchaToken?:unknown}).captchaToken, Deno.env.get('TURNSTILE_SECRET_KEY'))) {
         await waitResponseFloor(startedAt);
         return genericSuccess();
       }
