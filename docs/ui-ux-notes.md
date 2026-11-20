@@ -424,6 +424,8 @@ and the narrator's claims cannot be verified from what we have. Treat this as a
 **secondary** layer: §2-§3 are principle-level and durable; trends are season-level and
 decay. Take the durable mechanics, ignore the year label.
 
+### 5.1 Top 2026 app design trends
+
 **Emotionally intelligent design is a UX approach, not a visual trend.**
 - Use personality or character only where it supports the product's purpose. We have no
   mascot and should not add one for its own sake.
