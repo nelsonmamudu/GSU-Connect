@@ -207,16 +207,33 @@ export const AdminView: React.FC<AdminViewProps> = ({
     return true;
   };
   const cohortPicker = (user: AppUser, standalone = false) => (
-    <label className="flex flex-wrap items-center gap-2 text-xs">Confirm level for approval
-      <select disabled={!!busyId || confirmId === user.uid} value={selectedLevel(user)} onChange={e => {
-        const value = e.target.value;
-        setDraftLevels({...draftLevels,[user.uid]:value});
-        setDecisionMessage(prev => clearLevelWarning(prev,user.uid,value));
-      }}>
-        <option value="">Choose level</option>{levelChoices(user).map(v => <option key={v}>{v}</option>)}
-      </select>
-      {standalone && <button type="button" disabled={!selectedLevel(user)} onClick={() => void confirmLevel(user)}>Confirm level</button>}
-    </label>
+    <div className="flex flex-wrap items-center gap-2 text-xs">
+      <span className="font-semibold text-ink-soft">Confirm level for approval</span>
+      <Select
+        disabled={!!busyId || confirmId === user.uid}
+        value={selectedLevel(user)}
+        onChange={(e) => {
+          const value = e.target.value;
+          setDraftLevels({ ...draftLevels, [user.uid]: value });
+          setDecisionMessage((prev) => clearLevelWarning(prev, user.uid, value));
+        }}
+      >
+        <option value="">Choose level</option>
+        {levelChoices(user).map((v) => (
+          <option key={v}>{v}</option>
+        ))}
+      </Select>
+      {standalone && (
+        <Button
+          type="button"
+          variant="secondary"
+          disabled={!selectedLevel(user)}
+          onClick={() => void confirmLevel(user)}
+        >
+          Confirm level
+        </Button>
+      )}
+    </div>
   );
   const bannerTimerRef = useRef<number | null>(null);
   useEffect(() => {
@@ -875,9 +892,31 @@ export const AdminView: React.FC<AdminViewProps> = ({
           onChange={setSubTab}
           tabs={adminTabs}
         />
-        {currentUser.role==='classRep' && <div><button type="button" onClick={issueInvite}>Generate a 7-day department invite (replaces previous link)</button>
-          {inviteLink && <input aria-label="Share this registration link" readOnly value={inviteLink} onFocus={e=>e.target.select()} />}</div>}
-        {canDecide && inviteLink && <input readOnly aria-label="New registration link" value={inviteLink} onFocus={e=>e.target.select()}/>}
+        {currentUser.role==='classRep' && (
+          <div className="space-y-2">
+            <Button type="button" variant="secondary" onClick={issueInvite}>
+              Generate a 7-day department invite (replaces previous link)
+            </Button>
+            {inviteLink && (
+              <input
+                aria-label="Share this registration link"
+                readOnly
+                value={inviteLink}
+                onFocus={(e) => e.target.select()}
+                className="w-full min-h-[44px] px-3.5 rounded-lg border border-line bg-sunken text-sm text-ink font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+              />
+            )}
+          </div>
+        )}
+        {canDecide && inviteLink && (
+          <input
+            readOnly
+            aria-label="New registration link"
+            value={inviteLink}
+            onFocus={(e) => e.target.select()}
+            className="w-full min-h-[44px] px-3.5 rounded-lg border border-line bg-sunken text-sm text-ink font-mono focus:outline-none focus-visible:ring-2 focus-visible:ring-focus"
+          />
+        )}
         {isAdmin && <p className="text-xs">For admin reviews, verify your authenticator in Profile first.</p>}
         {cohortNotice && <p role="status">{cohortNotice}</p>}
         {!isAdmin && (
@@ -1431,8 +1470,75 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 shrink-0">
-                      {canDecide && !isSelf && (caseId!==user.uid ? <button type="button" onClick={()=>{setCaseId(user.uid);setCaseReason('');setCaseStatus('pending');}}>Review decision</button> : <div className="space-y-2"><label>Decision for {user.fullName}<select value={caseStatus} onChange={e=>setCaseStatus(e.target.value)}>{['pending','approved','rejected','suspended'].map(v=><option key={v}>{v}</option>)}</select></label><input placeholder="Decision reason" aria-label="Decision reason" maxLength={500} value={caseReason} onChange={e=>setCaseReason(e.target.value)}/><button type="button" disabled={!caseReason.trim() || busyId===caseId} onClick={decideCase}>Record decision</button><button type="button" onClick={()=>setCaseId('')}>Cancel</button></div>)}
-                      {canDecide && user.role==='classRep' && <button type="button" onClick={async()=>{const {data,error}=await supabase.rpc('manage_rep_invite',{rep_id:user.uid});if(error)setAdminError(error.message);else{const link=new URL('/',location.origin);link.searchParams.set('invite',data);setInviteLink(link.href);}}}>Replace department invite</button>}
+                      {canDecide && !isSelf && (
+                        caseId !== user.uid ? (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() => {
+                              setCaseId(user.uid);
+                              setCaseReason('');
+                              setCaseStatus('pending');
+                            }}
+                          >
+                            Review decision
+                          </Button>
+                        ) : (
+                          <div className="space-y-2 w-full">
+                            <Field label={`Decision for ${user.fullName}`}>
+                              <Select
+                                value={caseStatus}
+                                onChange={(e) => setCaseStatus(e.target.value)}
+                              >
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                                <option value="suspended">Suspended</option>
+                              </Select>
+                            </Field>
+                            <Field label="Decision reason" hint="Shown to the student.">
+                              <Input
+                                placeholder="Decision reason"
+                                maxLength={500}
+                                value={caseReason}
+                                onChange={(e) => setCaseReason(e.target.value)}
+                              />
+                            </Field>
+                            <div className="flex flex-wrap gap-2">
+                              <Button
+                                type="button"
+                                loading={busyId === caseId}
+                                disabled={!caseReason.trim()}
+                                onClick={decideCase}
+                              >
+                                Record decision
+                              </Button>
+                              <Button type="button" variant="ghost" onClick={() => setCaseId('')}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        )
+                      )}
+                      {canDecide && user.role==='classRep' && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          onClick={async () => {
+                            const { data, error } = await supabase.rpc('manage_rep_invite', {
+                              rep_id: user.uid,
+                            });
+                            if (error) setAdminError(error.message);
+                            else {
+                              const link = new URL('/', location.origin);
+                              link.searchParams.set('invite', data);
+                              setInviteLink(link.href);
+                            }
+                          }}
+                        >
+                          Replace department invite
+                        </Button>
+                      )}
                       {isAdmin && user.role==='classRep' && cohortPicker(user, true)}
                       <select
                         aria-label={`Change department for ${user.fullName}`}
