@@ -1,4 +1,5 @@
 import {StaffVouchInbox} from './components/StaffVerification';
+import {RecoveryEmailConfirm} from './components/RecoveryEmailConfirm';
 import React, { Component, ErrorInfo, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
@@ -1905,6 +1906,7 @@ function MainApp() {
         </div>
       )}
 
+      {authUser && <RecoveryEmailConfirm />}
       {activeVoiceCall && (
         <React.Suspense fallback={null}>
           <LazyVoiceCallModal
