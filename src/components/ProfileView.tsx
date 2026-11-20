@@ -1086,7 +1086,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
       {currentUser.role === 'admin' && <AdminTotp />}
       {/* Sign Out */}
-      <button type="button" className="min-h-[44px]" onClick={() => signOutUser('local').catch(e=>setLogoutError('Could not sign out. Please try again.'))}>Sign out on this device</button>
+      <button
+        type="button"
+        onClick={() => signOutUser('local').catch(e=>setLogoutError('Could not sign out. Please try again.'))}
+        className="w-full min-h-[48px] rounded-2xl bg-surface border border-line hover:bg-sunken hover:text-ink text-ink-soft font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+      >
+        <LogOut className="w-4 h-4" />
+        <span>Sign out on this device</span>
+      </button>
       {logoutError && <p role="alert">{logoutError}</p>}
       <button
         type="button"
@@ -1094,7 +1101,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           await updateUserLastSeen(currentUser.uid).catch(() => undefined);
           await signOutUser('global').catch(e=>setLogoutError('Could not sign out. Please try again.'));
         }}
-        className="w-full min-h-[48px] rounded-2xl bg-surface border border-line hover:bg-danger-bg hover:bg-danger-bg/40 hover:border-danger-line hover:border-danger/70 hover:text-danger hover:text-danger text-ink-soft font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
+        className="w-full min-h-[48px] rounded-2xl bg-surface border border-line hover:bg-danger-bg/40 hover:border-danger/70 hover:text-danger text-ink-soft font-semibold text-sm inline-flex items-center justify-center gap-2 transition-colors cursor-pointer"
       >
         <LogOut className="w-4 h-4" />
         <span>Sign out of all devices</span>
