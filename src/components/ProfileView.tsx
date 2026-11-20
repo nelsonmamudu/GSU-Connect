@@ -857,7 +857,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             )
           ) : (
             <form onSubmit={handleSaveRecoveryEmail} className="space-y-2 pt-1">
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-col gap-2">
                 <input
                   type="email"
                   required
@@ -869,6 +869,19 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   placeholder="yourname@example.com"
                   className="flex-1 min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
                 />
+              <input
+                type="password"
+                required
+                autoComplete="current-password"
+                value={recoveryPassword}
+                onChange={(e) => {
+                  setRecoveryPassword(e.target.value);
+                  setRecoveryError(null);
+                }}
+                placeholder="Enter your current password to confirm"
+                aria-label="Current password"
+                className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
+              />
                 <div className="flex gap-2">
                   <button
                     type="submit"
@@ -891,19 +904,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   </button>
                 </div>
               </div>
-              <input
-                type="password"
-                required
-                autoComplete="current-password"
-                value={recoveryPassword}
-                onChange={(e) => {
-                  setRecoveryPassword(e.target.value);
-                  setRecoveryError(null);
-                }}
-                placeholder="Enter your current password to confirm"
-                aria-label="Current password"
-                className="w-full min-h-[40px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
-              />
               {recoveryError && (
                 <p className="text-xs text-rose-600 dark:text-rose-400">{recoveryError}</p>
               )}
@@ -952,7 +952,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <span className="font-semibold text-slate-800 dark:text-slate-100">
               Restricted &amp; private info:
             </span>{' '}
-            Only you and authorized reviewers can see your registration ID. Class reps and department helpers review student submissions only; staff submissions go to admins. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Verification ID cards are deleted within 24 hours after approval.
+            Only you and authorized reviewers can see your registration ID. Class reps and department helpers review student submissions only; staff submissions go to admins. Your phone number and recovery email are never shown to other members and are used only for login and account recovery. Uploaded verification documents are deleted within 24 hours after approval.
           </p>
         </div>
       </div>

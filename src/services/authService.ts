@@ -1,3 +1,4 @@
+import {passwordError, validateGraduate} from '../utils/entryRules';
 import { proofTypes } from '../utils/proof';
 import {reportEntryIssue} from './entryFeedback';
 import type { AuthChangeEvent, Session, User } from '@supabase/supabase-js';
@@ -282,9 +283,8 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
   if (department.length < 2) {
     throw new Error('Department or office must be at least 2 characters.');
   }
-  if (input.password.length < 8) {
-    throw new Error('Password must be at least 8 characters.');
-  }
+  const weakPassword = passwordError(input.password);
+  if (weakPassword) throw new Error(weakPassword);
   if (
     cleanRecoveryEmail.length < 5 ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanRecoveryEmail)
@@ -309,20 +309,8 @@ export async function signUpUser(input: SignUpInput): Promise<AppUser> {
   }
 
   const isGraduate = input.accountType === 'student' && Boolean(input.isGraduate);
-  const graduationClassYear =
-    isGraduate &&
-    typeof input.graduationClassYear === 'number' &&
-    Number.isInteger(input.graduationClassYear) &&
-    input.graduationClassYear >= 2000 &&
-    input.graduationClassYear <= 2100
-      ? input.graduationClassYear
-      : undefined;
-
-  if (isGraduate && graduationClassYear === undefined) {
-    throw new Error(
-      'Unable to determine your graduation class year for the current session. Please wait a moment and try again.'
-    );
-  }
+  const graduationClassYear = input.graduationClassYear;
+  validateGraduate(input.accountType, input.level, Boolean(input.isGraduate), graduationClassYear);
 
   const alreadyExists = await checkIdentifierExists(idNumber, input.accountType);
   if (alreadyExists) {

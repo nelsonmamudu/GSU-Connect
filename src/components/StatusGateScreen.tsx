@@ -1,6 +1,6 @@
 import {StaffPathPicker,StaffProofAction,staffPaths,type StaffPath} from './StaffVerification';
 import {noFileMessage, prepareReviewProof} from '../utils/prepareReviewProof';
-import {studentProof,staffProof,proofTypes} from '../utils/proof';
+import {studentProof,staffProof} from '../utils/proof';
 import {takeEntryIssue} from '../services/entryFeedback';
 import { mapProfileRowToAppUser } from '../services/supabaseService';
 import React, { useEffect, useRef, useState } from 'react';
@@ -70,7 +70,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   const [feedback, setFeedback] = useState<{ type: 'info' | 'error'; text: string } | null>(null);
   const [uploadStep, setUploadStep] = useState('');
   const [retrySubmit, setRetrySubmit] = useState(false);
-  const idCardInputRef = useRef<HTMLInputElement | null>(null);
+
 
   const [checkMessage, setCheckMessage] = useState('');
   const [checking, setChecking] = useState(false);
@@ -460,24 +460,17 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                   )}
                 </div>
               </div>
-              <input
-                ref={node => { idCardInputRef.current = node; if (node) node.oncancel = noFile; }}
-                type="file"
-                accept={(isLecturerRequest && staffPath==='id'?proofTypes.filter(t=>t.startsWith('image/')):proofTypes).join(',')}
-                onChange={handleUploadIdCard}
-                className="hidden"
-              />
-              <button
-                type="button"
-                disabled={uploadingIdCard}
-                onClick={() => idCardInputRef.current?.click()}
-                className="min-h-[44px] w-full sm:w-auto justify-center px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-emerald-600 text-xs font-semibold text-slate-700 dark:text-slate-200 inline-flex items-center gap-1.5 shrink-0 cursor-pointer disabled:opacity-60"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>
-                  {isLecturerRequest && staffPath === 'id' ? 'Choose photo' : 'Choose photo or PDF'}
-                </span>
-              </button>
+              <div className="flex flex-col gap-2 shrink-0">
+                {(isLecturerRequest && staffPath==='id' ? ['image/*'] : ['image/*','application/pdf']).map(accept => (
+                  <label key={accept} className="relative flex items-center justify-center gap-2 min-h-[44px] px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-semibold focus-within:ring-2 focus-within:ring-emerald-600">
+                    <Upload className="w-4 h-4" />{accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
+                    <input type="file" accept={accept} disabled={uploadingIdCard}
+                      aria-label={accept === 'image/*' ? 'Choose photo' : 'Choose PDF'}
+                      ref={node => { if (node) node.oncancel = noFile; }} onChange={handleUploadIdCard}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  </label>
+                ))}
+              </div>
             </div>
             {uploadStep && <p role="status" className="text-sm font-semibold">{uploadStep}</p>}
             {retrySubmit && isRejected && !uploadingIdCard && <button type="button" className="min-h-[44px] font-semibold text-emerald-700" onClick={() => void submitOnly()}>Retry submission</button>}
@@ -586,7 +579,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                     <option value="">Select level</option>
                     {availableLevels.map((lvl) => (
                       <option key={lvl} value={lvl}>
-                        {lvl==='Class of 2026'?'Graduate — Class of 2026':`${lvl} Level`}
+                        {lvl==='Class of 2026'?'Class of 2026':`${lvl} Level`}
                       </option>
                     ))}
                   </select>
@@ -631,7 +624,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           )}
 
           <div className="space-y-1.5">
-            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-3 gap-y-1">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-start gap-x-3 gap-y-1">
               <span className="text-slate-500 dark:text-slate-400">Recovery Email</span>
               {!editingRecovery && (
                 <span className="text-right text-sm font-medium text-slate-900 dark:text-slate-100 break-all">
@@ -651,16 +644,18 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
             </div>
             {editingRecovery && (
               <form onSubmit={handleSaveRecovery} className="space-y-2 pt-0.5">
-                <div className="flex items-center gap-2">
+                <div className="space-y-2">
                   <input
+                    aria-label="Recovery email"
                     type="email"
                     required
                     maxLength={120}
                     value={recoveryInput}
                     onChange={(e) => setRecoveryInput(e.target.value)}
                     placeholder="e.g. yourname@gmail.com"
-                    className="flex-1 min-w-0 min-h-[38px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-w-0 min-h-[38px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-emerald-600"
                   />
+                  <div className="flex justify-end gap-2">
                   <button
                     type="submit"
                     disabled={savingRecovery}
@@ -679,6 +674,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                   >
                     Cancel
                   </button>
+                  </div>
                 </div>
                 {recoveryError && (
                   <p className="text-[11px] text-red-700 dark:text-red-300">{recoveryError}</p>
