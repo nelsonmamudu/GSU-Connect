@@ -890,3 +890,76 @@ Two one-shot scripts, kept in `scripts/` because they document the mapping:
   was "emerald + neutrals", not a repaint of every state colour. The `success` /
   `warn` / `danger` / `info` role tokens exist and the shared primitives use them, so
   this is a mechanical follow-up with a ready mapping rather than an open question.
+
+### 9.5 The dark-mode contrast sweep (2026-11-20, after the palette)
+
+The palette made every role token **swap** with the theme, including `brand` and
+the four state tokens. That is right for surfaces, but it silently broke every
+place where a fill and its text were chosen as a pair in light mode. Four passes:
+
+**1. `bg-brand` + `text-white` (30 fragments, 16 files).** `bg-brand` is `#0b4f3c`
+in light mode and `#4fa582` in dark, so white text went 9.55:1 → invisible. The
+first pass only caught fragments whose whole class string was `bg-brand`; the
+rest lived in ternaries. `scripts/fix-brand-on-text.py` (a real string-literal
+scanner that recurses into `${…}` and only rewrites class-looking fragments) got
+the other 30.
+
+**2. Own-message bubble meta (28 fragments, `ChatsView`).** Sender name, time,
+read state, reactions, captions — every `isMine ? 'text-emerald-100/80' : …`
+branch. Light-green-on-light-green in dark mode. `scripts/fix-brand-bubble-meta.py`.
+`/80` became `/85`: `/80` on the dark brand is 4.38:1, `/85` is 4.78:1.
+
+**3. Solid state fills (26 fragments, 13 files).** `bg-danger` is `#b42318` in
+light mode and `#f97066` in dark, so `text-white` was 6.57:1 → 2.79:1. Added a
+paired token per state — `--color-danger-on` etc. — pale tints on the light
+fills, deep tints on the dark ones, both sides checked. Same for warn (1.85:1),
+success (1.81:1), info (2.17:1). `scripts/fix-state-fill-text.py`.
+
+**4. Everything else (`scripts/audit-contrast.py`).** 731 fragments scanned,
+each text token resolved against the fill it actually sits on, **compositing
+alpha over the surface**. Token-on-token comparison was the blind spot all
+three earlier passes shared: `bg-warn/90` is not `warn`. It found:
+
+| site | was | ratio | now |
+| --- | --- | --- | --- |
+| `App.tsx` alumni banner | `text-warn-bg` on `bg-warn-bg` | 1.0 | `text-warn` |
+| `StatusView` viewer error | `text-danger-line` on `bg-danger-bg` | 1.3 | `text-danger` |
+| nine danger panels | `text-danger-line` on `bg-danger-bg/60` | 1.3 | `text-danger` |
+| two status pills | `text-danger` on `bg-danger-line` | 4.28 | `bg-danger-bg` |
+| in-chat search `<mark>` | `bg-warn/90` + `text-ink` | 3.18 | `bg-warn-on` + `text-warn` |
+| own-bubble icon chips | `on-brand/20` | 4.27 dark | `on-brand/15` (4.66) |
+| own-bubble selected poll | `bg-white/20` + `text-white` | 2.34 dark | `bg-on-brand` + `text-brand` |
+| radar countdown pill | `bg-slate-900 dark:bg-sunken` + `text-white` | 1.14 light | `bg-ink` / `dark:bg-sunken` + `dark:text-ink` |
+
+`audit-contrast.py --check` now exits non-zero on any pair under 4.5:1 and
+reports 0. Two exemptions are recorded in the script with hand-checked ratios,
+both because the fragment composites over `bg-brand`, not over `surface`.
+
+**Also in this pass:**
+
+- **`text-on-dark` utilities** (`index.css`). A call sheet, a lightbox and a
+  view-once viewer are dark in both themes, so the swapping role tokens are the
+  wrong thing inside one. `VoiceCallModal` was built from light-theme tokens on
+  a permanently dark panel: `text-success` was 1.80:1 and `text-ink` 1.00:1.
+- **Elevation.** Six shadow sizes (`2xs`, `xs`, `sm`, `lg`, `xl`, `2xl`) with no
+  semantic difference, against an `elevation` token only `Card` and `EmptyState`
+  used. Now three named tiers — `shadow-resting` / `-raised` / `-overlay` — each
+  with a darker, wider value under `html.dark`, because a shadow that reads on
+  white is invisible on `#1d1b17`. 105 sites mapped by `scripts/migrate-elevation.py`.
+- **State colours onto the role tokens.** 786 ramp utilities (red/amber/rose/
+  emerald/sky/indigo/teal/violet) were hand-rolled `bg-X-50 dark:bg-X-950/50
+  text-X-700 dark:text-X-300` quads. Mapped by `scripts/migrate-state-colours.py`
+  to the `danger` / `warn` / `success` / `info` triples. Six ramp utilities remain,
+  all decorative (five avatar gradients, one hover shadow tint).
+- **222 + 110 self-cancelling `dark:` variants** removed. Once a fragment reads a
+  role token it needs no dark variant, and the state rewrite made both sides of
+  each quad resolve to the same token. `scripts/strip-redundant-dark.py`.
+
+### 9.6 Still open
+
+- **390px visual verification.** Static checks pass — no fixed width ≥390px, no
+  `w-screen` — but the actual rendering needs a browser.
+- **`tests/proof-card-browser.test.mjs`** still never executed.
+- **Breadth discipline (§7.1).** About six patterns per screen; the per-screen
+  pattern inventory was never written down.
+- **Mobile bottom nav** has five tabs; §5.5 prefers 3–4. Product decision.
