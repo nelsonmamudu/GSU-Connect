@@ -998,14 +998,14 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         </div>
 
                         <p className="text-xs text-slate-600 dark:text-slate-300">
-                          <span className="text-slate-400 dark:text-slate-500">
+                          <span className="text-slate-500 dark:text-slate-400">
                             {user.accountType === 'staff' ? 'Staff ID: ' : 'Matric No: '}
                           </span>
                           <span className="font-mono text-slate-800 dark:text-slate-200">{user.idNumber}</span>
                         </p>
 
                         <p className="text-xs text-slate-600 dark:text-slate-300">
-                          <span className="text-slate-400 dark:text-slate-500">
+                          <span className="text-slate-500 dark:text-slate-400">
                             {user.accountType === 'staff' ? 'Dept / Office: ' : 'Department: '}
                           </span>
                           <span className="font-medium text-slate-800 dark:text-slate-200">{user.department}</span>
@@ -1272,7 +1272,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         <div className="space-y-3">
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-3">
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={userSearch}
@@ -1285,7 +1285,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   type="button"
                   onClick={() => setUserSearch('')}
                   aria-label="Clear user search"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1513,7 +1513,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         <div className="space-y-3">
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={groupSearch}
@@ -1526,7 +1526,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   type="button"
                   onClick={() => setGroupSearch('')}
                   aria-label="Clear group search"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1607,7 +1607,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           disabled={busyId === group.id}
                           onClick={() => setConfirmDeleteGroupId(group.id)}
                           aria-label={`Delete ${group.name}`}
-                          className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                          className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -1646,7 +1646,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
         <div className="space-y-3">
           <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1">
-              <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
               <input
                 type="text"
                 value={deptSearch}
@@ -1659,7 +1659,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                   type="button"
                   onClick={() => setDeptSearch('')}
                   aria-label="Clear department search"
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -1740,7 +1740,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                         disabled={busyId === dept.id}
                         onClick={() => handleRequestDeleteDepartment(dept)}
                         aria-label={`Delete ${dept.name}`}
-                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-60"
+                        className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer disabled:opacity-60"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

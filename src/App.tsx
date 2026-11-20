@@ -1117,7 +1117,7 @@ function MainApp() {
           </div>
 
           <nav aria-label="Primary navigation" className="space-y-1">
-            <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">Workspace</p>
+            <p className="px-3 pb-1 text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">Workspace</p>
           {primaryTabs.map((tabId) => {
             const item = navItems.find((navItem) => navItem.id === tabId)!;
               const Icon = item.icon;
@@ -1136,7 +1136,7 @@ function MainApp() {
                   <span className="flex items-center gap-3">
                     <Icon
                       className={`w-5 h-5 ${
-                        isActive ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'
+                        isActive ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-500 dark:text-slate-400'
                       }`}
                     />
                     <span className="whitespace-nowrap">{item.label}</span>
@@ -1168,7 +1168,7 @@ function MainApp() {
                     isActive ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-900 dark:text-emerald-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/80'
                   }`}
                 >
-                  <span className="flex items-center gap-3"><Icon className="w-5 h-5 text-slate-400" /><span>{item.label}</span></span>
+                  <span className="flex items-center gap-3"><Icon className="w-5 h-5 text-slate-500" /><span>{item.label}</span></span>
                   {item.badge ? <span className="min-w-[20px] h-5 px-1.5 rounded-full bg-emerald-700 text-white text-[11px] font-mono font-bold flex items-center justify-center">{item.badge > 99 ? '99+' : item.badge}</span> : null}
                 </button>
               );
@@ -1802,7 +1802,7 @@ function MainApp() {
                     {currentUser.department} ·{' '}
                     {formatCompactLevelLabel(currentUser.level, currentUser.is_alumni)}
                   </p>
-                  <p className="text-[11px] font-mono text-slate-400 dark:text-slate-500 truncate">
+                  <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 truncate">
                     {currentUser.idNumber}
                   </p>
                 </div>
@@ -1811,7 +1811,7 @@ function MainApp() {
               {/* Secondary & Governance Section: Statuses, Announcements, Admin */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between px-2">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     More campus tools
                   </p>
                   {drawerAttentionCount > 0 && (
@@ -1842,7 +1842,7 @@ function MainApp() {
                             className={`w-5 h-5 ${
                               isActive
                                 ? 'text-emerald-700 dark:text-emerald-400'
-                                : 'text-slate-400 dark:text-slate-500'
+                                : 'text-slate-500 dark:text-slate-400'
                             }`}
                           />
                           <span>{item.label}</span>
@@ -1870,7 +1870,7 @@ function MainApp() {
 
               {/* Core Campus Sections Quick Jump */}
               <div className="space-y-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <p className="px-2 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                <p className="px-2 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Campus Hub
                 </p>
                 <div className="space-y-1">
@@ -1895,7 +1895,7 @@ function MainApp() {
                             className={`w-5 h-5 ${
                               isActive
                                 ? 'text-emerald-700 dark:text-emerald-400'
-                                : 'text-slate-400 dark:text-slate-500'
+                                : 'text-slate-500 dark:text-slate-400'
                             }`}
                           />
                           <span>{item.label}</span>

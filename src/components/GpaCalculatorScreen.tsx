@@ -344,7 +344,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               {gpaMetrics.semUnits > 0 ? (
                 <>
                   {gpaMetrics.semesterGpa.toFixed(2)}
-                  <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                     {' '}
                     / 5.00
                   </span>
@@ -408,7 +408,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               className={`px-2 py-0.5 rounded-lg font-mono font-bold tabular-nums border ${
                 gpaMetrics.gradeCounts[g] > 0
                   ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
-                  : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-800 text-slate-400 dark:text-slate-500'
+                  : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200/70 dark:border-slate-800 text-slate-500 dark:text-slate-400'
               }`}
             >
               {g}:{gpaMetrics.gradeCounts[g]}
@@ -466,7 +466,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
         {/* Course Rows */}
         <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               This Semester Courses
             </p>
             <button
@@ -583,7 +583,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                         }
                         title={`Points: ${rowPts}`}
                         aria-label={`Remove course ${course.code || idx + 1}`}
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

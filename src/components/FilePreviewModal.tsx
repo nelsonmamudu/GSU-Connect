@@ -193,7 +193,7 @@ export const FilePreviewModal: React.FC<FilePreviewModalProps> = ({
             </pre>
           ) : (
             <div className="text-center space-y-2 max-w-sm">
-              <FileText className="w-10 h-10 text-slate-400 mx-auto" />
+              <FileText className="w-10 h-10 text-slate-500 mx-auto" />
               <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
                 Inline preview unavailable for this file type
               </p>

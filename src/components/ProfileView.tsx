@@ -734,7 +734,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0" />
+        <ChevronRight className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0" />
       </button>
 
       {/* Dedicated GPA Calculator Launcher */}
@@ -756,7 +756,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             </p>
           </div>
         </div>
-        <ChevronRight className="w-5 h-5 text-slate-400 dark:text-slate-500 shrink-0" />
+        <ChevronRight className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0" />
       </button>
 
       {/* Notification Settings */}
@@ -994,7 +994,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               Update your GSU Connect sign-in password
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
         </button>
       </div>
 
@@ -1053,7 +1053,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <Mail className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             <span>Help &amp; Support ({SUPPORT_EMAIL})</span>
           </span>
-          <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
         </a>
 
         <button
@@ -1065,7 +1065,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <FileText className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             <span>Terms of Use</span>
           </span>
-          <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
         </button>
 
         <button
@@ -1077,7 +1077,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             <Shield className="w-4 h-4 text-slate-500 dark:text-slate-400" />
             <span>Privacy Policy</span>
           </span>
-          <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+          <ChevronRight className="w-4 h-4 text-slate-500 shrink-0" />
         </button>
       </div>
 
@@ -1218,7 +1218,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             )}
 
             <div className="space-y-2.5">
-              <p className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Campus Preset Avatars
               </p>
               <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">

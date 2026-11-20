@@ -592,10 +592,10 @@ export const StatusView: React.FC<StatusViewProps> = ({
       {/* Recent Updates (Unviewed) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Recent updates
           </span>
-          <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
+          <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
             {recentGroups.length}
           </span>
         </div>
@@ -652,10 +652,10 @@ export const StatusView: React.FC<StatusViewProps> = ({
       {viewedGroups.length > 0 && (
         <div className="space-y-2">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               Viewed updates
             </span>
-            <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
+            <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
               {viewedGroups.length}
             </span>
           </div>
@@ -683,7 +683,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                       <span className="text-sm font-medium text-slate-700 dark:text-slate-200 truncate">
                         {group.authorName}
                       </span>
-                      <span className="text-[11px] text-slate-400 dark:text-slate-500 shrink-0">
+                      <span className="text-[11px] text-slate-500 dark:text-slate-400 shrink-0">
                         {formatShortTime(latest.createdAt)}
                       </span>
                     </div>
@@ -734,7 +734,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 disabled={submitting}
                 onClick={() => setComposerOpen(false)}
                 aria-label="Close status composer"
-                className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1085,7 +1085,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setViewersDrawerOpen(false)}
-                    className="min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                    className="min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
                   >
                     <X className="w-4 h-4" />
                   </button>

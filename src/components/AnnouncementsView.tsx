@@ -148,7 +148,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
 
         <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 flex-1 lg:max-w-xl lg:justify-end">
           <div className="relative flex-1 sm:max-w-xs">
-            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -161,7 +161,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear announcement search"
-                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -234,7 +234,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                         onClick={() => handleCopyAnnouncement(item)}
                         aria-label="Copy announcement text"
                         title="Copy announcement"
-                        className="min-w-[34px] min-h-[34px] px-2 rounded-xl flex items-center justify-center gap-1 text-xs font-semibold text-slate-400 dark:text-slate-500 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer"
+                        className="min-w-[34px] min-h-[34px] px-2 rounded-xl flex items-center justify-center gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-emerald-700 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 transition-colors cursor-pointer"
                       >
                         {isCopied ? (
                           <>
@@ -250,7 +250,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
                           type="button"
                           onClick={() => setConfirmDeleteId(item.id)}
                           aria-label="Delete announcement"
-                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>

@@ -407,7 +407,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div className="relative sm:col-span-6">
-            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -421,7 +421,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear listing search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -583,7 +583,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       <span
                         className={`text-[11px] font-semibold uppercase tracking-wide ${
                           isSold
-                            ? 'text-slate-400 dark:text-slate-500'
+                            ? 'text-slate-500 dark:text-slate-400'
                             : 'text-emerald-700 dark:text-emerald-400'
                         }`}
                       >

@@ -690,7 +690,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
             <PhoneIncoming className="w-3.5 h-3.5" />
             <span>GSU Connect Voice</span>
           </div>
-          <p className="text-xs text-slate-400">1-to-1 Campus Voice Call</p>
+          <p className="text-xs text-slate-500">1-to-1 Campus Voice Call</p>
         </div>
 
         <div className="flex flex-col items-center space-y-3.5">
@@ -719,7 +719,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               {peerUser && <RoleBadge role={peerUser.role} inverted />}
             </div>
             {(peerDepartment || peerUser) && (
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 {peerDepartment}
                 {peerUser && (
                   <>
@@ -744,7 +744,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
                 </p>
               )}
               {liveCall.status === 'ended' && elapsedSec > 0 && (
-                <p className="text-xs font-mono text-slate-400 tabular-nums">
+                <p className="text-xs font-mono text-slate-500 tabular-nums">
                   Duration {formatDuration(elapsedSec)}
                 </p>
               )}
@@ -816,7 +816,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               >
                 {muted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
               </button>
-              <span className="text-[11px] font-medium text-slate-400">
+              <span className="text-[11px] font-medium text-slate-500">
                 {muted ? 'Unmute' : 'Mute'}
               </span>
             </div>
@@ -847,7 +847,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
               >
                 <Volume2 className="w-5 h-5" />
               </button>
-              <span className="text-[11px] font-medium text-slate-400">Speaker</span>
+              <span className="text-[11px] font-medium text-slate-500">Speaker</span>
             </div>
           </div>
         )}

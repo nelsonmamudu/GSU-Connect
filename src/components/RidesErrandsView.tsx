@@ -318,7 +318,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
           </div>
 
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={search}
@@ -332,7 +332,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 type="button"
                 onClick={() => setSearch('')}
                 aria-label="Clear ride search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -449,7 +449,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                     <div className="flex items-center gap-1.5 flex-wrap text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-50 dark:bg-slate-800/70 rounded-2xl px-3 py-2">
                       <MapPin className="w-3.5 h-3.5 text-emerald-700 dark:text-emerald-400 shrink-0" />
                       <span>{post.origin}</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <ArrowRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{post.destination}</span>
                     </div>
                   </div>
@@ -457,11 +457,11 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   {/* Metadata */}
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                     <span className="inline-flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <Clock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>{post.departureTime}</span>
                     </span>
                     <span className="inline-flex items-center gap-1.5 tabular-nums">
-                      <Users className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                      <Users className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       <span>
                         {post.seatsOrSlots}{' '}
                         {post.postType === 'ride'

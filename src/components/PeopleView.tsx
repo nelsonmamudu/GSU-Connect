@@ -317,7 +317,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
 
       <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={search}
@@ -334,7 +334,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               type="button"
               onClick={() => setSearch('')}
               aria-label="Clear people search"
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -479,7 +479,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               </div>
 
               <div className="sm:col-span-5 relative">
-                <MapPin className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <MapPin className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   maxLength={80}
@@ -517,7 +517,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                   type="button"
                   onClick={() => setStudyCourseFilter('')}
                   aria-label="Clear course code filter"
-                  className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 absolute right-1.5 top-1/2 -translate-y-1/2 cursor-pointer"
+                  className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 absolute right-1.5 top-1/2 -translate-y-1/2 cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -638,7 +638,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                             {diffMs !== null && (
                               <>
                                 <span aria-hidden="true"> · </span>
-                                <span className="text-slate-400 dark:text-slate-500">
+                                <span className="text-slate-500 dark:text-slate-400">
                                   {formatOfflineLastSeen(diffMs)}
                                 </span>
                               </>

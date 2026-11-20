@@ -137,7 +137,7 @@ export function ProofDropzone({
             />
           ) : (
             <div className="h-24 w-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 flex flex-col items-center justify-center gap-1 shrink-0">
-              <IdCard className="w-6 h-6 text-slate-400" />
+              <IdCard className="w-6 h-6 text-slate-500" />
               <span className="text-[10px] font-semibold text-slate-500">PDF</span>
             </div>
           )}
@@ -159,7 +159,7 @@ export function ProofDropzone({
         </div>
       ) : (
         <div className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-600 bg-white/60 dark:bg-slate-900/40 px-3 py-4 text-center">
-          <Upload className="w-5 h-5 text-slate-400" />
+          <Upload className="w-5 h-5 text-slate-500" />
           <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
             Drag &amp; drop a file here, paste it, or
           </p>
@@ -176,7 +176,7 @@ export function ProofDropzone({
           >
             {chooseLabel}
           </Button>
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed">
+          <p className="text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
             {acceptHint}. Redact unrelated personal information.
           </p>
         </div>

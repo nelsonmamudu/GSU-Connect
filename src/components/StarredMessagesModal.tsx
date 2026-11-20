@@ -107,7 +107,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
 
         <div className="px-5 py-3 border-b border-slate-100 dark:border-slate-800">
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -120,7 +120,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear starred search"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -131,7 +131,7 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FAFBFB] dark:bg-slate-950/60">
           {filtered.length === 0 ? (
             <div className="py-12 text-center space-y-2">
-              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 flex items-center justify-center mx-auto">
                 <Star className="w-5 h-5" />
               </div>
               <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
@@ -156,14 +156,14 @@ export const StarredMessagesModal: React.FC<StarredMessagesModalProps> = ({
                         {item.senderName}
                       </span>
                       <RoleBadge role={item.senderRole} />
-                      <span aria-hidden="true" className="text-xs text-slate-400">
+                      <span aria-hidden="true" className="text-xs text-slate-500">
                         ·
                       </span>
                       <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400 truncate">
                         {item.chatName}
                       </span>
                     </div>
-                    <p className="text-[11px] font-mono text-slate-400 dark:text-slate-500 mt-0.5 tabular-nums">
+                    <p className="text-[11px] font-mono text-slate-500 dark:text-slate-400 mt-0.5 tabular-nums">
                       {formatDateTime(item.messageCreatedAt || item.starredAt)}
                     </p>
                   </div>

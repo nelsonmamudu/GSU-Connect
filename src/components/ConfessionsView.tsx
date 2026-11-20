@@ -351,7 +351,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
 
         {/* Search & Category Filter Pills */}
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
@@ -365,7 +365,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               type="button"
               onClick={() => setSearchQuery('')}
               aria-label="Clear confession search"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[34px] min-h-[34px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -677,7 +677,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 <label className="text-xs font-semibold text-slate-700 dark:text-slate-200">
                   Your Message
                 </label>
-                <span className="text-[11px] font-mono text-slate-400 tabular-nums">
+                <span className="text-[11px] font-mono text-slate-500 tabular-nums">
                   {text.length} / 800
                 </span>
               </div>

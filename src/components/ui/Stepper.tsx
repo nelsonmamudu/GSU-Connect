@@ -44,7 +44,7 @@ export function Stepper({ steps, current, onSelect, label, className = '' }: Ste
                         ? 'bg-emerald-700 border-emerald-700 text-white'
                         : active
                           ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
-                          : 'border-slate-300 dark:border-slate-600 text-slate-400 dark:text-slate-500'
+                          : 'border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400'
                     }`}
                   >
                     {done ? <CheckCircle2 className="w-3.5 h-3.5" /> : i + 1}
@@ -55,7 +55,7 @@ export function Stepper({ steps, current, onSelect, label, className = '' }: Ste
                         ? 'text-slate-900 dark:text-slate-100'
                         : done
                           ? 'text-emerald-700 dark:text-emerald-400'
-                          : 'text-slate-400 dark:text-slate-500'
+                          : 'text-slate-500 dark:text-slate-400'
                     }`}
                   >
                     {step.label}

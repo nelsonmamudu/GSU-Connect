@@ -152,7 +152,7 @@ function ShortcutCard({
         <span className="block text-sm font-bold text-slate-900 dark:text-slate-100">{label}</span>
         <span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-400">{detail}</span>
       </span>
-      <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-400 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-800 dark:group-hover:text-emerald-300" aria-hidden="true" />
+      <ArrowUpRight className="h-4 w-4 shrink-0 text-slate-500 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-800 dark:group-hover:text-emerald-300" aria-hidden="true" />
     </button>
   );
 }

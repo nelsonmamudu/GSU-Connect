@@ -338,7 +338,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
           <div className="relative sm:col-span-8">
-            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-500 dark:text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
@@ -352,7 +352,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                 type="button"
                 onClick={() => setSearchQuery('')}
                 aria-label="Clear calendar search"
-                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-500 hover:text-slate-700 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -436,7 +436,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                             : relTag === 'Tomorrow'
                               ? 'font-semibold text-indigo-700 dark:text-indigo-300'
                               : relTag === 'Past'
-                                ? 'font-medium text-slate-400 dark:text-slate-500'
+                                ? 'font-medium text-slate-500 dark:text-slate-400'
                                 : 'font-medium text-slate-500 dark:text-slate-400'
                         }`}
                       >
@@ -444,7 +444,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       </span>
                     )}
                   </h3>
-                  <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">
+                  <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
                     {dayEvents.length} {dayEvents.length === 1 ? 'entry' : 'entries'}
                   </span>
                 </div>
@@ -473,7 +473,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                               </span>
                               {ev.courseCode && (
                                 <>
-                                  <span className="text-slate-400 dark:text-slate-500" aria-hidden="true">
+                                  <span className="text-slate-500 dark:text-slate-400" aria-hidden="true">
                                     ·
                                   </span>
                                   <span className="font-mono font-bold text-slate-900 dark:text-slate-100">
@@ -481,7 +481,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                   </span>
                                 </>
                               )}
-                              <span className="text-slate-400 dark:text-slate-500" aria-hidden="true">
+                              <span className="text-slate-500 dark:text-slate-400" aria-hidden="true">
                                 ·
                               </span>
                               <span className="font-medium text-slate-600 dark:text-slate-300">
@@ -561,18 +561,18 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                         <div className="flex flex-wrap items-center justify-between gap-2 pt-1 text-xs text-slate-600 dark:text-slate-300">
                           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
                             <span className="inline-flex items-center gap-1.5 font-mono">
-                              <Clock className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                              <Clock className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                               <span>
                                 {ev.startTime}
                                 {ev.endTime ? ` – ${ev.endTime}` : ''}
                               </span>
                             </span>
                             <span className="inline-flex items-center gap-1.5">
-                              <MapPin className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                              <MapPin className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                               <span>{ev.venue}</span>
                             </span>
                             <span className="inline-flex items-center gap-1.5">
-                              <Building2 className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
+                              <Building2 className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
                               <span>{ev.department}</span>
                             </span>
                           </div>
