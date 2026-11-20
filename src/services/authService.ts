@@ -1,3 +1,4 @@
+import {ClientCooldownError} from '../utils/entryErrors';
 import {passwordError, validateGraduate} from '../utils/entryRules';
 import { proofTypes } from '../utils/proof';
 import {reportEntryIssue} from './entryFeedback';
@@ -37,7 +38,6 @@ interface ThrottleConfig {
   minIntervalMs: number;
   maxAttempts: number;
   windowMs: number;
-  actionLabel: string;
 }
 
 const MEMORY_THROTTLE = new Map<string, number[]>();
@@ -75,20 +75,11 @@ function assertClientThrottle(bucket: string, cfg: ThrottleConfig): void {
   const recent = readThrottleTimestamps(bucket, cfg.windowMs, nowMs);
   const lastMs = recent[recent.length - 1] ?? 0;
 
-  if (lastMs && nowMs - lastMs < cfg.minIntervalMs) {
-    const waitSec = Math.max(1, Math.ceil((cfg.minIntervalMs - (nowMs - lastMs)) / 1000));
-    throw new Error(
-      `Please wait ${waitSec} second${waitSec === 1 ? '' : 's'} before ${cfg.actionLabel}.`
-    );
-  }
-
-  if (recent.length >= cfg.maxAttempts) {
-    const oldest = recent[0] ?? nowMs;
-    const waitSec = Math.max(1, Math.ceil((oldest + cfg.windowMs - nowMs) / 1000));
-    throw new Error(
-      `Too many attempts. Please wait ${waitSec} second${waitSec === 1 ? '' : 's'} and try again.`
-    );
-  }
+  const nextAllowed = Math.max(
+    lastMs + cfg.minIntervalMs,
+    recent.length >= cfg.maxAttempts ? recent[0] + cfg.windowMs : 0,
+  );
+  if (nextAllowed > nowMs) throw new ClientCooldownError(Math.ceil((nextAllowed - nowMs) / 1000));
 
   recent.push(nowMs);
   writeThrottleTimestamps(bucket, recent);
@@ -202,7 +193,6 @@ export async function resolveLoginEmail(rawIdentifier: string): Promise<string> 
     minIntervalMs: 1000,
     maxAttempts: 5,
     windowMs: 120_000,
-    actionLabel: 'signing in again',
   });
 
   if (isEmailInput) {
@@ -239,7 +229,6 @@ export async function checkIdentifierExists(
     minIntervalMs: 1000,
     maxAttempts: 5,
     windowMs: 120_000,
-    actionLabel: 'checking again',
   });
 
   const lookupTypes: ('matric' | 'staff_id')[] =
@@ -444,25 +433,24 @@ export async function signInUser(identifier: string, password: string, captchaTo
  */
 export async function requestPasswordReset(identifier: string, captchaToken?: string): Promise<void> {
   if (/[\x00-\x1F\x7F]/.test(identifier)) {
-    throw new Error('Please enter a valid Matric Number, Staff ID, phone number, or email.');
+    throw new Error('Please enter a valid Matric Number, Staff ID, registered phone number, or sign-in email.');
   }
   const trimmed = identifier.trim();
   if (trimmed.length < 3 || trimmed.length > 120) {
-    throw new Error('Please enter your Matric Number, Staff ID, phone number, or email.');
+    throw new Error('Please enter your Matric Number, Staff ID, registered phone number, or sign-in email.');
   }
   if (trimmed.includes('@')) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) {
       throw new Error('Please enter a valid email address.');
     }
   } else if (normalizeIdNumber(trimmed).length < 3) {
-    throw new Error('Please enter your Matric Number, Staff ID, phone number, or email.');
+    throw new Error('Please enter your Matric Number, Staff ID, registered phone number, or sign-in email.');
   }
 
   assertClientThrottle('password_reset', {
     minIntervalMs: 2000,
     maxAttempts: 3,
     windowMs: 120_000,
-    actionLabel: 'requesting another reset link',
   });
 
   const { error } = await supabase.functions.invoke('password-reset', {
