@@ -69,6 +69,7 @@ test('proof viewer displays only the filename without the storage UUID prefix', 
 });
 
 import {resetOrigin} from '../supabase/functions/password-reset/redirect';
+import {maskEmail} from '../src/utils/maskEmail';
 import {ClientCooldownError, friendlyEntryError, formatAuthError} from '../src/utils/entryErrors';
 test('reset mail requires an exact configured HTTPS origin', () => {
   const allowed = 'https://one.example, https://two.example';
@@ -109,4 +110,11 @@ test('sign-in shows the local cooldown without echoing backend messages', () => 
   assert.equal(formatAuthError(new ClientCooldownError(1)), 'Please wait about 1 second before trying again.');
   assert.equal(formatAuthError(new ClientCooldownError(117)), 'Please wait about 117 seconds before trying again.');
   assert.doesNotMatch(formatAuthError(new Error('Please wait 42 seconds: private detail')), /42|private detail/);
+});
+
+test('maskEmail stubs local part and host, keeps the TLD', () => {
+  assert.equal(maskEmail('ada.lovelace@example.test'), 'ad***@ex***.test');
+  assert.equal(maskEmail('a@sub.example.co.uk'), 'a***@su***.uk');
+  assert.equal(maskEmail('ab@cd.io'), 'a***@c***.io');
+  assert.equal(maskEmail('not-an-email'), '•••');
 });

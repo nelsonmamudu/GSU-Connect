@@ -1,4 +1,5 @@
 import {useTurnstile} from './Turnstile';
+import { maskEmail } from '../utils/maskEmail';
 import {friendlyEntryError} from '../utils/entryErrors';
 import { AdminTotp } from './AdminTotp';
 import React, { useEffect, useRef, useState } from 'react';
@@ -29,13 +30,15 @@ import {
 } from 'lucide-react';
 import {
   changeOwnPassword,
+  fetchMyRecoveryStatus,
   fetchOwnRecoveryEmail,
   requestOwnAccountDeletion,
   signOutUser,
   unstarMessageForUser,
   updateOwnAvatar,
   updateOwnFullName,
-  updateRecoveryEmail,
+  requestRecoveryEmailVerification,
+  isReauthRequired,
   updateUserLastSeen,
 } from '../services/supabaseService';
 import {
@@ -154,6 +157,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
   // Recovery email
   const [recoveryEmail, setRecoveryEmail] = useState('');
+  const [recoveryStatus, setRecoveryStatus] = useState<{ verified: boolean; maskedEmail: string | null } | null>(null);
   const [loadingRecovery, setLoadingRecovery] = useState(true);
   const [editingRecovery, setEditingRecovery] = useState(false);
   const [recoveryInput, setRecoveryInput] = useState('');
@@ -161,6 +165,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [recoveryPassword, setRecoveryPassword] = useState('');
   const [savingRecovery, setSavingRecovery] = useState(false);
   const [recoveryError, setRecoveryError] = useState<string | null>(null);
+  // Address awaiting inbox confirmation — shown as "pending" until reload; the
+  // verified binding (and this list) moves only when the new inbox confirms.
+  const [pendingRecovery, setPendingRecovery] = useState('');
+  const [reauthRequiredRecovery, setReauthRequiredRecovery] = useState(false);
 
   // Change password modal
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
@@ -224,20 +232,26 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
 
   useEffect(() => {
     let active = true;
-    setLoadingRecovery(true);
-    fetchOwnRecoveryEmail()
-      .then((email) => {
+    const load = () => {
+      setLoadingRecovery(true);
+      // Server truth for verified state (my_recovery_status RPC); the legacy
+      // table only supplies the owner's own unverified address for display.
+      // A status failure renders as "unknown", never as a wrong claim.
+      Promise.all([
+        fetchMyRecoveryStatus().catch(() => null),
+        fetchOwnRecoveryEmail().catch(() => ''),
+      ]).then(([status, legacy]) => {
         if (!active) return;
-        setRecoveryEmail(email);
-        setLoadingRecovery(false);
-      })
-      .catch(() => {
-        if (!active) return;
-        setRecoveryEmail('');
+        setRecoveryStatus(status);
+        setRecoveryEmail(legacy);
         setLoadingRecovery(false);
       });
+    };
+    load();
+    window.addEventListener('gsu-recovery-verified', load);
     return () => {
       active = false;
+      window.removeEventListener('gsu-recovery-verified', load);
     };
   }, [currentUser.uid]);
 
@@ -298,13 +312,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     setRecoveryError(null);
     setSavingRecovery(true);
     try {
-      await updateRecoveryEmail(cleaned, recoveryPassword, recoveryCheck.consume());
-      setRecoveryEmail(cleaned);
+      await requestRecoveryEmailVerification(cleaned, recoveryPassword, recoveryCheck.consume());
+      setPendingRecovery(cleaned);
       setEditingRecovery(false);
       setRecoveryPassword('');
-      showSavedToast('Recovery email updated.');
+      showSavedToast('Verification link sent. Your current recovery email stays active until the new one is confirmed.');
     } catch (err) {
-      setRecoveryError(friendlyEntryError(err, 'Could not update recovery email.'));
+      if (isReauthRequired(err)) {
+        setReauthRequiredRecovery(true);
+        setRecoveryError(null);
+      } else {
+        setRecoveryError(friendlyEntryError(err, 'Could not update recovery email.'));
+      }
     } finally {
       setSavingRecovery(false);
     }
@@ -849,17 +868,41 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           </div>
 
           {!editingRecovery ? (
-            recoveryEmail ? (
-              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 break-all">
-                {recoveryEmail}
+            <>
+            {loadingRecovery ? (
+              <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
+                Loading...
               </p>
+            ) : recoveryStatus?.verified ? (
+              <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex flex-wrap items-center gap-2">
+                <span className="break-all">{recoveryStatus.maskedEmail}</span>
+                <span className="inline-flex items-center rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 text-[10px] font-semibold">
+                  Verified
+                </span>
+              </p>
+            ) : recoveryEmail ? (
+              <>
+                <p className="text-xs font-semibold text-slate-900 dark:text-slate-100 flex flex-wrap items-center gap-2">
+                  <span className="break-all">{maskEmail(recoveryEmail)}</span>
+                  <span className="inline-flex items-center rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 px-2 py-0.5 text-[10px] font-semibold">
+                    Not verified
+                  </span>
+                </p>
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
+                  Confirm the link we sent to this address — it stays unverified until you do.
+                </p>
+              </>
             ) : (
               <p className="text-xs font-medium text-slate-600 dark:text-slate-300">
-                {loadingRecovery
-                  ? 'Loading...'
-                  : 'No recovery email set — add one for password resets.'}
+                No verified recovery email yet — add one and confirm the link we send.
               </p>
-            )
+            )}
+            {pendingRecovery && (
+              <p className="text-[11px] font-medium text-amber-700 dark:text-amber-400 pt-1">
+                Pending confirmation: {maskEmail(pendingRecovery)} — open the link we sent there. Your current recovery email stays active until then.
+              </p>
+            )}
+            </>
           ) : (
             <form onSubmit={handleSaveRecoveryEmail} className="space-y-2 pt-1">
               <div className="flex flex-col gap-2">
@@ -910,6 +953,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   </button>
                 </div>
               </div>
+              {reauthRequiredRecovery && (
+                <div role="alert" className="rounded-xl border border-amber-300 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-2 space-y-2">
+                  <p className="text-[11px] font-medium text-amber-900 dark:text-amber-200">
+                    For your security, sign in again before changing your verified recovery address — the current session is too old to make this change.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => { void signOutUser('local'); }}
+                    className="min-h-[36px] px-3 rounded-lg bg-amber-700 dark:bg-amber-600 text-white text-[11px] font-semibold"
+                  >
+                    Sign in again
+                  </button>
+                </div>
+              )}
               {recoveryError && (
                 <p className="text-xs text-rose-600 dark:text-rose-400">{recoveryError}</p>
               )}

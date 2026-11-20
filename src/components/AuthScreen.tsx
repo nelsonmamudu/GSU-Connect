@@ -255,6 +255,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               }
             : {}),
         });
+        try { sessionStorage.setItem('gsu_signup_recovery', email.trim().toLowerCase()); } catch { /* ignore */ }
         // Signup and a usable session are separate outcomes (e.g. auth configuration changes).
         if (!(await supabase.auth.getSession()).data.session) {
           setMode('login');setPassword('');

@@ -66,6 +66,7 @@ export function RecoveryEmailConfirm() {
       });
       if (error) throw error;
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      window.dispatchEvent(new Event('gsu-recovery-verified'));
       try {
         sessionStorage.removeItem(STORAGE_KEY);
       } catch {
@@ -73,7 +74,7 @@ export function RecoveryEmailConfirm() {
       }
       setToken('');
       setStatus('done');
-      setMessage('Recovery email confirmed. Password reset links will go there from now on.');
+      setMessage('Recovery email confirmed. This inbox is now your verified recovery address.');
     } catch {
       setStatus('error');
       setMessage('This link is invalid, expired or already used. Request a fresh link from Profile.');

@@ -20,6 +20,25 @@ replaces the recovery email through the app's change-address flow (fresh
 password check + verification to the new inbox), and confirms the new link.
 The old binding is replaced only when the new inbox confirms.
 
+Note — 15-minute sign-in rule for changing a verified address: replacing an
+already-verified recovery inbox via the app additionally requires a recent
+authentication. The Edge Function decodes the JWT's `amr` claim (the
+authentication-method timestamps Supabase writes at sign-in / MFA step-up;
+these are NOT bumped by token refresh, unlike `iat`) and refuses the send
+with HTTP 403 `reauth_required` when no `amr` entry is within 15 minutes.
+A hijacked session therefore cannot swap the recovery inbox without a fresh
+sign-in. The client signs the user out locally and re-offers the change
+after they authenticate again. The `confirm` action is not gated (a link can
+only exist via a gated send and expires in 60 minutes).
+
+Custom Access Token Hook caveat: if the project ever enables a Supabase Auth
+Custom Access Token Hook that rewrites the JWT, the `amr` claim is only as
+trustworthy as that hook — the function checks shape and freshness only,
+never method legitimacy. If the hook drops or stale-dates `amr`, verified
+users will be locked out of changing recovery addresses (fail closed, no
+data leak) until the hook is fixed. Do not enable such a hook without
+preserving `amr` verbatim from the original token.
+
 ## Break-glass: password AND inbox both lost
 1. Verify the requester out-of-band first (in person, a call on a known
    number, or another verified channel). Never act on emailed support requests.
