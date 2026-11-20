@@ -185,7 +185,7 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
 
   return (
     <div className="space-y-7 sm:space-y-9">
-      <section className="relative overflow-hidden rounded-[28px] bg-[#0B3F35] p-5 text-white shadow-[0_20px_60px_-35px_rgba(7,54,44,0.7)] sm:p-8">
+      <section className="relative overflow-hidden rounded-[28px] bg-[#0B3F35] p-5 text-on-brand shadow-[0_20px_60px_-35px_rgba(7,54,44,0.7)] sm:p-8">
         <div className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full border border-white/10" />
         <div className="pointer-events-none absolute -right-2 -top-6 h-40 w-40 rounded-full border border-white/10" />
         <div className="relative max-w-2xl">

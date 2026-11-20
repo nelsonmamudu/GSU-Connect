@@ -2303,7 +2303,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             <div
               className={`relative w-11 h-11 rounded-2xl shrink-0 flex items-center justify-center font-semibold text-sm ${
                 chat.type === 'general'
-                  ? 'bg-brand text-white'
+                  ? 'bg-brand text-on-brand'
                   : chat.type === 'department'
                     ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
                     : 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border border-teal-200/70 dark:border-teal-800/70'
@@ -2901,7 +2901,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     title="Live Class Radar & Exam Countdown"
                     className={`min-h-[38px] px-2.5 rounded-xl inline-flex items-center gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                       activeChat.radarStatus
-                        ? 'bg-brand text-white hover:bg-brand-strong'
+                        ? 'bg-brand text-on-brand hover:bg-brand-strong'
                         : 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                     }`}
                   >
@@ -3924,7 +3924,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`w-full min-h-[36px] rounded-lg text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer disabled:opacity-60 ${
                                     isMine
                                       ? 'bg-on-brand/20 hover:bg-white/30 text-on-brand'
-                                      : 'bg-brand hover:bg-brand-strong text-white'
+                                      : 'bg-brand hover:bg-brand-strong text-on-brand'
                                   }`}
                                 >
                                   <MessageSquare className="w-3.5 h-3.5" />
@@ -3988,7 +3988,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                             isMine
                                               ? isSelected
                                                 ? 'border-white/80 bg-white/20 text-white'
-                                                : 'border-white/25 bg-brand-strong/40 hover:bg-brand-strong/60 text-emerald-50'
+                                                : 'border-white/25 bg-brand-strong/40 hover:bg-brand-strong/60 text-on-brand'
                                               : isSelected
                                                 ? 'border-brand dark:border-brand bg-brand-subtle/70 dark:bg-brand-subtle/40 text-ink dark:text-ink'
                                                 : 'border-line dark:border-line bg-sunken/70 dark:bg-surface/50 hover:border-line dark:hover:border-line text-ink dark:text-ink-soft'
