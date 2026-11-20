@@ -24,6 +24,7 @@ const brevo = async (
 
 Deno.serve(
   recoveryEmailHandler({
+    turnstileSecret: () => Deno.env.get('TURNSTILE_SECRET_KEY'),
     async identify(jwt: string) {
       const caller = createClient(
         url,

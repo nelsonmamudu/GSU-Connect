@@ -10,7 +10,7 @@
 --      separately-authorised rollout. Legacy unverified reset is untouched.
 --   3. phase1_private.recovery_mail_limits  — normalized-before-counting send
 --      ledger enforcing a global daily cap (100), a per-destination cap (3),
---      and a per-account cap (4/day, 1/minute).
+--      a per-IP cap (20) and a per-account cap (4/day, 1/minute).
 --   4. public.request_recovery_email(u, mail, token_hash) — validates, caps,
 --      revokes prior outstanding challenges, issues a fresh digest. service_role.
 --   5. public.confirm_recovery_email(u, token_hash) — atomic claim: verifies
@@ -25,7 +25,7 @@
 --
 -- ROLLBACK (drop in reverse dependency order):
 --   drop function if exists public.confirm_recovery_email(uuid,text);
---   drop function if exists public.request_recovery_email(uuid,text,text);
+--   drop function if exists public.request_recovery_email(uuid,text,text,text);
 --   drop function if exists phase1_private.normalize_recovery_email(text);
 --   drop table if exists phase1_private.recovery_mail_limits;
 --   drop table if exists phase1_private.verified_recovery;
@@ -62,11 +62,13 @@ revoke all on phase1_private.verified_recovery from public, anon, authenticated;
 create table phase1_private.recovery_mail_limits (
   user_id uuid not null references auth.users(id) on delete cascade,
   destination text not null,
+  ip_hash text not null default '',
   sent_at timestamptz not null default now()
 );
 create index recovery_mail_limits_sent_idx on phase1_private.recovery_mail_limits (sent_at);
 create index recovery_mail_limits_destination_idx on phase1_private.recovery_mail_limits (destination, sent_at);
 create index recovery_mail_limits_user_idx on phase1_private.recovery_mail_limits (user_id, sent_at);
+create index recovery_mail_limits_ip_idx on phase1_private.recovery_mail_limits (ip_hash, sent_at);
 alter table phase1_private.recovery_mail_limits enable row level security;
 revoke all on phase1_private.recovery_mail_limits from public, anon, authenticated;
 
@@ -79,9 +81,11 @@ $$;
 -- 4. Issue a challenge. Caps are enforced here, not in the handler, so they
 -- hold for every caller and every retry. Destinations are normalized BEFORE
 -- any count or comparison, so case/whitespace variants cannot dodge a cap.
-create function public.request_recovery_email(u uuid, mail text, token_hash text) returns void
+-- ip_hash is the SHA-256 hex of the client IP (or '' when unknown). It is
+-- used only for equality counts and is never exposed.
+create function public.request_recovery_email(u uuid, mail text, token_hash text, ip_hash text default '') returns void
 language plpgsql security definer set search_path = '' as $$
-declare m text;
+declare m text; ip text;
 begin
   m := phase1_private.normalize_recovery_email(mail);
   if length(m) > 254 or m !~ '^[a-z0-9][a-z0-9._+-]*@[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$' then
@@ -89,6 +93,10 @@ begin
   end if;
   if token_hash is null or token_hash !~ '^[a-f0-9]{64}$' then
     raise exception 'Invalid token';
+  end if;
+  ip := lower(btrim(coalesce(ip_hash, '')));
+  if length(ip) > 64 then
+    raise exception 'Invalid request';
   end if;
 
   delete from phase1_private.recovery_mail_limits where sent_at < now() - interval '1 day';
@@ -105,6 +113,10 @@ begin
         where destination = m and sent_at > now() - interval '1 day') >= 3 then
     raise exception 'Too many verification requests for this address';
   end if;
+  if ip <> '' and (select count(*) from phase1_private.recovery_mail_limits l
+                     where l.ip_hash = ip and l.sent_at > now() - interval '1 day') >= 20 then
+    raise exception 'Too many verification requests from this network';
+  end if;
   if exists(select from phase1_private.recovery_mail_limits
               where user_id = u and sent_at > now() - interval '1 minute')
      or (select count(*) from phase1_private.recovery_mail_limits
@@ -112,7 +124,7 @@ begin
     raise exception 'Email request limit reached';
   end if;
 
-  insert into phase1_private.recovery_mail_limits (user_id, destination) values (u, m);
+  insert into phase1_private.recovery_mail_limits (user_id, destination, ip_hash) values (u, m, ip);
 
   -- One active challenge per account: outstanding unconsumed challenges die here.
   update phase1_private.recovery_challenges set consumed_at = now()
@@ -167,10 +179,10 @@ end $$;
 
 revoke all on function phase1_private.normalize_recovery_email(text)
   from public, anon, authenticated;
-revoke all on function public.request_recovery_email(uuid, text, text),
+revoke all on function public.request_recovery_email(uuid, text, text, text),
               public.confirm_recovery_email(uuid, text)
   from public, anon, authenticated;
-grant execute on function public.request_recovery_email(uuid, text, text),
+grant execute on function public.request_recovery_email(uuid, text, text, text),
                           public.confirm_recovery_email(uuid, text)
   to service_role;
 

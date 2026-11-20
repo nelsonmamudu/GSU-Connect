@@ -12,13 +12,20 @@
 //     never reaches the RPC layer.
 //   - Requester supplies neither the digest to issue nor the account to bind:
 //     the account comes from the verified session, the digest is generated here.
+//   - The send action verifies Turnstile before any RPC or quota charge;
+//     missing/invalid tokens return the same generic 200 body as success,
+//     after the same timing floor, and nothing is counted or sent.
 //   - Rate limits live in the database (global daily cap, per-destination cap,
-//     per-account cap) and are counted on NORMALIZED addresses.
+//     per-IP cap, per-account cap) and are counted on NORMALIZED addresses.
 //   - Identical generic failure message for expired, consumed, revoked,
 //     cross-account and replayed links.
 
+import {verifyTurnstile} from './turnstile.ts';
+
 interface Dependencies {
   identify(jwt: string): Promise<string | null>;
+  /** Turnstile secret; the secret never leaves the index wrapper. */
+  turnstileSecret(): string | undefined;
   rpc(
     name: string,
     args: Record<string, string>
@@ -36,6 +43,30 @@ const headers = {
   'Cache-Control': 'no-store',
   'Content-Type': 'application/json',
 };
+
+const RESPONSE_FLOOR_MS = 350;
+
+async function waitResponseFloor(startedAt: number): Promise<void> {
+  const jitter = Math.floor(Math.random() * 75);
+  const targetMs = RESPONSE_FLOOR_MS + jitter;
+  const elapsed = Date.now() - startedAt;
+  if (elapsed < targetMs) {
+    await new Promise((resolve) => setTimeout(resolve, targetMs - elapsed));
+  }
+}
+
+function extractClientIp(req: Request): string {
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff) {
+    const first = xff.split(',')[0]?.trim();
+    if (first && first.length <= 64) return first;
+  }
+  const cfIp = req.headers.get('cf-connecting-ip')?.trim();
+  if (cfIp && cfIp.length <= 64) return cfIp;
+  const realIp = req.headers.get('x-real-ip')?.trim();
+  if (realIp && realIp.length <= 64) return realIp;
+  return '';
+}
 
 const reply = (status: number, message: string) =>
   new Response(JSON.stringify({ message }), { status, headers });
@@ -75,6 +106,7 @@ export function recoveryEmailHandler(deps: Dependencies) {
     if (req.method === 'OPTIONS') return new Response(null, { headers });
     if (req.method !== 'POST') return reply(405, 'Method not allowed.');
 
+    const startedAt = Date.now();
     try {
       const auth = req.headers.get('Authorization') || '';
       if (!auth.startsWith('Bearer ')) return reply(401, 'Sign in required');
@@ -122,20 +154,31 @@ export function recoveryEmailHandler(deps: Dependencies) {
         return reply(400, 'Enter a valid email address');
       }
 
+      // Turnstile BEFORE any RPC or quota charge — same generic-failure shape
+      // and timing floor as password-reset. Failure returns the same 200 body
+      // as success: nothing is sent, counted or looked up.
+      if (!await verifyTurnstile((input as {captchaToken?:unknown}).captchaToken, deps.turnstileSecret())) {
+        await waitResponseFloor(startedAt);
+        return reply(200, 'Check your inbox. The link expires in 60 minutes.');
+      }
+
       const link = new URL('/', deps.appUrl());
       if (link.protocol !== 'https:') return reply(503, 'Email delivery unavailable');
 
       const token = hex(crypto.getRandomValues(new Uint8Array(32)));
       link.hash = `recovery-confirm=${token}`;
 
+      const clientIp = extractClientIp(req);
+      const ipHash = clientIp ? await hash(clientIp) : '';
       const r = await deps.rpc('request_recovery_email', {
         u,
         mail,
         token_hash: await hash(token),
+        ip_hash: ipHash,
       });
       if (r.error) {
         const msg = String(r.error.message || '');
-        if (msg.includes('limit') || msg.includes('Too many')) {
+        if (msg.includes('limit') || msg.includes('Too many') || msg.includes('network')) {
           return reply(
             429,
             'Please wait before requesting another verification link.'

@@ -64,6 +64,15 @@ export async function testRecoveryEmail(db) {
   );
   await superq(`delete from phase1_private.recovery_mail_limits where destination like 'bulk%@example.com'`);
 
+  // --- per-IP cap (20/day) -----------------------------------------------------
+  await superq(`insert into phase1_private.recovery_mail_limits(user_id, destination, ip_hash, sent_at)
+                select '${id(209)}', 'network' || g || '@example.com', 'iptest', now() from generate_series(1, 20) g`);
+  await assert.rejects(
+    serviceq(`select public.request_recovery_email('${id(209)}', 'victim@example.com', '${tok('e1')}', 'iptest')`),
+    /network/
+  );
+  await superq(`delete from phase1_private.recovery_mail_limits where ip_hash = 'iptest'`);
+
   // --- one active challenge per account: re-issue revokes the previous one -----
   await cool(id(201));
   await serviceq(`select public.request_recovery_email('${id(201)}', 'reissue@example.com', '${tok('c')}')`);

@@ -14,7 +14,14 @@ function readToken(): string {
     try {
       sessionStorage.setItem(STORAGE_KEY, fromHash);
     } catch {
-      // Storage unavailable — the hash alone is still the source of truth.
+      // Storage unavailable — keep the token in the hash alone.
+    }
+    // Drop the token from the address bar immediately: hashes can be shared,
+    // screenshotted or synced; sessionStorage survives the sign-in redirect.
+    try {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    } catch {
+      // ignore — the token remains only in sessionStorage / this closure
     }
     return fromHash;
   }
