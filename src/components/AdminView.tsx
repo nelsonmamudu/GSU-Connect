@@ -178,7 +178,24 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [adminError, setAdminError] = useState<string | null>(null);
   const [cohortNotice, setCohortNotice] = useState('');
   const [draftLevels,setDraftLevels]=useState<Record<string,string>>({});
-  const cohortPicker = (user:AppUser) => { const choices=user.level==='Class of 2026'?['Class of 2026']:['100','200','300','400','500','600']; const level=draftLevels[user.uid]??(choices.includes(user.level)?user.level:'');return <div className="flex flex-wrap items-center gap-2 text-xs"><label>Reviewer-confirmed level <select value={level} onChange={e=>setDraftLevels({...draftLevels,[user.uid]:e.target.value})}><option value="">Choose level</option>{choices.map(v=><option key={v}>{v}</option>)}</select></label><button type="button" disabled={!level} onClick={async()=>{const {error}=await supabase.rpc('confirm_review_level',{target:user.uid,confirmed_level:level});if(error)setAdminError(error.message);else setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);}}>Confirm level</button></div>; };
+  const levelChoices = (user: AppUser) => currentUser.role === 'classRep' ? [currentUser.level]
+    : user.level === 'Class of 2026' ? ['Class of 2026'] : ['100','200','300','400','500','600'];
+  const selectedLevel = (user: AppUser) => draftLevels[user.uid] ?? (levelChoices(user).includes(user.level) ? user.level : '');
+  const confirmLevel = async (user: AppUser) => {
+    const level = selectedLevel(user);
+    const { error } = await supabase.rpc('confirm_review_level', { target: user.uid, confirmed_level: level });
+    if (error) { setAdminError(error.message); return false; }
+    setCohortNotice(`Confirmed level ${level} for ${user.fullName}.`);
+    return true;
+  };
+  const cohortPicker = (user: AppUser, standalone = false) => (
+    <label className="flex flex-wrap items-center gap-2 text-xs">Confirm level for approval
+      <select value={selectedLevel(user)} onChange={e => setDraftLevels({...draftLevels,[user.uid]:e.target.value})}>
+        <option value="">Choose level</option>{levelChoices(user).map(v => <option key={v}>{v}</option>)}
+      </select>
+      {standalone && <button type="button" disabled={!selectedLevel(user)} onClick={() => void confirmLevel(user)}>Confirm level</button>}
+    </label>
+  );
   const bannerTimerRef = useRef<number | null>(null);
   const queuedDecisionsRef = useRef<Map<string, QueuedSignupDecision>>(new Map());
   const isMountedRef = useRef(true);
@@ -1096,7 +1113,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </div>
                     </div>
 
-                    {!isLecturerReq && (isAdmin || currentUser.role === 'deptHelper') && cohortPicker(user)}
+                    {!isLecturerReq && cohortPicker(user)}
                     {isAdmin && (
                       <div className="flex items-center justify-between gap-3 bg-slate-50 dark:bg-slate-800/70 rounded-2xl px-3.5 py-2 border border-slate-100 dark:border-slate-700/80">
                         <label
@@ -1151,8 +1168,15 @@ export const AdminView: React.FC<AdminViewProps> = ({
                       </button>
                       <button
                         type="button"
-                        disabled={busyId === user.uid}
-                        onClick={() => { if (window.confirm(`Approve ${user.fullName} after reviewing their evidence?`)) void handleDecision(user, 'approved'); }}
+                        disabled={busyId === user.uid || (!isLecturerReq && !selectedLevel(user))}
+                        onClick={async () => {
+                          if (!window.confirm(isLecturerReq ? `Approve ${user.fullName} after reviewing their evidence?` : `Confirm level ${selectedLevel(user)} and approve ${user.fullName}?`)) return;
+                          setBusyId(user.uid);
+                          try {
+                            if (isLecturerReq || await confirmLevel(user)) handleDecision(user, 'approved');
+                          } catch { setAdminError('Could not confirm the student level. Please retry.'); }
+                          finally { setBusyId(null); }
+                        }}
                         className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Check className="w-4 h-4" />
@@ -1422,7 +1446,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                     <div className="flex flex-wrap items-center gap-2 shrink-0">
                       {canDecide && !isSelf && (caseId!==user.uid ? <button type="button" onClick={()=>{setCaseId(user.uid);setCaseReason('');setCaseStatus('pending');}}>Review decision</button> : <div className="space-y-2"><label>Decision for {user.fullName}<select value={caseStatus} onChange={e=>setCaseStatus(e.target.value)}>{['pending','approved','rejected','suspended'].map(v=><option key={v}>{v}</option>)}</select></label><input placeholder="Decision reason" aria-label="Decision reason" maxLength={500} value={caseReason} onChange={e=>setCaseReason(e.target.value)}/><button type="button" disabled={!caseReason.trim() || busyId===caseId} onClick={decideCase}>Record decision</button><button type="button" onClick={()=>setCaseId('')}>Cancel</button></div>)}
                       {canDecide && user.role==='classRep' && <button type="button" onClick={async()=>{const {data,error}=await supabase.rpc('manage_rep_invite',{rep_id:user.uid});if(error)setAdminError(error.message);else{const link=new URL('/',location.origin);link.searchParams.set('invite',data);setInviteLink(link.href);}}}>Replace department invite</button>}
-                      {isAdmin && user.role==='classRep' && cohortPicker(user)}
+                      {isAdmin && user.role==='classRep' && cohortPicker(user, true)}
                       <select
                         aria-label={`Change department for ${user.fullName}`}
                         value={user.department}
