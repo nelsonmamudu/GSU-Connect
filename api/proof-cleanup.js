@@ -56,11 +56,16 @@ export default async function handler(req, res) {
   if (req.method !== 'GET' && req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   if (!bearerOk(req.headers.authorization)) return res.status(401).json({ error: 'Unauthorized' });
 
-  const urlEnv = process.env.SUPABASE_URL ? 'SUPABASE_URL' : 'VITE_SUPABASE_URL';
+  const urlEnv = process.env.VITE_SUPABASE_URL ? 'VITE_SUPABASE_URL' : 'SUPABASE_URL';
   const url = process.env[urlEnv];
   const keyEnv = process.env.GSU_SUPABASE_SECRET_KEY ? 'GSU_SUPABASE_SECRET_KEY' : 'SUPABASE_SERVICE_ROLE_KEY';
   const key = process.env[keyEnv];
   if (!url || !key) return res.status(500).json({ error: 'Server not configured' });
+
+  const diag = invalidKeyDiag(keyEnv, urlEnv, key, url);
+  if (diag.keyType.startsWith('jwt_') && diag.refMatch !== true) {
+    return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', stage: 'init', code: null, kind: 'config_mismatch' });
+  }
 
   let stage = 'init';
   try {
@@ -114,7 +119,7 @@ export default async function handler(req, res) {
     else if (error?.code === '42501' || /permission denied/i.test(message)) kind = 'permission';
     else if (error?.code === '42883' || error?.code === 'PGRST202') kind = 'missing_function';
     const details = { stage, code, kind };
-    if (kind === 'invalid_key') details.diag = invalidKeyDiag(keyEnv, urlEnv, key, url);
+    if (kind === 'invalid_key') details.diag = diag;
     console.error(JSON.stringify(details));
     return res.status(503).json({ error: 'Cleanup incomplete; queued objects remain', ...details });
   }
