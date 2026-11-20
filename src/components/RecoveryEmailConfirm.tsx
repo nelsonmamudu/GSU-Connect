@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { markRecoveryEmailVerified } from './RecoveryEmailPrompt';
 
 // Reads #recovery-confirm=<64-hex-token> from the hash, keeps the token in
 // sessionStorage so it survives a sign-in round trip, and lets the signed-in
@@ -65,6 +66,7 @@ export function RecoveryEmailConfirm() {
         body: { action: 'confirm', token: t },
       });
       if (error) throw error;
+      markRecoveryEmailVerified();
       window.history.replaceState(null, '', window.location.pathname + window.location.search);
       try {
         sessionStorage.removeItem(STORAGE_KEY);

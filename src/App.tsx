@@ -1,5 +1,6 @@
 import {StaffVouchInbox} from './components/StaffVerification';
 import {RecoveryEmailConfirm} from './components/RecoveryEmailConfirm';
+import {RecoveryEmailPrompt} from './components/RecoveryEmailPrompt';
 import React, { Component, ErrorInfo, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import {
   AlertTriangle,
@@ -987,20 +988,24 @@ function MainApp() {
 
   if (currentUser.status !== 'approved') {
     return (
-      <React.Suspense
-        fallback={
-          <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex items-center justify-center p-6">
-            <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Loading status...</p>
-          </div>
-        }
-      >
-        <LazyStatusGateScreen
-          onChecked={setCurrentUser}
-          user={currentUser}
-          authUser={authUser}
-          departments={effectiveDepartments}
-        />
-      </React.Suspense>
+      <>
+        <React.Suspense
+          fallback={
+            <div className="min-h-screen bg-[#F6F8F7] dark:bg-slate-950 flex items-center justify-center p-6">
+              <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">Loading status...</p>
+            </div>
+          }
+        >
+          <LazyStatusGateScreen
+            onChecked={setCurrentUser}
+            user={currentUser}
+            authUser={authUser}
+            departments={effectiveDepartments}
+          />
+        </React.Suspense>
+        {authUser && <RecoveryEmailConfirm />}
+        {authUser && <RecoveryEmailPrompt />}
+      </>
     );
   }
 
@@ -1907,6 +1912,7 @@ function MainApp() {
       )}
 
       {authUser && <RecoveryEmailConfirm />}
+      {authUser && <RecoveryEmailPrompt />}
       {activeVoiceCall && (
         <React.Suspense fallback={null}>
           <LazyVoiceCallModal
