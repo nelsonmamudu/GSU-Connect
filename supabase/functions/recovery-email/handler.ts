@@ -68,6 +68,26 @@ function extractClientIp(req: Request): string {
   return '';
 }
 
+/**
+ * ip_hash is an HMAC-SHA256 of the client IP, keyed by an existing function
+ * secret (TURNSTILE_SECRET_KEY — the one secret guaranteed present whenever a
+ * send proceeds, since Turnstile is verified first) and domain-separated by
+ * the 'recovery-ip:' prefix. It is NEVER a bare SHA-256 of the IP (an
+ * IPv4 address is only ~32 bits of entropy and would be trivially
+ * reversible from a leaked ledger) and never the raw IP.
+ */
+const hmacSha256 = async (secret: string, message: string) => {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(message));
+  return hex(new Uint8Array(signature));
+};
+
 const reply = (status: number, message: string) =>
   new Response(JSON.stringify({ message }), { status, headers });
 
@@ -169,7 +189,11 @@ export function recoveryEmailHandler(deps: Dependencies) {
       link.hash = `recovery-confirm=${token}`;
 
       const clientIp = extractClientIp(req);
-      const ipHash = clientIp ? await hash(clientIp) : '';
+      const pepper = deps.turnstileSecret()?.trim();
+      // Turnstile has already passed at this point, so the pepper exists;
+      // if it somehow does not, fail closed: skip the per-IP ledger instead
+      // of storing an unsalted or empty-keyed hash.
+      const ipHash = clientIp && pepper ? await hmacSha256(pepper, `recovery-ip:${clientIp}`) : '';
       const r = await deps.rpc('request_recovery_email', {
         u,
         mail,

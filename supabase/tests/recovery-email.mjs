@@ -141,7 +141,52 @@ export async function testRecoveryEmail(db) {
     db.exec(`set role authenticated; select public.confirm_recovery_email('${id(202)}', '${tok('2')}')`),
     /permission denied/
   );
+  // --- my_recovery_status(): caller-scoped, masked, authenticated-only -------
+  const statusMigration = readFileSync(
+    new URL('../migrations/20261126_my_recovery_status.sql', import.meta.url),
+    'utf8'
+  );
+  await superq(statusMigration);
+
+  const asUser = async n => db.exec(`reset role;set role authenticated;set request.jwt.claims='${JSON.stringify({ sub: id(n), aal: 'aal1' })}'`);
+  const status = async () => {
+    const rows = (await db.query('select public.my_recovery_status() as s')).rows;
+    return rows[0].s;
+  };
+
+  // 201 verified replacement@example.com earlier in this suite.
+  await asUser(201);
+  const s201 = await status();
+  assert.equal(s201.verified, true);
+  assert.equal(s201.masked_email, 're***@ex***.com');
+  assert.ok(!JSON.stringify(s201).includes('replacement@example.com'), 'never returns the raw address');
+
+  // 203 requested but never confirmed — no verified binding exists for them.
+  await asUser(203);
+  const s203 = await status();
+  assert.deepEqual(s203, { verified: false, masked_email: null });
+
+  // Caller scoping: 203 cannot see 201's status, and there is no uid argument to abuse.
+  await assert.rejects(
+    db.query(`select public.my_recovery_status('${id(201)}')`),
+    /does not exist|too many arguments/i
+  );
+
+  // anon cannot execute it.
+  await db.exec('reset role; set role anon');
+  await assert.rejects(db.query('select public.my_recovery_status()'), /permission denied/i);
+
+  // authenticated CAN execute it (grant intact).
+  await asUser(201);
+  assert.equal((await status()).verified, true);
+
+  // Helpers are not callable by API roles either.
+  await db.exec('reset role; set role authenticated');
+  await assert.rejects(
+    db.query(`select phase1_private.mask_recovery_email('leak@example.com')`),
+    /permission denied/i
+  );
   await superq('select 1');
 
-  console.log('Recovery email: normalization-before-count, 60-minute TTL, global/destination/account caps, replay/expiry/cross-account, atomic claim and old-inbox continuity passed.');
+  console.log('Recovery email: normalization-before-count, 60-minute TTL, global/destination/account caps, replay/expiry/cross-account, atomic claim, old-inbox continuity and my_recovery_status passed.');
 }

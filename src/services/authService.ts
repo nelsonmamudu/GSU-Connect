@@ -513,6 +513,25 @@ export async function requestRecoveryEmailVerification(
   }
 }
 
+/**
+ * Caller-scoped recovery status from the server (SECURITY DEFINER RPC,
+ * auth.uid() only). The raw address is never returned — `maskedEmail` is
+ * masked server-side, and is null until this account verifies an inbox.
+ * Throws on transport/permission error; callers should treat that as
+ * "unknown" and fail closed (render nothing / no nudge).
+ */
+export async function fetchMyRecoveryStatus(): Promise<{ verified: boolean; maskedEmail: string | null }> {
+  const { data, error } = await supabase.rpc('my_recovery_status');
+  if (error) {
+    throw new Error(error.message);
+  }
+  const raw = (data ?? {}) as { verified?: unknown; masked_email?: unknown };
+  return {
+    verified: raw.verified === true,
+    maskedEmail: typeof raw.masked_email === 'string' ? raw.masked_email : null,
+  };
+}
+
 export async function signOutUser(scope: 'local' | 'global' = 'global'): Promise<void> {
   clearCachedWorkspaceStorage();
   const { error } = await supabase.auth.signOut({ scope });

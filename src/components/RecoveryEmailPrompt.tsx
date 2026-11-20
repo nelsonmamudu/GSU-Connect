@@ -3,19 +3,23 @@ import { supabase } from '../lib/supabase';
 import { useTurnstile } from './Turnstile';
 import { friendlyEntryError } from '../utils/entryErrors';
 import { maskEmail } from '../utils/maskEmail';
-import { requestRecoveryEmailVerification } from '../services/authService';
+import { fetchMyRecoveryStatus, requestRecoveryEmailVerification } from '../services/authService';
 import { fetchOwnRecoveryEmail } from '../services/supabaseService';
 
-// Shown to every signed-in account until either a verified binding exists
-// (set locally on confirm success) or the user dismisses it with "Later"
-// (snoozed for 7 days). Honest by construction: the client cannot query
-// verified_recovery, so the card nudges rather than claims a state it
-// cannot see. After signup it additionally knows the address typed.
-const VERIFIED_KEY = 'gsu_recovery_verified_at';
+// Shown to every signed-in account until the SERVER reports a verified
+// binding for this account (my_recovery_status RPC; auth.uid() only, returns
+// at most a masked address) or the user dismisses it with "Later" (snoozed
+// 7 days). The client has no other source of truth about verified state;
+// it does not keep a local "verified" flag. If the status RPC cannot be
+// reached the card hides itself — an unreachable backend must produce no
+// nudge rather than a broken one. After signup the typed inbox (stashed in
+// sessionStorage) drives the card until the stash is cleared by a successful
+// send.
 const DISMISS_KEY = 'gsu_recovery_verify_dismissed_until';
 const SIGNUP_KEY = 'gsu_signup_recovery';
 const SNOOZE_MS = 7 * 24 * 60 * 60 * 1000;
 const EMAIL_RE = /^[a-z0-9][a-z0-9._+-]*@[a-z0-9][a-z0-9.-]*\.[a-z]{2,}$/;
+export const RECOVERY_VERIFIED_EVENT = 'gsu-recovery-verified';
 
 function readSignupEmail(): string {
   try {
@@ -24,19 +28,14 @@ function readSignupEmail(): string {
     return '';
   }
 }
-function isVerifiedLocally(): boolean {
-  try { return Number(localStorage.getItem(VERIFIED_KEY) || 0) > 0; } catch { return false; }
-}
 function isSnoozed(): boolean {
   try { return Number(localStorage.getItem(DISMISS_KEY) || 0) > Date.now(); } catch { return false; }
-}
-export function markRecoveryEmailVerified(): void {
-  try { localStorage.setItem(VERIFIED_KEY, String(Date.now())); } catch { /* ignore */ }
 }
 
 export function RecoveryEmailPrompt() {
   const [signupEmail, setSignupEmail] = useState(readSignupEmail);
   const [mode, setMode] = useState<'hidden' | 'signup' | 'login' | 'change' | 'sent'>('hidden');
+  const [status, setStatus] = useState<{ verified: boolean; maskedEmail: string | null } | null>(null);
   const [knownEmail, setKnownEmail] = useState('');
   const [newEmail, setNewEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -46,16 +45,33 @@ export function RecoveryEmailPrompt() {
   const resendCheck = useTurnstile('recovery-resend');
 
   useEffect(() => {
-    if (isVerifiedLocally()) { setMode('hidden'); return; }
-    if (signupEmail) { setMode('signup'); return; }
-    if (isSnoozed()) { setMode('hidden'); return; }
     let active = true;
+    const onVerified = () => setMode('hidden');
+    window.addEventListener(RECOVERY_VERIFIED_EVENT, onVerified);
+    fetchMyRecoveryStatus()
+      .then((s) => {
+        if (!active) return;
+        setStatus(s);
+        if (s.verified) { setMode('hidden'); return; }
+        if (readSignupEmail()) { setMode('signup'); return; }
+        if (isSnoozed()) { setMode('hidden'); return; }
+        setMode('login');
+      })
+      .catch(() => {
+        // Fail closed: no verified-state source, no nudge.
+        if (active) {
+          setStatus(null);
+          setMode('hidden');
+        }
+      });
     fetchOwnRecoveryEmail()
       .then((email) => { if (active) setKnownEmail(email); })
-      .catch(() => { /* display is optional */ })
-      .finally(() => { if (active) setMode('login'); });
-    return () => { active = false; };
-  }, [signupEmail]);
+      .catch(() => { /* display/resend fallback is optional */ });
+    return () => {
+      active = false;
+      window.removeEventListener(RECOVERY_VERIFIED_EVENT, onVerified);
+    };
+  }, []);
 
   if (mode === 'hidden') return null;
 
@@ -68,25 +84,38 @@ export function RecoveryEmailPrompt() {
     setSignupEmail('');
   };
   const sent = (masked: string) => {
+    // Clear the signup stash after a successful send: the address now lives
+    // only in the pending challenge / verified binding server-side.
+    forgetSignupKey();
     setMessage(`Verification link sent to ${masked}. It expires in 60 minutes — check your spam folder.`);
     setMode('sent');
     setPassword('');
     setNewEmail('');
   };
+
+  // Where a resend goes: the freshly-stashed signup address, or the legacy
+  // recovery address (the owner's own typed value). A verified masked_email
+  // from the server is never a send target — it is display-only.
+  const resendTarget = signupEmail || knownEmail;
+  const shownMasked = signupEmail
+    ? maskEmail(signupEmail)
+    : status?.maskedEmail ?? (knownEmail ? maskEmail(knownEmail) : null);
+
   const resend = async () => {
     setBusy(true); setMessage('');
     try {
+      if (!resendTarget) { setMessage('Enter the inbox to verify with “Add one now”.'); setBusy(false); return; }
       const token = resendCheck.consume();
       const { error } = await supabase.functions.invoke('recovery-email', {
-        body: { action: 'send', email: signupEmail || knownEmail, captchaToken: token },
+        body: { action: 'send', email: resendTarget, captchaToken: token },
       });
       if (error) {
-        const status = (error as { context?: { status?: number } })?.context?.status;
-        throw new Error(status === 429
+        const statusCode = (error as { context?: { status?: number } })?.context?.status;
+        throw new Error(statusCode === 429
           ? 'Too many verification requests. Please wait a few minutes and try again.'
           : 'Could not send the verification email. Please check your connection and try again.');
       }
-      sent(maskEmail(signupEmail || knownEmail));
+      sent(maskEmail(resendTarget));
     } catch (err) {
       setMessage(friendlyEntryError(err, 'Could not send the verification email.'));
     } finally {
@@ -100,7 +129,6 @@ export function RecoveryEmailPrompt() {
     setBusy(true); setMessage('');
     try {
       await requestRecoveryEmailVerification(clean, password, changeCheck.consume());
-      forgetSignupKey();
       sent(maskEmail(clean));
     } catch (err) {
       setMessage(friendlyEntryError(err, 'Could not send the verification email.'));
@@ -109,7 +137,6 @@ export function RecoveryEmailPrompt() {
     }
   };
 
-  const shown = signupEmail || knownEmail;
   const title = mode === 'signup' ? 'Verify your recovery email' : 'Verify a recovery email';
 
   return (
@@ -159,21 +186,21 @@ export function RecoveryEmailPrompt() {
       ) : (
         <>
           <p>
-            {shown
-              ? <>We sent a verification link to <span className="font-semibold">{maskEmail(shown)}</span>. Password reset links will go there once you confirm it.</>
-              : 'Add a verified recovery inbox so password reset links reach you even if you forget your sign-in password.'}
+            {shownMasked
+              ? <>We sent a verification link to <span className="font-semibold">{shownMasked}</span>. Confirm it to make this your verified recovery inbox.</>
+              : 'Add a verified recovery inbox so password reset links can reach you when that is enabled.'}
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">Check your spam folder — the link expires in 60 minutes.</p>
           {resendCheck.widget}
           {message && <p role="alert" className="text-red-600 dark:text-red-400">{message}</p>}
           <div className="flex flex-wrap gap-2">
-            {shown && (
+            {resendTarget && (
               <button type="button" onClick={resend} disabled={busy} className="min-h-[44px] px-4 rounded-xl bg-emerald-700 disabled:opacity-60 text-white font-semibold">
                 {busy ? 'Sending…' : 'Resend link'}
               </button>
             )}
             <button type="button" onClick={() => { setMode('change'); setMessage(''); }} className="min-h-[44px] px-4 rounded-xl border border-emerald-700 dark:border-emerald-500 text-emerald-800 dark:text-emerald-300 font-semibold">
-              {shown ? 'Correct address' : 'Add one now'}
+              {shownMasked ? 'Correct address' : 'Add one now'}
             </button>
             <button type="button" onClick={() => { forgetSignupKey(); snooze(); }} className="min-h-[44px] px-4 rounded-xl border border-slate-200 dark:border-slate-700 font-medium">
               Later

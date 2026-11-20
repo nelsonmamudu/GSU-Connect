@@ -1,9 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createHash } from 'node:crypto';
+import { createHash, createHmac } from 'node:crypto';
 import {recoveryEmailHandler} from '../supabase/functions/recovery-email/handler';
 
 const sha256 = s => createHash('sha256').update(s).digest('hex');
+const hmacSha256 = (secret, message) =>
+  createHmac('sha256', secret).update(message).digest('hex');
 
 const VALID = 'valid-captcha-token';
 
@@ -87,12 +89,14 @@ test('send validates input and issues a normalized, server-side token', async (t
   assert.equal(calls[0].args.token_hash, sha256(token), 'only the digest reaches the database');
 });
 
-test('the client IP is hashed before it reaches the database; the raw IP never does', async (t) => {
+test('the client IP is salted (HMAC, keyed by the Turnstile secret) before it reaches the database; the raw IP never does', async (t) => {
   mockCaptcha(t, true);
   const {post, calls} = harness();
   const res = await post({action: 'send', email: 'a@example.com', captchaToken: VALID}, 'valid-a', {'x-forwarded-for': '203.0.113.9, 10.0.0.1'});
   assert.equal(res.status, 200);
-  assert.equal(calls[0].args.ip_hash, sha256('203.0.113.9'));
+  // Salted with the existing TURNSTILE_SECRET_KEY ('test-secret' here), domain-separated.
+  assert.equal(calls[0].args.ip_hash, hmacSha256('test-secret', 'recovery-ip:203.0.113.9'));
+  assert.notEqual(calls[0].args.ip_hash, sha256('203.0.113.9'));
   assert.ok(!JSON.stringify(calls[0]).includes('203.0.113.9'));
 });
 
