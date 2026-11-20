@@ -112,7 +112,7 @@ function ModeSwitch({
           onClick={() => onChange(key)}
           className={
             mode === key
-              ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-xs'
+              ? 'bg-white dark:bg-surface text-ink shadow-xs'
               : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
           }
         >
@@ -575,7 +575,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
               }}
               className={
                 accountType === type
-                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand dark:text-brand'
+                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand'
                   : 'bg-white dark:bg-sunken/70'
               }
             >

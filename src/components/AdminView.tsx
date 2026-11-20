@@ -1225,8 +1225,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           isOpen
                             ? 'text-amber-700 dark:text-amber-400'
                             : report.status === 'resolved'
-                              ? 'text-brand dark:text-brand'
-                              : 'text-ink-muted dark:text-ink-muted'
+                              ? 'text-brand'
+                              : 'text-ink-muted'
                         }`}
                       >
                         {report.status}
@@ -1472,7 +1472,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           onClick={() => handleToggleSuspend(user)}
                           className={`min-h-[42px] px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer ${
                             isSuspended
-                              ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
+                              ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                               : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/60'
                           }`}
                         >
@@ -1505,7 +1505,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                           className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border transition-colors cursor-pointer disabled:opacity-60 ${
                             user.is_exempt
                               ? 'bg-brand border-brand'
-                              : 'bg-sunken dark:bg-sunken border-line dark:border-line'
+                              : 'bg-sunken border-line'
                           }`}
                         >
                           <span
@@ -1861,7 +1861,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
                 role="status"
                 className={`rounded-2xl px-3.5 py-2.5 text-xs font-medium ${
                   domainMessage.type === 'ok'
-                    ? 'bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 text-brand dark:text-brand'
+                    ? 'bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 text-brand'
                     : 'bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 text-red-800 dark:text-red-300'
                 }`}
               >

@@ -83,7 +83,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   avatarId,
   size = 'md',
   roundedClass = 'rounded-full',
-  fallbackClassName = 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand',
+  fallbackClassName = 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand',
   className = '',
 }) => {
   const [imgError, setImgError] = useState(false);

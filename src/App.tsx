@@ -1129,14 +1129,14 @@ function MainApp() {
                   onClick={() => handleSelectTab(item.id)}
                   className={`w-full min-h-[44px] px-3.5 rounded-2xl flex items-center justify-between text-sm font-semibold transition-colors cursor-pointer ${
                     isActive
-                      ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
-                      : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken/80 hover:text-ink dark:hover:text-ink'
+                      ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
+                      : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken/80 hover:text-ink'
                   }`}
                 >
                   <span className="flex items-center gap-3">
                     <Icon
                       className={`w-5 h-5 ${
-                        isActive ? 'text-brand dark:text-brand' : 'text-ink-muted dark:text-ink-muted'
+                        isActive ? 'text-brand' : 'text-ink-muted'
                       }`}
                     />
                     <span className="whitespace-nowrap">{item.label}</span>
@@ -1165,7 +1165,7 @@ function MainApp() {
                   type="button"
                   onClick={() => handleSelectTab('admin')}
                   className={`mt-4 w-full min-h-[44px] px-3.5 rounded-2xl flex items-center justify-between text-sm font-semibold transition-colors cursor-pointer ${
-                    isActive ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand' : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken/80'
+                    isActive ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand' : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken/80'
                   }`}
                 >
                   <span className="flex items-center gap-3"><Icon className="w-5 h-5 text-ink-muted" /><span>{item.label}</span></span>
@@ -1720,8 +1720,8 @@ function MainApp() {
                 onClick={() => handleSelectTab(item.id)}
                 className={`relative flex flex-col items-center justify-center min-w-0 min-h-[44px] px-0.5 transition-colors cursor-pointer ${
                   isActive
-                    ? 'text-brand dark:text-brand'
-                    : 'text-ink-muted dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
+                    ? 'text-brand'
+                    : 'text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
                 {isActive && (
@@ -1833,16 +1833,16 @@ function MainApp() {
                         onClick={() => handleSelectTab(item.id)}
                         className={`w-full min-h-[48px] px-3.5 rounded-2xl flex items-center justify-between text-sm font-semibold transition-colors cursor-pointer ${
                           isActive
-                            ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
-                            : 'text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                            ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
+                            : 'text-ink-soft hover:bg-sunken'
                         }`}
                       >
                         <span className="flex items-center gap-3">
                           <Icon
                             className={`w-5 h-5 ${
                               isActive
-                                ? 'text-brand dark:text-brand'
-                                : 'text-ink-muted dark:text-ink-muted'
+                                ? 'text-brand'
+                                : 'text-ink-muted'
                             }`}
                           />
                           <span>{item.label}</span>
@@ -1886,16 +1886,16 @@ function MainApp() {
                         onClick={() => handleSelectTab(item.id)}
                         className={`w-full min-h-[44px] px-3.5 rounded-2xl flex items-center justify-between text-sm font-semibold transition-colors cursor-pointer ${
                           isActive
-                            ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
-                            : 'text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                            ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
+                            : 'text-ink-soft hover:bg-sunken'
                         }`}
                       >
                         <span className="flex items-center gap-3">
                           <Icon
                             className={`w-5 h-5 ${
                               isActive
-                                ? 'text-brand dark:text-brand'
-                                : 'text-ink-muted dark:text-ink-muted'
+                                ? 'text-brand'
+                                : 'text-ink-muted'
                             }`}
                           />
                           <span>{item.label}</span>

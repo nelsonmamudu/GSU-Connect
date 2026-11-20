@@ -187,8 +187,8 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                     onClick={() => setScopeType(opt.id)}
                     className={`min-h-[54px] p-2.5 rounded-xl border text-left transition-colors cursor-pointer ${
                       active
-                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand dark:text-brand'
-                        : 'bg-white dark:bg-sunken/70 border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-line dark:hover:border-line'
+                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand'
+                        : 'bg-white dark:bg-sunken/70 border-line text-ink-soft hover:border-line'
                     }`}
                   >
                     <p className="text-xs font-bold">{opt.label}</p>
@@ -296,7 +296,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                             avatarId={member.avatarId}
                             size="sm"
                             roundedClass="rounded-xl"
-                            fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
+                            fallbackClassName="bg-sunken text-ink-soft"
                           />
                           <div className="min-w-0">
                             <p className="text-xs font-bold text-ink truncate">
@@ -319,7 +319,7 @@ export const CreateGroupModal: React.FC<CreateGroupModalProps> = ({
                           className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 ${
                             checked
                               ? 'bg-brand border-brand text-on-brand'
-                              : 'border-line dark:border-line bg-white dark:bg-sunken'
+                              : 'border-line bg-white dark:bg-sunken'
                           }`}
                         >
                           {checked && <Check className="w-3.5 h-3.5" />}

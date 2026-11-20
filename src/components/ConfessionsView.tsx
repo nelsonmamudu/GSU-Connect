@@ -281,7 +281,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               onClick={() => setViewMode('feed')}
               className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 viewMode === 'feed'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -294,7 +294,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 onClick={() => setViewMode('queue')}
                 className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer inline-flex items-center gap-1.5 ${
                   viewMode === 'queue'
-                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                     : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
@@ -312,7 +312,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               onClick={() => setViewMode('mine')}
               className={`min-h-[36px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 viewMode === 'mine'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -327,7 +327,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   onClick={() => setSortBy('newest')}
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
                     sortBy === 'newest'
-                      ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
@@ -338,7 +338,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   onClick={() => setSortBy('top')}
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
                     sortBy === 'top'
-                      ? 'bg-white dark:bg-surface text-brand dark:text-brand shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-brand shadow-2xs'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >
@@ -383,7 +383,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                 className={`min-h-[32px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                   active
                     ? 'bg-brand border-brand text-on-brand'
-                    : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
+                    : 'bg-sunken dark:bg-sunken/70 border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                 }`}
               >
                 {cat}
@@ -467,7 +467,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                         <span
                           className={`px-2 py-1 rounded-xl text-[11px] font-semibold capitalize ${
                             post.status === 'approved'
-                              ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/80 dark:text-brand'
+                              ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/80'
                               : post.status === 'rejected'
                                 ? 'bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300'
                                 : 'bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300'
@@ -493,7 +493,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                       className={`min-h-[36px] px-3 rounded-xl border text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer tabular-nums ${
                         hasUpvoted
                           ? 'bg-brand border-brand text-on-brand'
-                          : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-brand'
+                          : 'bg-sunken dark:bg-sunken/70 border-line text-ink-soft hover:border-brand'
                       }`}
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
@@ -663,7 +663,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                     className={`min-h-[34px] px-3 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                       category === cat
                         ? 'bg-brand border-brand text-on-brand'
-                        : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-soft dark:text-ink-soft'
+                        : 'bg-sunken border-line text-ink-soft'
                     }`}
                   >
                     {cat}

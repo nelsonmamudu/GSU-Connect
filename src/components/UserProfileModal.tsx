@@ -237,7 +237,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <span
                 title={online ? 'Online' : 'Offline'}
                 className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ring-3 ring-white dark:ring-slate-900 ${
-                  online ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                  online ? 'bg-brand' : 'bg-sunken'
                 }`}
               />
             </div>
@@ -258,7 +258,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <div className="inline-flex items-center justify-center gap-1.5 text-xs">
                 <span
                   className={`w-2 h-2 rounded-full shrink-0 ${
-                    online ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                    online ? 'bg-brand' : 'bg-sunken'
                   }`}
                 />
                 {online ? (

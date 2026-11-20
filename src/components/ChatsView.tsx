@@ -2291,7 +2291,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             ? 'bg-brand-subtle/90 dark:bg-brand-subtle/50 border-success-line dark:border-success-line/80'
             : unread > 0
               ? 'bg-white dark:bg-surface border-success-line/80 dark:border-success-line/70 hover:border-success-line dark:hover:border-brand'
-              : 'bg-white dark:bg-surface border-line/80 dark:border-line hover:border-line dark:hover:border-line'
+              : 'bg-white dark:bg-surface border-line/80 dark:border-line hover:border-line'
         }`}
       >
         <button
@@ -2305,7 +2305,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 chat.type === 'general'
                   ? 'bg-brand text-on-brand'
                   : chat.type === 'department'
-                    ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
+                    ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
                     : 'bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-200 border border-teal-200/70 dark:border-teal-800/70'
               }`}
             >
@@ -2319,14 +2319,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 avatarId={peer?.avatarId}
                 size="lg"
                 roundedClass="rounded-2xl"
-                fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
+                fallbackClassName="bg-sunken text-ink-soft"
               />
               {peer && (
                 <span
                   title={peerOnline ? 'Online' : 'Offline'}
                   aria-label={peerOnline ? 'Online' : 'Offline'}
                   className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                    peerOnline ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                    peerOnline ? 'bg-brand' : 'bg-sunken'
                   }`}
                 />
               )}
@@ -2347,7 +2347,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         ? 'bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300'
                         : chat.radarStatus === 'venue_changed'
                           ? 'bg-amber-100 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300'
-                          : 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
+                          : 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
                     }`}
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" />
@@ -2358,8 +2358,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <span
                 className={`text-[11px] tabular-nums font-mono shrink-0 ${
                   unread > 0
-                    ? 'text-brand dark:text-brand font-semibold'
-                    : 'text-ink-muted dark:text-ink-muted'
+                    ? 'text-brand font-semibold'
+                    : 'text-ink-muted'
                 }`}
               >
                 {formatShortTime(chat.lastMessageAt)}
@@ -2388,8 +2388,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
               <p
                 className={`text-xs truncate ${
                   unread > 0
-                    ? 'text-ink dark:text-ink font-semibold'
-                    : 'text-ink-muted dark:text-ink-muted'
+                    ? 'text-ink font-semibold'
+                    : 'text-ink-muted'
                 }`}
               >
                 {chat.type === 'dm' && peer && isBlockedBetweenUsers(currentUser, peer)
@@ -2416,8 +2416,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
           title={isPinned ? 'Unpin chat' : 'Pin chat to top (max 3)'}
           className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-xl shrink-0 inline-flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 ${
             isPinned
-              ? 'text-brand dark:text-brand bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/70'
-              : 'text-ink-muted dark:text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+              ? 'text-brand bg-brand-subtle dark:bg-brand-subtle/60 hover:bg-brand-subtle dark:hover:bg-brand-subtle/70'
+              : 'text-ink-muted hover:text-ink-soft hover:bg-sunken'
           }`}
         >
           <Pin className={`w-3.5 h-3.5 ${isPinned ? 'fill-current' : ''}`} />
@@ -2441,7 +2441,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             onClick={() => setSidebarMode('chats')}
             className={`flex-1 min-h-[40px] px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               sidebarMode === 'chats'
-                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -2453,7 +2453,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             onClick={() => setSidebarMode('updates')}
             className={`flex-1 min-h-[40px] px-3 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
               sidebarMode === 'updates'
-                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -2524,7 +2524,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   className={`w-4 h-4 ${
                     starredMessages.length > 0
                       ? 'text-amber-500 fill-current'
-                      : 'text-ink-muted dark:text-ink-muted'
+                      : 'text-ink-muted'
                   }`}
                 />
                 {starredMessages.length > 0 && (
@@ -2786,13 +2786,13 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           avatarId={peer.avatarId}
                           size="md"
                           roundedClass="rounded-2xl"
-                          fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
+                          fallbackClassName="bg-sunken text-ink-soft"
                         />
                         <span
                           title={peerOnline ? 'Online' : 'Offline'}
                           aria-label={peerOnline ? 'Online' : 'Offline'}
                           className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                            peerOnline ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                            peerOnline ? 'bg-brand' : 'bg-sunken'
                           }`}
                         />
                       </div>
@@ -2813,8 +2813,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           <span
                             className={
                               isMemberOnline(getDmPeer(activeChat)!)
-                                ? 'text-brand dark:text-brand font-medium shrink-0'
-                                : 'text-ink-muted dark:text-ink-muted shrink-0'
+                                ? 'text-brand font-medium shrink-0'
+                                : 'text-ink-muted shrink-0'
                             }
                           >
                             {isMemberOnline(getDmPeer(activeChat)!)
@@ -2828,14 +2828,14 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         <>
                           <span
                             className={`w-2 h-2 rounded-full shrink-0 ${
-                              activeGroupOnlineCount > 0 ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                              activeGroupOnlineCount > 0 ? 'bg-brand' : 'bg-sunken'
                             }`}
                           />
                           <span
                             className={
                               activeGroupOnlineCount > 0
-                                ? 'text-brand dark:text-brand font-medium shrink-0'
-                                : 'text-ink-muted dark:text-ink-muted shrink-0'
+                                ? 'text-brand font-medium shrink-0'
+                                : 'text-ink-muted shrink-0'
                             }
                           >
                             {activeGroupOnlineCount} online
@@ -2862,8 +2862,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title="Search in conversation"
                   className={`min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center transition-colors cursor-pointer ${
                     inChatSearchOpen
-                      ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand'
-                      : 'text-ink-muted dark:text-ink-muted hover:bg-sunken dark:hover:bg-sunken hover:text-ink-soft dark:hover:text-ink-soft'
+                      ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand'
+                      : 'text-ink-muted hover:bg-sunken hover:text-ink-soft'
                   }`}
                 >
                   <Search className="w-4 h-4" />
@@ -2902,7 +2902,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     className={`min-h-[38px] px-2.5 rounded-xl inline-flex items-center gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                       activeChat.radarStatus
                         ? 'bg-brand text-on-brand hover:bg-brand-strong'
-                        : 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
+                        : 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                     }`}
                   >
                     <Radio className="w-3.5 h-3.5" />
@@ -2930,8 +2930,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   title={pinnedChatSet.has(activeChat.id) ? 'Unpin chat' : 'Pin chat'}
                   className={`min-w-[38px] min-h-[38px] rounded-xl inline-flex items-center justify-center transition-colors cursor-pointer ${
                     pinnedChatSet.has(activeChat.id)
-                      ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand'
-                      : 'text-ink-muted dark:text-ink-muted hover:bg-sunken dark:hover:bg-sunken hover:text-ink-soft dark:hover:text-ink-soft'
+                      ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand'
+                      : 'text-ink-muted hover:bg-sunken hover:text-ink-soft'
                   }`}
                 >
                   <Pin
@@ -2946,7 +2946,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     disabled={blockingBusy}
                     className={`min-h-[40px] px-3 rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer ${
                       iBlockedDm
-                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
+                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/60'
                         : 'bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/60'
                     }`}
                   >
@@ -3183,7 +3183,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             className={`font-medium ${
                               isMissedOrDeclined
                                 ? 'text-red-700 dark:text-red-300'
-                                : 'text-ink-soft dark:text-ink-soft'
+                                : 'text-ink-soft'
                             }`}
                           >
                             {renderHighlightedText(msg.text)}
@@ -3323,7 +3323,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 avatarId={senderProfile?.avatarId}
                                 size="sm"
                                 roundedClass="rounded-full"
-                                fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand"
+                                fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/70 text-brand"
                               />
                             </button>
                           );
@@ -3363,7 +3363,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`min-w-[36px] min-h-[36px] rounded-xl text-lg flex items-center justify-center transition-transform hover:scale-115 active:scale-95 cursor-pointer ${
                                     selected
                                       ? 'bg-brand-subtle dark:bg-brand-subtle/70 ring-1 ring-emerald-400 dark:ring-emerald-600'
-                                      : 'hover:bg-sunken dark:hover:bg-sunken'
+                                      : 'hover:bg-sunken'
                                   }`}
                                 >
                                   {emoji}
@@ -3424,7 +3424,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                           className={`rounded-2xl px-3.5 py-2.5 shadow-2xs select-text ${
                             isMine
                               ? 'bg-brand text-on-brand rounded-br-md'
-                              : 'bg-white dark:bg-sunken border border-line/80 dark:border-line text-ink dark:text-ink rounded-bl-md'
+                              : 'bg-white dark:bg-sunken border border-line/80 dark:border-line text-ink rounded-bl-md'
                           }`}
                         >
                           <div className="flex items-center flex-wrap gap-1.5 mb-1">
@@ -3452,7 +3452,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                             />
                             <span
                               className={`text-[11px] font-mono tabular-nums ${
-                                isMine ? 'text-on-brand' : 'text-ink-muted dark:text-ink-muted'
+                                isMine ? 'text-on-brand' : 'text-ink-muted'
                               }`}
                             >
                               {formatShortTime(msg.createdAt)}
@@ -3462,7 +3462,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`text-[10px] italic ${
                                   isMine
                                     ? 'text-on-brand/85'
-                                    : 'text-ink-muted dark:text-ink-muted'
+                                    : 'text-ink-muted'
                                 }`}
                               >
                                 · Edited
@@ -3474,7 +3474,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`w-3 h-3 ${
                                   isMine
                                     ? 'text-on-brand fill-current'
-                                    : 'text-brand dark:text-brand fill-current'
+                                    : 'text-brand fill-current'
                                 }`}
                               />
                             )}
@@ -3532,7 +3532,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               className={`text-sm italic leading-relaxed ${
                                 isMine
                                   ? 'text-on-brand/85'
-                                  : 'text-ink-muted dark:text-ink-muted'
+                                  : 'text-ink-muted'
                               }`}
                             >
                               {DELETED_MESSAGE_PLACEHOLDER}
@@ -3543,7 +3543,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`inline-flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-dashed text-xs italic ${
                                   isMine
                                     ? 'border-on-brand/40 text-on-brand/85'
-                                    : 'border-line dark:border-line text-ink-muted dark:text-ink-muted'
+                                    : 'border-line text-ink-muted'
                                 }`}
                               >
                                 <span className="w-5 h-5 rounded-full border border-dashed border-current flex items-center justify-center text-[10px] font-bold not-italic">
@@ -3647,7 +3647,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`truncate ${
                                     isMine
                                       ? 'text-on-brand/85'
-                                      : 'text-ink-muted dark:text-ink-muted'
+                                      : 'text-ink-muted'
                                   }`}
                                 >
                                   {formatFileSize(msg.fileSizeBytes || 0)}
@@ -3667,7 +3667,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 font-semibold px-2 py-1 rounded-lg transition-colors shrink-0 cursor-pointer ${
                                     isMine
                                       ? 'bg-white/15 hover:bg-white/25 text-on-brand'
-                                      : 'bg-sunken dark:bg-sunken/80 hover:bg-sunken dark:hover:bg-sunken text-ink-soft dark:text-ink-soft'
+                                      : 'bg-sunken dark:bg-sunken/80 hover:bg-sunken text-ink-soft'
                                   }`}
                                 >
                                   <Download className="w-3 h-3" />
@@ -3687,7 +3687,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`rounded-xl p-2.5 flex items-center gap-2 border ${
                                       isMine
                                         ? 'bg-brand-strong/55 border-white/20'
-                                        : 'bg-sunken dark:bg-surface/70 border-line dark:border-line'
+                                        : 'bg-sunken dark:bg-surface/70 border-line'
                                     }`}
                                   >
                                     <div
@@ -3708,7 +3708,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         className={`text-[11px] font-mono mt-0.5 ${
                                           isMine
                                             ? 'text-on-brand/85'
-                                            : 'text-ink-muted dark:text-ink-muted'
+                                            : 'text-ink-muted'
                                         }`}
                                       >
                                         {badge} · {formatFileSize(msg.fileSizeBytes || 0)}
@@ -3740,7 +3740,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                           className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                                             isMine
                                               ? 'bg-white/15 hover:bg-white/25 text-on-brand'
-                                              : 'bg-white dark:bg-sunken border border-line dark:border-line text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                                              : 'bg-white dark:bg-sunken border border-line text-ink-soft hover:bg-sunken'
                                           }`}
                                         >
                                           <Eye className="w-3.5 h-3.5" />
@@ -3765,7 +3765,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         className={`w-8 h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer ${
                                           isMine
                                             ? 'bg-white/15 hover:bg-white/25 text-on-brand'
-                                            : 'bg-white dark:bg-sunken border border-line dark:border-line text-ink-soft dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                                            : 'bg-white dark:bg-sunken border border-line text-ink-soft hover:bg-sunken'
                                         }`}
                                       >
                                         <Download className="w-3.5 h-3.5" />
@@ -3817,7 +3817,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 className={`text-xs space-y-1 ${
                                   isMine
                                     ? 'text-on-brand/95'
-                                    : 'text-ink-soft dark:text-ink-soft'
+                                    : 'text-ink-soft'
                                 }`}
                               >
                                 <p className="flex items-center gap-1.5 font-medium">
@@ -3837,7 +3837,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[11px] leading-relaxed pt-0.5 ${
                                       isMine
                                         ? 'text-on-brand/85'
-                                        : 'text-ink-muted dark:text-ink-muted'
+                                        : 'text-ink-muted'
                                     }`}
                                   >
                                     {msg.eventNotes}
@@ -3850,7 +3850,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               className={`min-w-[225px] max-w-[300px] rounded-xl p-3 space-y-2.5 border ${
                                 isMine
                                   ? 'bg-brand-strong/50 border-white/20'
-                                  : 'bg-sunken dark:bg-surface/70 border-line dark:border-line'
+                                  : 'bg-sunken dark:bg-surface/70 border-line'
                               }`}
                             >
                               <button
@@ -3892,7 +3892,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[11px] truncate mt-0.5 ${
                                       isMine
                                         ? 'text-on-brand/85'
-                                        : 'text-ink-muted dark:text-ink-muted'
+                                        : 'text-ink-muted'
                                     }`}
                                   >
                                     {msg.contactDepartment} ·{' '}
@@ -3908,7 +3908,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         className={`text-[10px] font-mono mt-0.5 ${
                                           isMine
                                             ? 'text-on-brand/85'
-                                            : 'text-ink-muted dark:text-ink-muted'
+                                            : 'text-ink-muted'
                                         }`}
                                       >
                                         {msg.contactIdNumber}
@@ -3960,7 +3960,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                       className={`w-4 h-4 mt-0.5 shrink-0 ${
                                         isMine
                                           ? 'text-on-brand'
-                                          : 'text-brand dark:text-brand'
+                                          : 'text-brand'
                                       }`}
                                     />
                                     <p className="text-sm font-bold leading-snug break-words">
@@ -3990,8 +3990,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                                 ? 'border-white/80 bg-white/20 text-white'
                                                 : 'border-white/25 bg-brand-strong/40 hover:bg-brand-strong/60 text-on-brand'
                                               : isSelected
-                                                ? 'border-brand dark:border-brand bg-brand-subtle/70 dark:bg-brand-subtle/40 text-ink dark:text-ink'
-                                                : 'border-line dark:border-line bg-sunken/70 dark:bg-surface/50 hover:border-line dark:hover:border-line text-ink dark:text-ink-soft'
+                                                ? 'border-brand bg-brand-subtle/70 dark:bg-brand-subtle/40 text-ink'
+                                                : 'border-line bg-sunken/70 dark:bg-surface/50 hover:border-line text-ink dark:text-ink-soft'
                                           }`}
                                         >
                                           <div
@@ -4027,7 +4027,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`text-[11px] ${
                                       isMine
                                         ? 'text-on-brand/85'
-                                        : 'text-ink-muted dark:text-ink-muted'
+                                        : 'text-ink-muted'
                                     }`}
                                   >
                                     {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
@@ -4055,7 +4055,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isMine
                                       ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
-                                      : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
+                                      : 'text-ink-muted hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
                                   }`}
                                 >
                                   <Reply className="w-3 h-3" />
@@ -4077,7 +4077,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                         : 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40'
                                       : isMine
                                         ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
-                                        : 'text-ink-muted dark:text-ink-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
+                                        : 'text-ink-muted hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/40'
                                   }`}
                                 >
                                   <Star className={`w-3 h-3 ${isStarred ? 'fill-current' : ''}`} />
@@ -4099,7 +4099,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   className={`inline-flex items-center gap-1 text-[11px] py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                     isMine
                                       ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
-                                      : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
+                                      : 'text-ink-muted hover:text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/40'
                                   }`}
                                 >
                                   <SmilePlus className="w-3 h-3" />
@@ -4122,7 +4122,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                     className={`inline-flex items-center justify-center py-0.5 px-1.5 rounded-md transition-colors cursor-pointer ${
                                       isMine
                                         ? 'text-on-brand/85 hover:text-on-brand hover:bg-on-brand/10'
-                                        : 'text-ink-muted dark:text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                                        : 'text-ink-muted hover:text-ink-soft hover:bg-sunken'
                                     }`}
                                   >
                                     <MoreHorizontal className="w-3.5 h-3.5" />
@@ -4253,8 +4253,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                   : 'cursor-pointer'
                               } ${
                                 group.reactedByMe
-                                  ? 'bg-brand-subtle dark:bg-brand-subtle/70 border-success-line dark:border-brand text-brand dark:text-brand'
-                                  : 'bg-white dark:bg-sunken border-line/90 dark:border-line text-ink-soft dark:text-ink-soft hover:border-line dark:hover:border-line'
+                                  ? 'bg-brand-subtle dark:bg-brand-subtle/70 border-success-line dark:border-brand text-brand'
+                                  : 'bg-white dark:bg-sunken border-line/90 dark:border-line text-ink-soft hover:border-line'
                               }`}
                             >
                               <span className="leading-none">{group.emoji}</span>
@@ -4579,7 +4579,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-full border-2 border-dashed inline-flex items-center justify-center text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOnceVoice
                       ? 'bg-brand border-brand text-on-brand'
-                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand'
+                      : 'bg-sunken border-line text-ink-body dark:text-ink-soft hover:border-brand'
                   }`}
                 >
                   1
@@ -4626,7 +4626,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   className={`w-10 h-10 min-w-[40px] min-h-[40px] rounded-full border-2 border-dashed inline-flex items-center justify-center text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOnceVoice
                       ? 'bg-brand border-brand text-on-brand'
-                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand'
+                      : 'bg-sunken border-line text-ink-body dark:text-ink-soft hover:border-brand'
                   }`}
                 >
                   1
@@ -4671,8 +4671,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       title="Attach media, file, poll, event, or contact"
                       className={`w-9 h-9 min-w-[36px] min-h-[36px] rounded-full shrink-0 inline-flex items-center justify-center transition-colors cursor-pointer ${
                         attachmentMenuOpen
-                          ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand'
-                          : 'text-ink-muted dark:text-ink-muted hover:text-brand dark:hover:text-brand hover:bg-sunken/70 dark:hover:bg-sunken/60'
+                          ? 'bg-brand-subtle dark:bg-brand-subtle/70 text-brand'
+                          : 'text-ink-muted hover:text-brand hover:bg-sunken/70 dark:hover:bg-sunken/60'
                       }`}
                     >
                       <Paperclip className="w-4 h-4 -rotate-45" />
@@ -4754,8 +4754,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                       onClick={() => setReportReason(reason)}
                       className={`min-h-[40px] px-3 rounded-xl border text-xs font-medium text-left transition-colors cursor-pointer ${
                         reportReason === reason
-                          ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand dark:text-brand'
-                          : 'bg-white dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-line dark:hover:border-line'
+                          ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-brand text-brand'
+                          : 'bg-white dark:bg-sunken/70 border-line text-ink-body dark:text-ink-soft hover:border-line'
                       }`}
                     >
                       {reason}
@@ -4998,7 +4998,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   className={`min-h-[44px] px-3 rounded-xl border-2 border-dashed inline-flex items-center gap-1.5 text-xs font-bold transition-colors cursor-pointer shrink-0 ${
                     viewOncePhoto
                       ? 'bg-brand border-brand text-on-brand'
-                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-soft dark:text-ink-soft hover:border-brand'
+                      : 'bg-sunken border-line text-ink-soft hover:border-brand'
                   }`}
                 >
                   <span>1</span>
@@ -5426,7 +5426,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   onClick={() => setGroupInfoTab(tab.id)}
                   className={`min-h-[38px] px-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                     groupInfoTab === tab.id
-                      ? 'bg-white dark:bg-sunken text-brand dark:text-brand shadow-2xs border border-line/70 dark:border-line'
+                      ? 'bg-white dark:bg-sunken text-brand shadow-2xs border border-line/70 dark:border-line'
                       : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                   }`}
                 >
@@ -5462,11 +5462,11 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                               avatarId={member.userObj?.avatarId}
                               size="md"
                               roundedClass="rounded-full"
-                              fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/70 text-brand dark:text-brand"
+                              fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/70 text-brand"
                             />
                             <span
                               className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                                member.online ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                                member.online ? 'bg-brand' : 'bg-sunken'
                               }`}
                             />
                           </div>
@@ -5490,7 +5490,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                                 </>
                               )}{' '}
                               ·{' '}
-                              <span className={member.online ? 'text-brand dark:text-brand font-medium' : ''}>
+                              <span className={member.online ? 'text-brand font-medium' : ''}>
                                 {member.online ? 'Online' : 'Offline'}
                               </span>
                             </p>
@@ -5933,8 +5933,8 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                         onClick={() => setRadarStatusDraft(key)}
                         className={`min-h-[40px] px-3 rounded-xl border text-xs font-semibold text-left transition-colors cursor-pointer ${
                           selected
-                            ? 'border-brand bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand ring-2 ring-emerald-500/20'
-                            : 'border-line dark:border-line bg-sunken/70 dark:bg-sunken/60 text-ink-soft dark:text-ink-soft hover:border-line dark:hover:border-line'
+                            ? 'border-brand bg-brand-subtle dark:bg-brand-subtle/60 text-brand ring-2 ring-emerald-500/20'
+                            : 'border-line bg-sunken/70 dark:bg-sunken/60 text-ink-soft hover:border-line'
                         }`}
                       >
                         {RADAR_STATUS_LABELS[key]}
@@ -5996,7 +5996,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                     className={`min-h-[28px] px-2.5 rounded-lg border text-[11px] font-medium transition-colors cursor-pointer ${
                       radarVenueDraft === presetVenue
                         ? 'bg-brand border-brand text-on-brand'
-                        : 'bg-sunken dark:bg-sunken/80 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
+                        : 'bg-sunken dark:bg-sunken/80 border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                     }`}
                   >
                     {presetVenue}

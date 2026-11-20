@@ -151,7 +151,7 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
   return (
     <div
       className={`flex items-center gap-2.5 min-w-[215px] sm:min-w-[260px] py-1 ${
-        inverted ? 'text-white' : 'text-ink dark:text-ink'
+        inverted ? 'text-white' : 'text-ink'
       }`}
     >
       <audio
@@ -219,7 +219,7 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
           className={`h-2 rounded-full overflow-hidden cursor-pointer focus:outline-none focus:ring-2 ${
             inverted
               ? 'bg-white/25 focus:ring-white/60'
-              : 'bg-sunken dark:bg-sunken focus:ring-focus'
+              : 'bg-sunken focus:ring-focus'
           }`}
         >
           <div
@@ -232,7 +232,7 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
 
         <div
           className={`flex items-center justify-between gap-2 text-[11px] font-mono tabular-nums ${
-            inverted ? 'text-emerald-100' : 'text-ink-muted dark:text-ink-muted'
+            inverted ? 'text-emerald-100' : 'text-ink-muted'
           }`}
         >
           <span className="inline-flex items-center gap-1 truncate">
@@ -253,7 +253,7 @@ export const VoiceNotePlayer: React.FC<VoiceNotePlayerProps> = ({
               className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold transition-colors cursor-pointer ${
                 inverted
                   ? 'bg-white/15 hover:bg-white/25 text-white'
-                  : 'bg-sunken dark:bg-sunken hover:bg-sunken dark:hover:bg-sunken text-ink-soft dark:text-ink-soft'
+                  : 'bg-sunken hover:bg-sunken text-ink-soft'
               }`}
             >
               {playbackRate}x

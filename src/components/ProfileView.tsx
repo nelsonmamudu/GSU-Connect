@@ -826,7 +826,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors cursor-pointer ${
                     enabled
                       ? 'bg-brand border-brand'
-                      : 'bg-sunken dark:bg-sunken border-line dark:border-line'
+                      : 'bg-sunken border-line'
                   }`}
                 >
                   <span
@@ -1238,7 +1238,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       className={`relative rounded-2xl p-2 flex flex-col items-center gap-1.5 border transition-all cursor-pointer disabled:opacity-60 ${
                         selected
                           ? 'border-brand bg-brand-subtle/70 dark:bg-brand-subtle/50 ring-2 ring-emerald-500/30'
-                          : 'border-line/80 dark:border-line hover:border-line dark:hover:border-line bg-sunken/60 dark:bg-sunken/40'
+                          : 'border-line/80 dark:border-line hover:border-line bg-sunken/60 dark:bg-sunken/40'
                       }`}
                     >
                       <div

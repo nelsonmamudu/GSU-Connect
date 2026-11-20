@@ -515,7 +515,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
               fallbackClassName={
                 myStatuses.length > 0
                   ? 'bg-brand text-on-brand'
-                  : 'bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft'
+                  : 'bg-sunken text-ink-soft'
               }
             />
             {myStatuses.length === 0 && (
@@ -676,7 +676,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                     size="lg"
                     roundedClass="rounded-full"
                     className="ring-2 ring-slate-300 dark:ring-slate-600 ring-offset-2 ring-offset-white dark:ring-offset-slate-900"
-                    fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
+                    fallbackClassName="bg-sunken text-ink-soft"
                   />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -749,7 +749,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 }}
                 className={`flex-1 min-h-[38px] rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   composeType === 'text'
-                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                     : 'text-ink-body dark:text-ink-muted'
                 }`}
               >
@@ -763,7 +763,7 @@ export const StatusView: React.FC<StatusViewProps> = ({
                 }}
                 className={`flex-1 min-h-[38px] rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                   composeType === 'image'
-                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                     : 'text-ink-body dark:text-ink-muted'
                 }`}
               >

@@ -232,7 +232,7 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
           {upcomingEvents.length ? (
             <div className="overflow-hidden rounded-2xl border border-line/80 bg-surface dark:border-line">
               {upcomingEvents.map((event, index) => (
-                <div key={event.id} className={`flex gap-4 p-4 sm:p-5 ${index ? 'border-t border-line dark:border-line' : ''}`}>
+                <div key={event.id} className={`flex gap-4 p-4 sm:p-5 ${index ? 'border-t border-line' : ''}`}>
                   <div className="w-14 shrink-0 text-center">
                     <span className="block text-[10px] font-bold uppercase tracking-wider text-brand">{event.date === todayKey ? 'Today' : formatEventDate(event.date).split(',')[0]}</span>
                     <span className="mt-1 block font-display text-xl font-bold text-ink dark:text-white">{event.date === todayKey ? '•' : new Date(`${event.date}T12:00:00`).getDate()}</span>

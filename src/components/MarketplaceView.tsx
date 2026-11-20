@@ -375,8 +375,8 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               onClick={() => setScopeTab('all')}
               className={`min-h-[38px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'all'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
-                  : 'text-ink-body dark:text-ink-soft hover:text-ink dark:hover:text-ink'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft hover:text-ink'
               }`}
             >
               All Listings ({listings.length})
@@ -386,8 +386,8 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               onClick={() => setScopeTab('mine')}
               className={`min-h-[38px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'mine'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
-                  : 'text-ink-body dark:text-ink-soft hover:text-ink dark:hover:text-ink'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
+                  : 'text-ink-body dark:text-ink-soft hover:text-ink'
               }`}
             >
               My Listings ({myListingCount})
@@ -476,7 +476,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 className={`min-h-[32px] px-3 rounded-xl text-[11px] font-semibold border transition-colors cursor-pointer ${
                   typeFilter === t
                     ? 'bg-brand border-brand text-on-brand'
-                    : 'bg-white dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                    : 'bg-white dark:bg-sunken border-line text-ink-body dark:text-ink-soft hover:bg-sunken'
                 }`}
               >
                 {t === 'All' ? 'All Types' : t}
@@ -583,8 +583,8 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       <span
                         className={`text-[11px] font-semibold uppercase tracking-wide ${
                           isSold
-                            ? 'text-ink-muted dark:text-ink-muted'
-                            : 'text-brand dark:text-brand'
+                            ? 'text-ink-muted'
+                            : 'text-brand'
                         }`}
                       >
                         {isSold ? 'Sold' : item.listingType}
@@ -637,7 +637,7 @@ export const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                         avatarId={userMap.get(item.sellerId)?.avatarId}
                         size="sm"
                         roundedClass="rounded-xl"
-                        fallbackClassName="bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft"
+                        fallbackClassName="bg-sunken text-ink-soft"
                       />
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">

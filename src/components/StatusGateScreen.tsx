@@ -81,7 +81,7 @@ function TimelineRow({
             ? 'bg-brand text-on-brand'
             : current
               ? 'border-2 border-brand'
-              : 'border-2 border-line dark:border-line'
+              : 'border-2 border-line'
         }`}
       >
         {done && <CheckCircle2 className="w-3 h-3" />}
@@ -90,8 +90,8 @@ function TimelineRow({
         <p
           className={`text-xs font-semibold ${
             done || current
-              ? 'text-ink dark:text-ink'
-              : 'text-ink-muted dark:text-ink-muted'
+              ? 'text-ink'
+              : 'text-ink-muted'
           }`}
         >
           {label}

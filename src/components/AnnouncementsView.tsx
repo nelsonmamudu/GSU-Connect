@@ -127,7 +127,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             onClick={() => setFilter('all')}
             className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'all'
-                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >
@@ -138,7 +138,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
             onClick={() => setFilter('department')}
             className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
               filter === 'department'
-                ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                 : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
             }`}
           >

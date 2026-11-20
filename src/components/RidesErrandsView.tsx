@@ -308,7 +308,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 onClick={() => setScopeTab(tab.id)}
                 className={`min-h-[36px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                   scopeTab === tab.id
-                    ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                    ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                     : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
                 }`}
               >
@@ -352,7 +352,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                 className={`min-h-[32px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                   active
                     ? 'bg-brand border-brand text-on-brand'
-                    : 'bg-sunken dark:bg-sunken/70 border-line dark:border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
+                    : 'bg-sunken dark:bg-sunken/70 border-line text-ink-body dark:text-ink-soft hover:border-brand/60'
                 }`}
               >
                 {loc === 'All' ? 'All Routes' : loc}
@@ -411,7 +411,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-xl text-[11px] font-bold ${
                           post.postType === 'ride'
-                            ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/70 dark:text-brand'
+                            ? 'bg-brand-subtle text-brand dark:bg-brand-subtle/70'
                             : 'bg-sky-50 text-sky-800 dark:bg-sky-950/70 dark:text-sky-300'
                         }`}
                       >
@@ -426,7 +426,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 px-2 py-1 rounded-xl text-[11px] font-semibold ${
                           isFulfilled
-                            ? 'bg-sunken text-ink-body dark:bg-sunken dark:text-ink-muted'
+                            ? 'bg-sunken text-ink-body dark:text-ink-muted'
                             : 'bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
                         }`}
                       >
@@ -513,7 +513,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                       avatarId={poster?.avatarId}
                       size="sm"
                       roundedClass="rounded-xl"
-                      fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand"
+                      fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/60 text-brand"
                     />
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 min-w-0">
@@ -668,7 +668,7 @@ export const RidesErrandsView: React.FC<RidesErrandsViewProps> = ({
                   onClick={() => setPostType('ride')}
                   className={`min-h-[40px] rounded-xl text-xs font-bold inline-flex items-center justify-center gap-1.5 cursor-pointer transition-colors ${
                     postType === 'ride'
-                      ? 'bg-white dark:bg-surface text-brand dark:text-brand shadow-2xs'
+                      ? 'bg-white dark:bg-surface text-brand shadow-2xs'
                       : 'text-ink-body dark:text-ink-muted'
                   }`}
                 >

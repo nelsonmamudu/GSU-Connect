@@ -348,7 +348,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('all')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'all'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -359,7 +359,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('dept')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'dept'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -370,7 +370,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
               onClick={() => setSegment('staff')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                 segment === 'staff'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-muted hover:text-ink dark:hover:text-ink-soft'
               }`}
             >
@@ -393,7 +393,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
           <div className="inline-flex items-center gap-1.5 text-xs text-ink-muted px-1">
             <span
               className={`w-2 h-2 rounded-full ${
-                onlineCount > 0 ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                onlineCount > 0 ? 'bg-brand' : 'bg-sunken'
               }`}
             />
             <span>{onlineCount} recently active</span>
@@ -532,7 +532,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                   className={`min-h-[34px] px-3 rounded-xl text-xs font-semibold whitespace-nowrap border transition-colors cursor-pointer ${
                     studyLevelFilter === lvl
                       ? 'bg-brand border-brand text-on-brand'
-                      : 'bg-sunken dark:bg-sunken border-line dark:border-line text-ink-body dark:text-ink-soft'
+                      : 'bg-sunken border-line text-ink-body dark:text-ink-soft'
                   }`}
                 >
                   {lvl === 'All' ? 'All Levels' : `${lvl}L`}
@@ -590,13 +590,13 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                         avatarId={person.avatarId}
                         size="lg"
                         roundedClass="rounded-2xl"
-                        fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand"
+                        fallbackClassName="bg-brand-subtle dark:bg-brand-subtle/60 text-brand"
                       />
                       <span
                         title={statusTooltip}
                         aria-label={recentlyActive ? 'Online, recently active' : 'Offline'}
                         className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full ring-2 ring-white dark:ring-slate-900 ${
-                          recentlyActive ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                          recentlyActive ? 'bg-brand' : 'bg-sunken'
                         }`}
                       />
                     </div>
@@ -623,7 +623,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                       <div className="flex items-center gap-1.5 mt-1 text-xs">
                         <span
                           className={`w-2 h-2 rounded-full shrink-0 ${
-                            recentlyActive ? 'bg-brand' : 'bg-sunken dark:bg-sunken'
+                            recentlyActive ? 'bg-brand' : 'bg-sunken'
                           }`}
                         />
                         {recentlyActive ? (
@@ -694,7 +694,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                           className={`px-2 py-0.5 rounded-lg text-[11px] font-bold ${
                             isShared
                               ? 'bg-brand text-on-brand'
-                              : 'bg-sunken dark:bg-sunken text-ink-soft dark:text-ink-soft'
+                              : 'bg-sunken text-ink-soft'
                           }`}
                         >
                           {course}

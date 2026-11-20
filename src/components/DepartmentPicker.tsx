@@ -183,8 +183,8 @@ export const DepartmentPicker: React.FC<DepartmentPickerProps> = ({
                     onClick={() => handleSelectDepartment(dept.name)}
                     className={`w-full min-h-[44px] px-3.5 py-2 text-left flex items-center justify-between gap-2 transition-colors cursor-pointer ${
                       isSelected
-                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand'
-                        : 'hover:bg-sunken dark:hover:bg-sunken text-ink dark:text-ink'
+                        ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand'
+                        : 'hover:bg-sunken text-ink'
                     }`}
                   >
                     <div className="min-w-0">
@@ -214,8 +214,8 @@ export const DepartmentPicker: React.FC<DepartmentPickerProps> = ({
               }
               className={`w-full min-h-[44px] px-3 rounded-xl text-left text-sm font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
                 isOtherMode
-                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand dark:text-brand'
-                  : 'text-brand dark:text-brand hover:bg-brand-subtle/70 dark:hover:bg-brand-subtle/40'
+                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 text-brand'
+                  : 'text-brand hover:bg-brand-subtle/70 dark:hover:bg-brand-subtle/40'
               }`}
             >
               <Plus className="w-4 h-4 shrink-0" />

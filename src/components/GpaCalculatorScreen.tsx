@@ -56,7 +56,7 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   if (gpa >= 4.5) {
     return {
       label: 'First Class Honours',
-      toneClass: 'bg-brand-subtle text-brand dark:bg-brand-subtle/80 dark:text-brand',
+      toneClass: 'bg-brand-subtle text-brand dark:bg-brand-subtle/80',
     };
   }
   if (gpa >= 3.5) {
@@ -80,7 +80,7 @@ function getGsuStanding(gpa: number): { label: string; toneClass: string } {
   if (gpa >= 1.0) {
     return {
       label: 'Pass',
-      toneClass: 'bg-sunken text-ink-soft dark:bg-sunken dark:text-ink-soft',
+      toneClass: 'bg-sunken text-ink-soft',
     };
   }
   return {
@@ -219,7 +219,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
     ? getGsuStanding(displayCgpa)
     : {
         label: 'No courses entered yet',
-        toneClass: 'bg-sunken text-ink-body dark:bg-sunken dark:text-ink-soft',
+        toneClass: 'bg-sunken text-ink-body dark:text-ink-soft',
       };
   const alreadyAtTarget = displayCgpa >= gpaState.targetCgpa && gpaMetrics.totalUnits > 0;
   const safeRequiredAvg = Math.max(0, gpaMetrics.requiredAvg);
@@ -407,8 +407,8 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               key={g}
               className={`px-2 py-0.5 rounded-lg font-mono font-bold tabular-nums border ${
                 gpaMetrics.gradeCounts[g] > 0
-                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-success-line dark:border-success-line text-brand dark:text-brand'
-                  : 'bg-sunken dark:bg-sunken/50 border-line/70 dark:border-line text-ink-muted dark:text-ink-muted'
+                  ? 'bg-brand-subtle dark:bg-brand-subtle/60 border-success-line text-brand'
+                  : 'bg-sunken dark:bg-sunken/50 border-line/70 dark:border-line text-ink-muted'
               }`}
             >
               {g}:{gpaMetrics.gradeCounts[g]}
@@ -452,7 +452,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
               className={`w-full min-h-[40px] px-3 rounded-xl border bg-sunken dark:bg-sunken text-sm text-ink dark:text-ink tabular-nums focus:outline-none ${
                 gpaMetrics.priorCgpaInvalid
                   ? 'border-rose-400 dark:border-rose-600 focus:border-rose-500'
-                  : 'border-line dark:border-line focus:border-brand'
+                  : 'border-line focus:border-brand'
               }`}
             />
             {gpaMetrics.priorCgpaInvalid && (
@@ -619,7 +619,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                   className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold whitespace-nowrap transition-colors cursor-pointer ${
                     gpaState.targetCgpa === opt.value
                       ? 'bg-brand text-on-brand'
-                      : 'text-ink-body dark:text-ink-soft hover:bg-sunken dark:hover:bg-sunken'
+                      : 'text-ink-body dark:text-ink-soft hover:bg-sunken'
                   }`}
                 >
                   {opt.label}
@@ -661,7 +661,7 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
                 className={`w-full min-h-[38px] px-3 rounded-xl border bg-white dark:bg-surface text-xs font-semibold text-ink dark:text-ink tabular-nums focus:outline-none ${
                   gpaMetrics.upcomingUnitsInvalid
                     ? 'border-rose-400 dark:border-rose-600 focus:border-rose-500'
-                    : 'border-line dark:border-line focus:border-brand'
+                    : 'border-line focus:border-brand'
                 }`}
               />
               {gpaMetrics.upcomingUnitsInvalid && (

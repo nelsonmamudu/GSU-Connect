@@ -17,12 +17,12 @@ export const RoleBadge: React.FC<RoleBadgeProps> = ({
   const tone = inverted
     ? 'text-emerald-100 bg-white/15'
     : role === 'admin'
-      ? 'text-brand bg-brand-subtle/80 dark:text-brand dark:bg-brand-subtle/80'
+      ? 'text-brand bg-brand-subtle/80 dark:bg-brand-subtle/80'
       : role === 'lecturer'
         ? 'text-amber-800 bg-amber-100/80 dark:text-amber-300 dark:bg-amber-950/70'
         : role === 'classRep' || role === 'deptHelper'
           ? 'text-teal-800 bg-teal-100/80 dark:text-teal-300 dark:bg-teal-950/70'
-          : 'text-ink-body bg-sunken dark:text-ink-soft dark:bg-sunken';
+          : 'text-ink-body bg-sunken dark:text-ink-soft';
 
   return (
     <span

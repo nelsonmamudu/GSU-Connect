@@ -59,7 +59,7 @@ const EVENT_TYPE_STYLES: Record<
   campus_event: {
     card: 'bg-brand-subtle/60 dark:bg-brand-subtle/25 border-success-line/90 dark:border-success-line/70',
     dot: 'bg-brand dark:bg-brand-subtle',
-    label: 'text-brand dark:text-brand',
+    label: 'text-brand',
   },
 };
 
@@ -295,7 +295,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('all')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'all'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-soft'
               }`}
             >
@@ -306,7 +306,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
               onClick={() => setScopeTab('mine')}
               className={`min-h-[38px] px-3.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 scopeTab === 'mine'
-                  ? 'bg-white dark:bg-surface text-ink dark:text-ink shadow-2xs'
+                  ? 'bg-white dark:bg-surface text-ink shadow-2xs'
                   : 'text-ink-body dark:text-ink-soft'
               }`}
             >
@@ -432,12 +432,12 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                       <span
                         className={`text-[11px] normal-case ${
                           relTag === 'Today'
-                            ? 'font-bold text-brand dark:text-brand'
+                            ? 'font-bold text-brand'
                             : relTag === 'Tomorrow'
                               ? 'font-semibold text-indigo-700 dark:text-indigo-300'
                               : relTag === 'Past'
-                                ? 'font-medium text-ink-muted dark:text-ink-muted'
-                                : 'font-medium text-ink-muted dark:text-ink-muted'
+                                ? 'font-medium text-ink-muted'
+                                : 'font-medium text-ink-muted'
                         }`}
                       >
                         · {relTag}

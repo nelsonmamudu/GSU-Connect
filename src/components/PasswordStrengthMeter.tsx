@@ -20,7 +20,7 @@ export function PasswordStrengthMeter({
   const strength = passwordStrength(value);
   const barTone = (filled: boolean) =>
     !filled
-      ? 'bg-sunken dark:bg-sunken'
+      ? 'bg-sunken'
       : strength.score <= 1
         ? 'bg-red-500'
         : strength.score === 2
@@ -31,7 +31,7 @@ export function PasswordStrengthMeter({
       ? 'text-red-600 dark:text-red-400'
       : strength.score === 2
         ? 'text-amber-600 dark:text-amber-400'
-        : 'text-brand dark:text-brand';
+        : 'text-brand';
 
   return (
     <div className={`flex items-center gap-2 ${className}`} aria-hidden="true">
