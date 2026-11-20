@@ -10,7 +10,7 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:phase1": "node supabase/tests/phase1-access.mjs",
-    "test:entry": "tsx --test tests/entry.test.ts tests/cleanup.test.mjs tests/staff-email.test.ts && npm run test:phase1",
+    "test:entry": "tsx --test tests/entry.test.ts tests/cleanup.test.mjs tests/staff-email.test.ts tests/password-reset.test.mjs && npm run test:phase1",
     "test:signin": "node --test tests/signin-browser.test.mjs"
   },
   "dependencies": {
