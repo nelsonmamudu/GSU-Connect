@@ -8,3 +8,5 @@ coverage/
 !.env.example
 *.keystore
 *.jks
+__pycache__/
+*.pyc
