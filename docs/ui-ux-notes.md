@@ -574,6 +574,45 @@ Source: "Everything you need to know about Mobile App UI's in 8 minutes" (Kole J
    there is no app-shell bell or overflow menu. Whether that is a gap depends on whether a
    global notification surface is actually needed; nothing currently demands one.
 
+### 5.6 Smart defaults and decision fatigue (secondary — principle 2 truncated)
+
+Source: "The UX Psychology Behind Apps People Can't Stop Using" (uxpeak,
+`youtu.be/2TlIg3VokY8`). Promised six principles; the transcript completes only the first and
+cuts off during the second's example. Principle 2 is recorded below as a lead, not a rule.
+
+**Smart defaults.** The failure mode is decision fatigue / choice overload: five blank fields
+is five decisions, and too many simultaneous choices produces inaction. (The narrator cites a
+jam-aisle study; the figures are unverified.) The fix is not necessarily fewer fields — it is
+**pre-filled common choices**:
+- Review every required field; pre-select a safe, common value where one exists.
+- Default only where it causes no harmful or costly outcome.
+- Make it obvious the value was preselected and easy to change. Never hide it.
+- Button copy states the **result** ("See 12 results"), not the mechanic ("Search") — same
+  rule as `microcopy`.
+- Defaults reduce effort; they must not pressure the user into an unintended choice.
+
+**Already in our code.** The invite link pre-fills the department (`inviteDept`) and carries
+the token — exactly this pattern. Worth extending to any other field with a dominant common
+value.
+
+**Choice overload / Hick's law.** Decision time rises with the number and complexity of the
+choices offered. Bears on the admin queue's filters and on any future settings screen: fewer,
+grouped options beat a long flat list.
+
+**Principle 2 (truncated lead).** The narrator begins a car-wash loyalty-card study — a card
+with eight empty stamps — and the transcript ends before the comparison condition or the
+principle is named. *This is my inference, not from the source:* the study is almost
+certainly the **endowed progress** effect (Nunes & Drèze, 2006), where customers given a
+two-stamp head start on an eight-stamp card completed at a far higher rate than those given
+an empty eight-stamp card. The head start does not reduce the work; it changes where it
+starts.
+
+**Tension worth holding.** `zeigarnik-effect` (§3) says do not manufacture progress on chores;
+endowed progress says a real head start lifts completion. They are compatible, and the line is
+**earned versus fabricated**: a head start the user was genuinely given is honest; a bar that
+starts at 80% for no reason is not. Do not use the psychological finding as an excuse for the
+fabrication.
+
 ---
 
 ## 6. How to use this later
