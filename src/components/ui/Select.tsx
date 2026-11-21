@@ -1,5 +1,5 @@
 import React from 'react';
-import { controlClass } from './styles';
+import { controlClass, inputTone } from './styles';
 import { useFieldControl } from './Field';
 
 export interface SelectProps
@@ -15,7 +15,7 @@ export function Select({ className = '', invalid, id, ...rest }: SelectProps) {
     <select
       id={resolvedId}
       aria-invalid={resolvedInvalid || undefined}
-      className={`${controlClass} ${resolvedInvalid ? 'border-red-400 dark:border-red-500' : ''} ${className}`}
+      className={`${controlClass} ${inputTone(resolvedInvalid)} ${className}`}
       {...rest}
     />
   );

@@ -201,22 +201,22 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
       aria-modal="true"
       aria-label={`${targetUser.fullName} profile`}
       onClick={onClose}
-      className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
+      className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-canvas/80 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl"
+        className="w-full sm:max-w-md max-h-[92vh] overflow-y-auto bg-surface border border-line/80 dark:border-line rounded-t-3xl sm:rounded-3xl shadow-overlay"
       >
         {/* Top Bar */}
-        <div className="sticky top-0 z-10 px-5 py-3.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-          <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+        <div className="sticky top-0 z-10 px-5 py-3.5 bg-white/95 dark:bg-surface/95 backdrop-blur-sm border-b border-line flex items-center justify-between">
+          <h2 className="text-sm font-bold text-ink">
             Contact Info
           </h2>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close contact info"
-            className="min-w-[40px] min-h-[40px] -mr-2 rounded-xl flex items-center justify-center text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+            className="min-w-[40px] min-h-[40px] -mr-2 rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -232,24 +232,24 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 avatarId={targetUser.avatarId}
                 size="2xl"
                 roundedClass="rounded-3xl"
-                fallbackClassName="bg-emerald-700 text-white"
+                fallbackClassName="bg-brand text-on-brand"
               />
               <span
                 title={online ? 'Online' : 'Offline'}
                 className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full ring-3 ring-white dark:ring-slate-900 ${
-                  online ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                  online ? 'bg-brand' : 'bg-sunken'
                 }`}
               />
             </div>
 
             <div className="space-y-1.5 max-w-full">
               <div className="flex items-center justify-center gap-2 flex-wrap">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 break-words">
+                <h3 className="text-lg font-bold text-ink break-words">
                   {targetUser.fullName}
                 </h3>
                 <RoleBadge role={roleValue} showStudent />
                 {statusValue === 'suspended' && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-red-100 dark:bg-red-950/70 text-red-700 dark:text-red-300">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-danger-line dark:bg-danger-bg/70 text-ink">
                     Suspended
                   </span>
                 )}
@@ -258,15 +258,15 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <div className="inline-flex items-center justify-center gap-1.5 text-xs">
                 <span
                   className={`w-2 h-2 rounded-full shrink-0 ${
-                    online ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'
+                    online ? 'bg-brand' : 'bg-sunken'
                   }`}
                 />
                 {online ? (
-                  <span className="text-emerald-700 dark:text-emerald-400 font-semibold">
+                  <span className="text-brand font-semibold">
                     Online · Active now
                   </span>
                 ) : (
-                  <span className="text-slate-500 dark:text-slate-400">
+                  <span className="text-ink-muted">
                     {diffMs !== null ? `Offline · ${formatLastSeen(diffMs)}` : 'Offline'}
                   </span>
                 )}
@@ -281,7 +281,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 type="button"
                 disabled={messagingBusy}
                 onClick={handleMessageClick}
-                className="min-h-[60px] px-2 py-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200/70 dark:border-emerald-800/70 text-emerald-800 dark:text-emerald-300 flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-60"
+                className="min-h-[60px] px-2 py-2.5 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/50 hover:bg-brand-subtle dark:hover:bg-brand-subtle/60 border border-success-line/70 text-brand flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-60"
               >
                 <MessageSquare className="w-4 h-4" />
                 <span>{messagingBusy ? 'Opening...' : 'Message'}</span>
@@ -291,7 +291,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 type="button"
                 disabled={callingBusy || anyBlocked || statusValue === 'suspended'}
                 onClick={handleCallClick}
-                className="min-h-[60px] px-2 py-2.5 rounded-2xl bg-sky-50 dark:bg-sky-950/50 hover:bg-sky-100 dark:hover:bg-sky-900/60 border border-sky-200/70 dark:border-sky-800/70 text-sky-800 dark:text-sky-300 flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="min-h-[60px] px-2 py-2.5 rounded-2xl bg-info-bg dark:bg-info-bg/50 hover:bg-info-line hover:bg-info/60 border border-info-line/70 dark:border-info/70 text-info flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Phone className="w-4 h-4" />
                 <span>{callingBusy ? 'Calling...' : 'Voice Call'}</span>
@@ -303,8 +303,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 onClick={handleToggleBlock}
                 className={`min-h-[60px] px-2 py-2.5 rounded-2xl border flex flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-60 ${
                   iBlocked
-                    ? 'bg-emerald-700 hover:bg-emerald-800 border-emerald-700 text-white'
-                    : 'bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-950/70 border-red-200/70 dark:border-red-900/70 text-red-700 dark:text-red-300'
+                    ? 'bg-brand hover:bg-brand-strong border-brand text-on-brand'
+                    : 'bg-danger-bg dark:bg-danger-bg/40 hover:bg-danger-line hover:bg-danger-bg/70 border-danger-line/70 dark:border-danger/70 text-danger'
                 }`}
               >
                 {iBlocked ? <UserCheck className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
@@ -314,8 +314,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           )}
 
           {anyBlocked && !isSelf && (
-            <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/70 px-3.5 py-2.5 text-xs text-amber-900 dark:text-amber-200 flex items-center gap-2">
-              <Ban className="w-4 h-4 shrink-0 text-amber-700 dark:text-amber-400" />
+            <div className="rounded-2xl bg-warn-bg dark:bg-warn-bg/40 border border-warn-line/80 dark:border-warn/70 px-3.5 py-2.5 text-xs text-warn dark:text-warn-line flex items-center gap-2">
+              <Ban className="w-4 h-4 shrink-0 text-warn" />
               <span>
                 {iBlocked
                   ? 'You blocked this member. Unblock them to resume messaging and voice calls.'
@@ -327,39 +327,39 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           )}
 
           {feedback && (
-            <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/70 px-3 py-2 text-xs text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5">
-              <Check className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+            <div className="rounded-xl bg-brand-subtle dark:bg-brand-subtle/60 border border-success-line dark:border-success-line/70 px-3 py-2 text-xs text-brand flex items-center gap-1.5">
+              <Check className="w-4 h-4 text-brand shrink-0" />
               <span>{feedback}</span>
             </div>
           )}
 
           {errorMsg && (
-            <div className="rounded-xl bg-red-50 dark:bg-red-950/60 border border-red-200 dark:border-red-900/70 px-3 py-2 text-xs text-red-800 dark:text-red-200">
+            <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/60 border border-danger-line dark:border-danger/70 px-3 py-2 text-xs text-danger">
               {errorMsg}
             </div>
           )}
 
           {/* Academic Details */}
-          <div className="rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-800 divide-y divide-slate-200/70 dark:divide-slate-700/70">
+          <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line divide-y divide-line/70">
             <div className="px-4 py-3 flex items-center gap-3">
-              <Building2 className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <Building2 className="w-4 h-4 text-brand shrink-0" />
               <div className="min-w-0">
-                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-[11px] font-medium text-ink-muted">
                   {targetUser.accountType === 'staff' ? 'Department / Office' : 'Department'}
                 </p>
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                <p className="text-sm font-semibold text-ink truncate">
                   {targetUser.department}
                 </p>
               </div>
             </div>
 
             <div className="px-4 py-3 flex items-center gap-3">
-              <GraduationCap className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+              <GraduationCap className="w-4 h-4 text-brand shrink-0" />
               <div className="min-w-0">
-                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-[11px] font-medium text-ink-muted">
                   {targetUser.accountType === 'staff' ? 'Academic Standing' : 'Level'}
                 </p>
-                <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                <p className="text-sm font-semibold text-ink">
                   {targetUser.is_alumni
                     ? 'Alumni'
                     : targetUser.level === 'Staff'
@@ -371,12 +371,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
             {canViewMemberIdNumber(currentUser, targetUser.uid) && targetUser.idNumber && (
               <div className="px-4 py-3 flex items-center gap-3">
-                <IdCard className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                <IdCard className="w-4 h-4 text-brand shrink-0" />
                 <div className="min-w-0">
-                  <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] font-medium text-ink-muted">
                     {targetUser.accountType === 'staff' ? 'Staff ID' : 'Matric Number'}
                   </p>
-                  <p className="text-sm font-mono font-semibold text-slate-900 dark:text-slate-100 truncate">
+                  <p className="text-sm font-mono font-semibold text-ink truncate">
                     {targetUser.idNumber}
                   </p>
                 </div>
@@ -386,16 +386,16 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
           {/* Admin Quick Controls */}
           {isAdmin && !isSelf && (
-            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 p-4 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
-                <Shield className="w-4 h-4 text-emerald-700 dark:text-emerald-400" />
+            <div className="rounded-2xl border border-line bg-sunken/60 dark:bg-sunken/40 p-4 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-bold text-ink">
+                <Shield className="w-4 h-4 text-brand" />
                 <span>Admin Moderation Controls</span>
               </div>
 
               <div className="space-y-1.5">
                 <label
                   htmlFor={`profile-role-${targetUser.uid}`}
-                  className="block text-[11px] font-medium text-slate-500 dark:text-slate-400"
+                  className="block text-[11px] font-medium text-ink-muted"
                 >
                   Assigned Role
                 </label>
@@ -404,7 +404,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   value={roleValue}
                   disabled={adminBusy}
                   onChange={(e) => handleRoleChange(e.target.value as UserRole)}
-                  className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-xs font-semibold text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600 disabled:opacity-60"
+                  className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface text-xs font-semibold text-ink focus:outline-none focus:border-brand disabled:opacity-60"
                 >
                   {(Object.keys(ROLE_LABELS) as UserRole[]).map((roleKey) => (
                     <option key={roleKey} value={roleKey}>
@@ -420,8 +420,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 onClick={handleToggleSuspend}
                 className={`w-full min-h-[42px] px-3.5 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-2 transition-colors cursor-pointer disabled:opacity-60 ${
                   statusValue === 'suspended'
-                    ? 'bg-emerald-700 hover:bg-emerald-800 text-white'
-                    : 'bg-red-50 dark:bg-red-950/50 hover:bg-red-100 dark:hover:bg-red-950/80 border border-red-200 dark:border-red-900/70 text-red-700 dark:text-red-300'
+                    ? 'bg-brand hover:bg-brand-strong text-on-brand'
+                    : 'bg-danger-bg dark:bg-danger-bg/50 hover:bg-danger-line hover:bg-danger-bg/80 border border-danger-line dark:border-danger/70 text-danger'
                 }`}
               >
                 {statusValue === 'suspended' ? (

@@ -2,31 +2,260 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Two ramps, both warm.
+ *
+ * Neutrals are a warm grey with a faint olive bias so they sit next to the
+ * emerald instead of fighting it. The numbering keeps Tailwind's convention
+ * (50 = lightest, 950 = darkest) and the app already picks the right step per
+ * theme, so the same ramp serves both modes: light surfaces are the low steps
+ * and dark surfaces the high ones.
+ *
+ * Brand is a deeper, more saturated emerald than the previous palette. The
+ * steps were chosen so the pairs the app actually uses clear 4.5:1 for text and
+ * 3:1 for large text and icons.
+ */
 @theme {
   --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Warm neutrals */
+  --color-slate-50: #f8f7f4;
+  --color-slate-100: #f2f0ea;
+  --color-slate-200: #e6e3da;
+  --color-slate-300: #d8d4c9;
+  --color-slate-400: #b3afa4;
+  --color-slate-500: #6f6a62;
+  --color-slate-600: #57534b;
+  --color-slate-700: #44403a;
+  --color-slate-800: #2a2721;
+  --color-slate-900: #1d1b17;
+  --color-slate-950: #141310;
+
+  /* Richer emerald */
+  --color-emerald-50: #edf7f2;
+  --color-emerald-100: #d6ede1;
+  --color-emerald-200: #b0dcc6;
+  --color-emerald-300: #7fc4a4;
+  --color-emerald-400: #4fa582;
+  --color-emerald-500: #2e8a6b;
+  --color-emerald-600: #1f7457;
+  --color-emerald-700: #146048;
+  --color-emerald-800: #0b4f3c;
+  --color-emerald-900: #08402f;
+  --color-emerald-950: #04241a;
+
+  /*
+   * Role tokens. Components should read these, not a ramp step: dark mode is a
+   * swap of the block below, never a second set of `dark:` classes.
+   */
+  --color-canvas: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-sunken: #f2f0ea;
+  --color-line: #e6e3da;
+  --color-line-strong: #d8d4c9;
+  --color-ink: #1d1b17;
+  --color-ink-soft: #44403a;
+  --color-ink-body: #57534b;
+  --color-ink-muted: #6f6a62;
+  --color-brand: #0b4f3c;
+  --color-brand-strong: #08402f;
+  --color-brand-subtle: #eaf6f0;
+  --color-on-brand: #ffffff;
+  --color-focus: #0b4f3c;
+
+  --color-success: #0b4f3c;
+  --color-success-bg: #eaf6f0;
+  --color-success-line: #c4e2d2;
+  --color-warn: #8a4b0b;
+  --color-warn-bg: #fcf3e2;
+  --color-warn-line: #efddb8;
+  --color-danger: #b42318;
+  --color-danger-bg: #fdecea;
+  --color-danger-line: #f3c6c2;
+  --color-info: #1d4ed8;
+  --color-info-bg: #eef3fe;
+  --color-info-line: #cfdcfb;
+
+  /*
+   * Text on a solid state fill. `bg-danger` swaps with the theme like every
+   * other role token, so `text-white` on it is 6.57:1 in light mode and 2.79:1
+   * in dark mode. These are the matching opposites: pale tints on the light
+   * fills, deep tints on the dark ones. Each pair clears 4.5:1 on its own fill.
+   */
+  --color-danger-on: #fdecea;
+  --color-warn-on: #fcf3e2;
+  --color-success-on: #eaf6f0;
+  --color-info-on: #eef3fe;
 }
 
 @layer base {
+  html.dark {
+    --color-canvas: #141310;
+    --color-surface: #1d1b17;
+    --color-sunken: #2a2721;
+    --color-line: #35312a;
+    --color-line-strong: #4a463f;
+    --color-ink: #f5f4f1;
+    --color-ink-soft: #d8d4c9;
+    --color-ink-body: #e6e3da;
+    --color-ink-muted: #b3afa4;
+    --color-brand: #4fa582;
+    --color-brand-strong: #7fc4a4;
+    --color-brand-subtle: #12291f;
+    --color-on-brand: #0e1a14;
+    --color-focus: #4fa582;
+
+    --color-success: #6fd3ac;
+    --color-success-bg: #12291f;
+    --color-success-line: #2a4a3b;
+    --color-warn: #f0b45a;
+    --color-warn-bg: #2a1e0c;
+    --color-warn-line: #4a3517;
+    --color-danger: #f97066;
+    --color-danger-bg: #2c1412;
+    --color-danger-line: #4e2521;
+    --color-info: #8fb0f5;
+    --color-info-bg: #131e33;
+    --color-info-line: #2a3a5c;
+
+    --color-danger-on: #2c1412;
+    --color-warn-on: #2a1e0c;
+    --color-success-on: #04241a;
+    --color-info-on: #131e33;
+  }
+
   html, body {
     font-family: var(--font-sans);
-    background-color: #F6F8F7;
-    color: #0F172A;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     -webkit-tap-highlight-color: transparent;
   }
 
   html.dark, html.dark body {
-    background-color: #020617;
-    color: #F1F5F9;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
     color-scheme: dark;
   }
 
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
   }
+
+  /*
+   * Most of the app's buttons are hand-rolled and carry no focus style of their
+   * own, so keyboard users could not see where they were. Elements that already
+   * use a Tailwind ring are left to it; everything else gets the shared ring.
+   */
+  button:focus-visible:not([class*="ring"]),
+  [role="button"]:focus-visible:not([class*="ring"]),
+  summary:focus-visible:not([class*="ring"]),
+  a:focus-visible:not([class*="ring"]),
+  input:focus-visible:not([class*="ring"]),
+  select:focus-visible:not([class*="ring"]),
+  textarea:focus-visible:not([class*="ring"]) {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
 }
 
 .pb-safe {
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/*
+ * Elevation. Three tiers, defined once: cards and chips rest, popovers lift,
+ * sheets and modals float. Components read `shadow-resting` / `shadow-raised` /
+ * `shadow-overlay` rather than picking a size, so "how elevated is this?" has
+ * one answer.
+ *
+ * Dark mode gets its own values rather than a `dark:` class: a shadow on a dark
+ * surface has to be darker and wider to read at all, and the alpha that works on
+ * white is invisible on #1d1b17.
+ */
+@utility shadow-resting {
+  box-shadow:
+    0 1px 2px 0 rgb(29 27 23 / 0.06),
+    0 1px 3px 0 rgb(29 27 23 / 0.08);
+}
+
+@utility shadow-raised {
+  box-shadow:
+    0 2px 4px -1px rgb(29 27 23 / 0.08),
+    0 4px 8px -2px rgb(29 27 23 / 0.12);
+}
+
+@utility shadow-overlay {
+  box-shadow:
+    0 8px 16px -4px rgb(29 27 23 / 0.16),
+    0 20px 40px -12px rgb(29 27 23 / 0.24);
+}
+
+/*
+ * On a dark surface the same alpha disappears, so each tier gets a darker,
+ * wider value. Applied to the utilities directly (not through a token) because
+ * the values are geometry, not colour.
+ */
+@layer base {
+  html.dark {
+    .shadow-resting {
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.5);
+    }
+    .shadow-raised {
+      box-shadow:
+        0 2px 6px -1px rgb(0 0 0 / 0.55),
+        0 6px 12px -4px rgb(0 0 0 / 0.5);
+    }
+    .shadow-overlay {
+      box-shadow:
+        0 10px 24px -6px rgb(0 0 0 / 0.65),
+        0 24px 48px -16px rgb(0 0 0 / 0.75);
+    }
+  }
+}
+
+/*
+ * Always-dark surfaces. A call sheet, a lightbox, a view-once viewer sits on a
+ * scrim and is dark in both themes, so the role tokens — which swap with the
+ * theme — are the wrong thing to reach for inside one. These are the dark-theme
+ * values, pinned: `on-dark-ink` for text, `on-dark-success` / `-warn` /
+ * `-danger` for state, `on-dark-fill` for the panel itself.
+ */
+@utility bg-on-dark {
+  background-color: #1d1b17;
+}
+
+@utility text-on-dark {
+  color: #f5f4f1;
+}
+
+@utility text-on-dark-muted {
+  color: #b3afa4;
+}
+
+@utility text-on-dark-success {
+  color: #6fd3ac;
+}
+
+@utility text-on-dark-warn {
+  color: #f0b45a;
+}
+
+@utility text-on-dark-danger {
+  color: #f97066;
+}
+
+@utility bg-on-dark-danger {
+  background-color: #f97066;
+  color: #2c1412;
+}
+
+@utility bg-on-dark-brand {
+  background-color: #4fa582;
+  color: #0e1a14;
+}
+
+@utility border-on-dark {
+  border-color: #4a463f;
 }

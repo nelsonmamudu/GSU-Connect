@@ -57,13 +57,13 @@ export function Field({
       >
         {label}
         {required && (
-          <span aria-hidden="true" className="text-red-500">
+          <span aria-hidden="true" className="text-danger">
             {' '}
             *
           </span>
         )}
         {optional && (
-          <span className="font-normal text-slate-500 dark:text-slate-400">
+          <span className="font-normal text-ink-muted">
             {' '}
             (Optional)
           </span>

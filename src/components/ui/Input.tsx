@@ -36,7 +36,7 @@ export function Input({
   return (
     <div className={`relative ${wrapperClassName}`}>
       {Icon && (
-        <Icon className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <Icon className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
       )}
       <input
         id={resolvedId}

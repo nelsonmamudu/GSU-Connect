@@ -300,12 +300,12 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
   return (
     <div className="max-w-5xl mx-auto space-y-4">
       {/* Header Banner */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="space-y-0.5">
-          <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-slate-100">
+          <h2 className="text-base sm:text-lg font-bold text-ink">
             Academic Resource Repository
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-ink-muted">
             Share and download past questions, lecture handouts, lab manuals, and study notes across GSU departments.
           </p>
         </div>
@@ -313,7 +313,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
         <button
           type="button"
           onClick={openUploadModal}
-          className="min-h-[44px] px-4 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer"
+          className="min-h-[44px] px-4 rounded-2xl bg-brand hover:bg-brand-strong text-on-brand text-sm font-semibold inline-flex items-center justify-center gap-2 transition-colors shrink-0 cursor-pointer"
         >
           <Upload className="w-4 h-4" />
           <span>Upload Material</span>
@@ -321,23 +321,23 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 space-y-3">
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 space-y-3">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-4 h-4 text-ink-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by course code (e.g., PHYS 401), title, department, or author..."
             aria-label="Search academic resources"
-            className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-800 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15"
+            className="w-full min-h-[44px] pl-10 pr-10 rounded-2xl border border-line bg-sunken/70 dark:bg-sunken/80 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:bg-white dark:focus:bg-sunken focus:border-brand focus:ring-2 focus:ring-focus/15"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
               aria-label="Clear resource search"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 cursor-pointer"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-ink-soft cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -356,7 +356,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 setSelectedFaculty(e.target.value);
                 setSelectedDepartment('All');
               }}
-              className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="All">All Faculties</option>
               {facultyOptions.map((fac) => (
@@ -375,7 +375,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               id="repoDeptFilter"
               value={selectedDepartment}
               onChange={(e) => setSelectedDepartment(e.target.value)}
-              className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="All">All Departments</option>
               {filterDepartments.map((dept) => (
@@ -394,7 +394,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               id="repoLevelFilter"
               value={selectedLevel}
               onChange={(e) => setSelectedLevel(e.target.value)}
-              className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="All">All Levels</option>
               {RESOURCE_LEVELS.map((lvl) => (
@@ -413,7 +413,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               id="repoCategoryFilter"
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full min-h-[42px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="w-full min-h-[42px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs font-medium text-ink dark:text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="All">All Material Types</option>
               {RESOURCE_CATEGORIES.map((cat) => (
@@ -425,7 +425,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 pt-0.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-muted pt-0.5">
           <div className="flex flex-wrap items-center gap-2">
             <span className="inline-flex items-center gap-1.5">
               <Filter className="w-3.5 h-3.5" />
@@ -438,8 +438,8 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               onClick={toggleMyDeptLevel}
               className={`min-h-[30px] px-2.5 rounded-lg text-[11px] font-semibold inline-flex items-center gap-1.5 border transition-colors cursor-pointer ${
                 isMyDeptLevelActive
-                  ? 'bg-emerald-700 border-emerald-700 text-white'
-                  : 'bg-emerald-50/80 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/50'
+                  ? 'bg-brand border-brand text-on-brand'
+                  : 'bg-brand-subtle/80 dark:bg-brand-subtle/40 border-success-line text-brand hover:bg-brand-subtle dark:hover:bg-brand-subtle/50'
               }`}
             >
               <GraduationCap className="w-3.5 h-3.5" />
@@ -454,7 +454,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               aria-label="Sort resources"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as 'newest' | 'downloads' | 'courseCode')}
-              className="min-h-[32px] px-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-[11px] font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
+              className="min-h-[32px] px-2.5 rounded-lg border border-line bg-surface dark:bg-sunken text-[11px] font-semibold text-ink-soft focus:outline-none focus:border-brand"
             >
               <option value="newest">Sort: Newest</option>
               <option value="downloads">Sort: Most Downloaded</option>
@@ -464,7 +464,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               <button
                 type="button"
                 onClick={resetFilters}
-                className="font-semibold text-emerald-700 dark:text-emerald-400 hover:underline cursor-pointer"
+                className="font-semibold text-brand hover:underline cursor-pointer"
               >
                 Reset filters
               </button>
@@ -474,12 +474,12 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
       </div>
 
       {bannerError && (
-        <div className="rounded-2xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 px-4 py-3 text-xs text-red-700 dark:text-red-300 flex items-center justify-between gap-2">
+        <div className="rounded-2xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger px-4 py-3 text-xs text-danger flex items-center justify-between gap-2">
           <span>{bannerError}</span>
           <button
             type="button"
             onClick={() => setBannerError(null)}
-            className="text-red-500 hover:text-red-700 cursor-pointer"
+            className="text-danger hover:text-danger cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -488,16 +488,16 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
 
       {/* Resources List */}
       {filteredResources.length === 0 ? (
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-10 text-center space-y-2.5">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 flex items-center justify-center mx-auto">
+        <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center space-y-2.5">
+          <div className="w-12 h-12 rounded-2xl bg-brand-subtle dark:bg-brand-subtle/60 text-brand flex items-center justify-center mx-auto">
             <BookOpen className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
+          <h3 className="text-sm font-bold text-ink">
             {resources.length === 0
               ? 'No academic materials uploaded yet'
               : 'No matching resources found'}
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
+          <p className="text-xs text-ink-muted max-w-sm mx-auto">
             {resources.length === 0
               ? 'Be the first to upload past questions, lecture handouts, or lab manuals for your department.'
               : 'Try adjusting your faculty, department, level, or course code search.'}
@@ -506,7 +506,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-1 inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold cursor-pointer"
+              className="mt-1 inline-flex items-center justify-center min-h-[40px] px-4 rounded-xl bg-sunken text-ink-soft text-xs font-semibold cursor-pointer"
             >
               Clear Filters
             </button>
@@ -514,7 +514,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
             <button
               type="button"
               onClick={openUploadModal}
-              className="mt-1 inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-xl bg-emerald-700 text-white text-xs font-semibold cursor-pointer"
+              className="mt-1 inline-flex items-center justify-center gap-1.5 min-h-[40px] px-4 rounded-xl bg-brand text-on-brand text-xs font-semibold cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Upload First Material</span>
@@ -531,17 +531,17 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
             return (
               <article
                 key={item.id}
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-4 flex flex-col justify-between gap-3"
+                className="bg-surface rounded-2xl border border-line/80 dark:border-line p-4 flex flex-col justify-between gap-3"
               >
                 <div className="space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                        <span className="font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                      <p className="text-xs text-ink-muted truncate">
+                        <span className="font-mono font-bold text-brand">
                           {item.courseCode}
                         </span>
                         <span aria-hidden="true"> · </span>
-                        <span className="font-semibold text-slate-700 dark:text-slate-200">
+                        <span className="font-semibold text-ink-soft">
                           {item.category}
                         </span>
                         <span aria-hidden="true"> · </span>
@@ -549,7 +549,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                           {item.level === 'General' ? 'General' : `${item.level}L`}
                         </span>
                       </p>
-                      <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100 mt-1 leading-snug">
+                      <h3 className="text-sm sm:text-base font-bold text-ink mt-1 leading-snug">
                         {item.title}
                       </h3>
                     </div>
@@ -561,14 +561,14 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                             type="button"
                             onClick={() => handleDelete(item)}
                             disabled={deletingId === item.id}
-                            className="min-h-[32px] px-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white text-[11px] font-semibold cursor-pointer"
+                            className="min-h-[32px] px-2.5 rounded-lg bg-danger hover:bg-danger disabled:opacity-60 text-danger-on text-[11px] font-semibold cursor-pointer"
                           >
                             {deletingId === item.id ? 'Deleting...' : 'Confirm'}
                           </button>
                           <button
                             type="button"
                             onClick={() => setConfirmDeleteId(null)}
-                            className="min-h-[32px] px-2 rounded-lg border border-slate-200 dark:border-slate-700 text-[11px] font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                            className="min-h-[32px] px-2 rounded-lg border border-line text-[11px] font-semibold text-ink-body dark:text-ink-soft hover:bg-sunken cursor-pointer"
                           >
                             Cancel
                           </button>
@@ -580,7 +580,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                           disabled={deletingId === item.id}
                           aria-label={`Delete ${item.title}`}
                           title="Delete material"
-                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 shrink-0 cursor-pointer"
+                          className="min-w-[36px] min-h-[36px] rounded-xl flex items-center justify-center text-ink-muted hover:text-danger hover:text-danger hover:bg-danger-bg hover:bg-danger-bg/40 shrink-0 cursor-pointer"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -588,28 +588,28 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     )}
                   </div>
 
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-xs text-ink-muted truncate">
                     {item.department} · Faculty of {item.faculty}
                   </p>
 
                   {item.description && (
-                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
+                    <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed line-clamp-2">
                       {item.description}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2.5 pt-1">
-                  <div className="rounded-xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/70 dark:border-slate-700/70 px-3 py-2.5 flex items-center justify-between gap-2.5">
+                  <div className="rounded-xl bg-sunken dark:bg-sunken/70 border border-line/70 px-3 py-2.5 flex items-center justify-between gap-2.5">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-emerald-100 dark:bg-emerald-950/70 text-emerald-800 dark:text-emerald-300 flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 rounded-xl bg-brand-subtle dark:bg-brand-subtle/70 text-brand flex items-center justify-center shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 truncate">
+                        <p className="text-xs font-semibold text-ink dark:text-ink-soft truncate">
                           {item.fileName}
                         </p>
-                        <p className="text-[11px] font-mono tabular-nums text-slate-500 dark:text-slate-400">
+                        <p className="text-[11px] font-mono tabular-nums text-ink-muted">
                           {formatFileSize(item.fileSizeBytes)} · {item.downloadCount}{' '}
                           {item.downloadCount === 1 ? 'download' : 'downloads'}
                         </p>
@@ -623,7 +623,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                           onClick={() => setPreviewItem(item)}
                           aria-label={`Preview ${item.title}`}
                           title="Preview material"
-                          className="min-w-[38px] min-h-[40px] px-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold inline-flex items-center justify-center gap-1 cursor-pointer"
+                          className="min-w-[38px] min-h-[40px] px-2.5 rounded-xl border border-line bg-surface hover:bg-sunken text-ink-soft text-xs font-semibold inline-flex items-center justify-center gap-1 cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5" />
                           <span className="hidden sm:inline">Preview</span>
@@ -633,7 +633,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                         type="button"
                         onClick={() => handleDownload(item)}
                         disabled={downloadingId === item.id}
-                        className="min-h-[40px] px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                        className="min-h-[40px] px-3.5 rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-xs font-semibold inline-flex items-center gap-1.5 transition-colors cursor-pointer"
                       >
                         <Download className="w-3.5 h-3.5" />
                         <span>{downloadingId === item.id ? 'Saving...' : 'Download'}</span>
@@ -641,9 +641,9 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between gap-2 text-[11px] text-slate-500 dark:text-slate-400 px-0.5">
+                  <div className="flex items-center justify-between gap-2 text-[11px] text-ink-muted px-0.5">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <span className="truncate font-medium text-slate-700 dark:text-slate-300">
+                      <span className="truncate font-medium text-ink-soft">
                         {item.authorName}
                       </span>
                       <RoleBadge role={item.authorRole} showStudent={true} />
@@ -665,7 +665,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
             type="button"
             disabled={loadingMore}
             onClick={onLoadMore}
-            className="min-h-[40px] px-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-60 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+            className="min-h-[40px] px-5 rounded-2xl border border-line bg-surface hover:bg-sunken disabled:opacity-60 text-xs font-semibold text-ink-soft transition-colors cursor-pointer"
           >
             {loadingMore ? 'Loading more...' : 'Load more study materials'}
           </button>
@@ -674,31 +674,31 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
 
       {/* Upload Material Modal */}
       {uploadOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-slate-950/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-white dark:bg-slate-900 border border-transparent dark:border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-xl">
+        <div className="fixed inset-0 z-50 bg-slate-900/45 dark:bg-canvas/70 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="w-full sm:max-w-lg max-h-[92dvh] overflow-y-auto bg-surface border border-transparent dark:border-line rounded-t-3xl sm:rounded-3xl p-6 space-y-4 shadow-overlay">
             <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              <h3 className="text-base font-bold text-ink">
                 Upload Academic Material
               </h3>
               <button
                 type="button"
                 onClick={() => setUploadOpen(false)}
                 aria-label="Close upload dialog"
-                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer"
+                className="min-w-[40px] min-h-[40px] rounded-xl flex items-center justify-center text-ink-muted hover:bg-sunken cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800/70 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="rounded-xl bg-danger-bg dark:bg-danger-bg/50 border border-danger-line dark:border-danger/70 p-3 text-xs text-danger">
                 {formError}
               </div>
             )}
 
             <form onSubmit={handleUploadSubmit} className="space-y-3.5">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                <label className="block text-xs font-semibold text-ink-soft mb-1.5">
                   Attach File (PDF, Handout, Notes, Image — max {formatFileSize(MAX_RESOURCE_FILE_BYTES)})
                 </label>
                 <input
@@ -710,18 +710,18 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="w-full min-h-[56px] px-4 py-3 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/60 hover:border-emerald-600 dark:hover:border-emerald-500 text-left flex items-center justify-between gap-3 transition-colors cursor-pointer"
+                  className="w-full min-h-[56px] px-4 py-3 rounded-2xl border border-dashed border-line bg-sunken/70 dark:bg-sunken/60 hover:border-brand text-left flex items-center justify-between gap-3 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
-                    <Upload className="w-4 h-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
-                    <span className="text-xs font-medium text-slate-700 dark:text-slate-200 truncate">
+                    <Upload className="w-4 h-4 text-brand shrink-0" />
+                    <span className="text-xs font-medium text-ink-soft truncate">
                       {selectedFile
                         ? selectedFile.name
                         : 'Choose a file from your device...'}
                     </span>
                   </div>
                   {selectedFile && (
-                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400 shrink-0">
+                    <span className="text-[11px] font-mono text-ink-muted shrink-0">
                       {formatFileSize(selectedFile.size)}
                     </span>
                   )}
@@ -732,7 +732,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 <div>
                   <label
                     htmlFor="resCourseCode"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Course Code
                   </label>
@@ -744,14 +744,14 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     value={courseCode}
                     onChange={(e) => setCourseCode(e.target.value)}
                     placeholder="e.g., PHYS 401"
-                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 uppercase focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink uppercase focus:outline-none focus:border-brand"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="resCategory"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Material Type
                   </label>
@@ -759,7 +759,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     id="resCategory"
                     value={category}
                     onChange={(e) => setCategory(e.target.value as ResourceCategory)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {RESOURCE_CATEGORIES.map((cat) => (
                       <option key={cat} value={cat}>
@@ -773,7 +773,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               <div>
                 <label
                   htmlFor="resTitle"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Title
                 </label>
@@ -785,7 +785,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="e.g., Quantum Mechanics Past Questions (2021–2024)"
-                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full min-h-[44px] px-3.5 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -793,7 +793,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 <div>
                   <label
                     htmlFor="resFaculty"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Faculty
                   </label>
@@ -801,7 +801,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     id="resFaculty"
                     value={uploadFaculty}
                     onChange={(e) => handleUploadFacultyChange(e.target.value)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs sm:text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {facultyOptions.map((fac) => (
                       <option key={fac} value={fac}>
@@ -814,7 +814,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 <div>
                   <label
                     htmlFor="resDepartment"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Department
                   </label>
@@ -822,7 +822,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     id="resDepartment"
                     value={uploadDepartment}
                     onChange={(e) => setUploadDepartment(e.target.value)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs sm:text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {uploadDepartments.map((dept) => (
                       <option key={dept.id} value={dept.name}>
@@ -835,7 +835,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 <div>
                   <label
                     htmlFor="resLevel"
-                    className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                    className="block text-xs font-semibold text-ink-soft mb-1"
                   >
                     Level
                   </label>
@@ -843,7 +843,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                     id="resLevel"
                     value={uploadLevel}
                     onChange={(e) => setUploadLevel(e.target.value as ResourceLevel)}
-                    className="w-full min-h-[44px] px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                    className="w-full min-h-[44px] px-3 rounded-xl border border-line bg-surface dark:bg-sunken text-xs sm:text-sm text-ink focus:outline-none focus:border-brand"
                   >
                     {RESOURCE_LEVELS.map((lvl) => (
                       <option key={lvl} value={lvl}>
@@ -857,7 +857,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
               <div>
                 <label
                   htmlFor="resDesc"
-                  className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1"
+                  className="block text-xs font-semibold text-ink-soft mb-1"
                 >
                   Short Notes / Topics Covered (optional)
                 </label>
@@ -868,7 +868,7 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Mention lecturer name, semester, or key chapters included..."
-                  className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:border-emerald-600"
+                  className="w-full p-3 rounded-xl border border-line bg-surface dark:bg-sunken text-sm text-ink focus:outline-none focus:border-brand"
                 />
               </div>
 
@@ -876,14 +876,14 @@ export const RepositoryView: React.FC<RepositoryViewProps> = ({
                 <button
                   type="button"
                   onClick={() => setUploadOpen(false)}
-                  className="flex-1 min-h-[44px] rounded-xl border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl border border-line text-sm font-semibold text-ink-soft hover:bg-sunken cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="flex-1 min-h-[44px] rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-60 text-white text-sm font-semibold cursor-pointer"
+                  className="flex-1 min-h-[44px] rounded-xl bg-brand hover:bg-brand-strong disabled:opacity-60 text-on-brand text-sm font-semibold cursor-pointer"
                 >
                   {uploading ? 'Uploading...' : 'Publish Material'}
                 </button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { elevation } from './styles';
 
 export interface CardProps {
   /** 4 | 5 | 6 | 10 — matches the app's existing paddings. */
@@ -17,7 +18,7 @@ const paddings: Record<NonNullable<CardProps['padding']>, string> = {
 export function Card({ padding = 5, className = '', children }: CardProps) {
   return (
     <div
-      className={`bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 ${paddings[padding]} ${className}`}
+      className={`bg-surface rounded-xl border border-line ${elevation.resting} ${paddings[padding]} ${className}`}
     >
       {children}
     </div>

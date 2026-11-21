@@ -42,7 +42,7 @@ function Challenge({onToken}: {onToken:(value:string)=>void}) {
     }).catch(fail);
     return ()=>{active=false; clearTimeout(slow); onToken(''); if(id!==undefined)window.turnstile?.remove(id);};
   },[onToken,attempt]);
-  return <div className="space-y-1 text-xs text-slate-600 dark:text-slate-300">
+  return <div className="space-y-1 text-xs text-ink-body dark:text-ink-soft">
     <div ref={host} />
     <div role="status">{status==='loading' && 'Loading security check. You can keep filling in the form.'}
       {status==='slow' && 'The security check is taking longer than usual. You can keep filling in the form.'}
