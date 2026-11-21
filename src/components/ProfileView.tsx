@@ -52,6 +52,7 @@ import {
 } from '../types';
 import { GpaCalculatorScreen } from './GpaCalculatorScreen';
 import { RoleBadge } from './RoleBadge';
+import { useIsCurrentUserFounder } from '../hooks/useFounder';
 import { StarredMessagesModal } from './StarredMessagesModal';
 import { renderPresetAvatarIcon, UserAvatar } from './UserAvatar';
 
@@ -65,18 +66,6 @@ interface ProfileViewProps {
   onJumpToMessage?: (chatId: string, messageId: string) => void;
   onProfileUpdated?: () => void;
 }
-
-interface NotificationPrefs {
-  messages: boolean;
-  announcementsAndTimetable: boolean;
-  soundAlerts: boolean;
-}
-
-const DEFAULT_NOTIFICATION_PREFS: NotificationPrefs = {
-  messages: true,
-  announcementsAndTimetable: true,
-  soundAlerts: true,
-};
 
 const SUPPORT_EMAIL = 'GSUConnect0@gmail.com';
 
@@ -141,6 +130,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   onJumpToMessage,
   onProfileUpdated,
 }) => {
+  const isFounder = useIsCurrentUserFounder(Boolean(currentUser.uid));
   const [showGpaCalculator, setShowGpaCalculator] = useState(false);
   const [starredOpen, setStarredOpen] = useState(false);
   const [avatarModalOpen, setAvatarModalOpen] = useState(false);
@@ -180,24 +170,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [savingPassword, setSavingPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  // Notification preferences (per-user device localStorage)
-  const notifStorageKey = `gsu_notification_prefs_${currentUser.uid}`;
-  const [notifPrefs, setNotifPrefs] = useState<NotificationPrefs>(() => {
-    try {
-      const raw = localStorage.getItem(notifStorageKey);
-      if (raw) {
-        const parsed = JSON.parse(raw) as Partial<NotificationPrefs>;
-        return {
-          messages: parsed.messages !== false,
-          announcementsAndTimetable: parsed.announcementsAndTimetable !== false,
-          soundAlerts: parsed.soundAlerts !== false,
-        };
-      }
-    } catch {
-      // Ignore storage access errors
-    }
-    return DEFAULT_NOTIFICATION_PREFS;
-  });
 
   // Terms & Privacy Policy modals
   const [legalModal, setLegalModal] = useState<'terms' | 'privacy' | null>(null);
@@ -254,14 +226,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       window.removeEventListener('gsu-recovery-verified', load);
     };
   }, [currentUser.uid]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(notifStorageKey, JSON.stringify(notifPrefs));
-    } catch {
-      // Ignore storage quota errors
-    }
-  }, [notifStorageKey, notifPrefs]);
 
   const isDark = theme === 'dark';
 
@@ -363,7 +327,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const clearUserDeviceData = () => {
     try {
       localStorage.removeItem(`gsu_gpa_calc_${currentUser.uid}`);
-      localStorage.removeItem(notifStorageKey);
     } catch {
       // Ignore storage access errors
     }
@@ -540,7 +503,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 <h2 className="text-lg font-bold text-ink leading-snug line-clamp-2 break-words">
                   {currentUser.fullName}
                 </h2>
-                <RoleBadge role={currentUser.role} showStudent />
+                <RoleBadge role={currentUser.role} showStudent founder={isFounder} />
               </div>
               <p className="text-sm font-mono text-ink-muted mt-0.5 break-all">
                 {currentUser.idNumber}
@@ -762,83 +725,18 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         <ChevronRight className="w-5 h-5 text-ink-muted shrink-0" />
       </button>
 
-      {/* Notification Settings */}
-      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-4">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2.5">
-            <Bell className="w-4 h-4 text-brand shrink-0" />
-            <div>
-              <h3 className="text-sm font-bold text-ink">
-                Notification Settings
-              </h3>
-              <p className="text-[11px] text-ink-muted">
-                Preferences saved on this device
-              </p>
-            </div>
-          </div>
+      {/* Notifications are in-app only. Offer no preference that does nothing. */}
+      <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-5 sm:p-6 space-y-3">
+        <div className="flex items-center gap-2.5">
+          <Bell className="w-4 h-4 text-brand shrink-0" />
+          <h3 className="text-sm font-bold text-ink">Notifications</h3>
         </div>
-
-        <div className="space-y-3">
-          {(
-            [
-              {
-                key: 'messages',
-                title: 'Chat & Direct Messages',
-                desc: 'Highlight unread messages and replies in your chats',
-              },
-              {
-                key: 'announcementsAndTimetable',
-                title: 'Announcements & Timetable',
-                desc: 'Show badges for campus notices and schedule updates',
-              },
-              {
-                key: 'soundAlerts',
-                title: 'In-App Sound Alerts',
-                desc: 'Play subtle audio chimes for incoming calls and messages',
-              },
-            ] as const
-          ).map((item) => {
-            const enabled = notifPrefs[item.key];
-            return (
-              <div
-                key={item.key}
-                className="flex items-center justify-between gap-3 py-1"
-              >
-                <div className="min-w-0">
-                  <p className="text-xs font-semibold text-ink">
-                    {item.title}
-                  </p>
-                  <p className="text-[11px] text-ink-muted">
-                    {item.desc}
-                  </p>
-                </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={enabled}
-                  aria-label={item.title}
-                  onClick={() =>
-                    setNotifPrefs((prev) => ({
-                      ...prev,
-                      [item.key]: !prev[item.key],
-                    }))
-                  }
-                  className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors cursor-pointer ${
-                    enabled
-                      ? 'bg-brand border-brand'
-                      : 'bg-sunken border-line'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-resting transition-transform ${
-                      enabled ? 'translate-x-6' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-              </div>
-            );
-          })}
-        </div>
+        <p className="text-xs text-ink-body dark:text-ink-soft leading-relaxed">
+          GSU Connect currently shows unread counts and new activity only while the app is open. It does not send push notifications, background alerts or sound alerts. There are no notification preferences to change yet.
+        </p>
+        <p className="text-[11px] text-ink-muted">
+          Do not rely on this app for urgent or time-critical messages.
+        </p>
       </div>
 
       {/* Security & Recovery */}
@@ -1417,7 +1315,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               <div className="space-y-3 text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 <p>
                   <strong className="text-ink">Who Operates GSU Connect:</strong>{' '}
-                  GSU Connect is the Gombe State University (GSU) student community platform, built to support communication, academic collaboration, and campus updates among verified members of the GSU community. For support or inquiries, contact{' '}
+                  GSU Connect is an independent, student-built community for Gombe State University students, created without an official relationship with the university. It is not operated, endorsed or supervised by GSU, and notices posted in the app are not official university communications unless a verified source is shown. For support or inquiries, contact{' '}
                   <a
                     href={`mailto:${SUPPORT_EMAIL}`}
                     className="font-semibold text-brand underline"
@@ -1436,14 +1334,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </p>
                 <p>
                   <strong className="text-ink">Campus Conduct &amp; Moderation:</strong>{' '}
-                  Harassment, spam, scams, hate speech, and unauthorized sharing of private student or staff data are forbidden across chats, study spaces, marketplace, and confessions. Admins and authorized moderators may review reported content and suspend accounts that violate campus guidelines.
+                  Harassment, spam, scams, hate speech, and unauthorized sharing of private student or staff data are forbidden across chats, study spaces and other enabled features. App admins and authorized moderators may review reported content and suspend accounts that violate these rules.
                 </p>
               </div>
             ) : (
               <div className="space-y-3 text-xs text-ink-body dark:text-ink-soft leading-relaxed">
                 <p>
                   <strong className="text-ink">Operator &amp; Scope:</strong>{' '}
-                  GSU Connect is operated as the Gombe State University (GSU) student community platform for verified GSU students, alumni, and staff (minimum age 16+). We process personal data strictly in line with the{' '}
+                  GSU Connect is an independent, student-built app for verified GSU students, alumni and staff (minimum age 16+). It has no official relationship with Gombe State University, which does not operate or endorse it. We process personal data in line with the{' '}
                   <strong className="text-ink">
                     Nigeria Data Protection Act (NDPA)
                   </strong>{' '}
@@ -1455,11 +1353,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 </p>
                 <p>
                   <strong className="text-ink">Cloud Storage &amp; Visibility:</strong>{' '}
-                  Account data, messages, and shared files are stored in Supabase. Chats are access-controlled, not end-to-end encrypted; authorized administrative moderation is possible. Phone numbers and recovery emails are kept private, and student IDs are visible only to the applicant and authorized reviewers. Staff applications and their proof are restricted to the applicant and admins. A colleague asked to vouch sees the applicant’s name and department, not the application or its files. GPA calculator entries and notification preferences are stored locally on your device.
+                  Account data, messages, and shared files are stored in Supabase. Chats are access-controlled, not end-to-end encrypted; authorized administrative moderation is possible. Phone numbers and recovery emails are kept private, and student IDs are visible only to the applicant and authorized reviewers. Staff applications and their proof are restricted to the applicant and admins. A colleague asked to vouch sees the applicant’s name and department, not the application or its files. GPA calculator entries are stored locally on your device.
                 </p>
                 <p>
                   <strong className="text-ink">Data Retention:</strong>{' '}
-                  Verification ID documents are deleted within 24 hours after your account is approved. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
+                  Verification ID documents are scheduled for deletion within 24 hours after your account is approved. Contact support if you need confirmation that a document was removed. Active account profile and community data are retained while your account remains active and removed upon verified account deletion.
                 </p>
                 <p>
                   <strong className="text-ink">Your NDPA Rights:</strong>{' '}

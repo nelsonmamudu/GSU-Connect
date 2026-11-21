@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {AnonymousComments, AnonymousCommentReview} from './AnonymousComments';
 import {
   Check,
   Eye,
@@ -18,6 +19,7 @@ import {
   fetchMyConfessions,
   moderateConfession,
   toggleConfessionUpvote,
+  type ConfessionSafetyReason,
 } from '../services/supabaseService';
 import {
   AppUser,
@@ -71,6 +73,9 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
   const [loadingMine, setLoadingMine] = useState(false);
   const [revealedAuthors, setRevealedAuthors] = useState<Record<string, AppUser | null>>({});
   const [revealingAuthorId, setRevealingAuthorId] = useState<string | null>(null);
+  const [revealReasons, setRevealReasons] = useState<Record<string, ConfessionSafetyReason | ''>>({});
+  const [commentsOpenId, setCommentsOpenId] = useState<string | null>(null);
+  const [commentReviewOpen, setCommentReviewOpen] = useState(false);
 
   const loadMySubmissions = useCallback(async () => {
     setLoadingMine(true);
@@ -168,11 +173,12 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
   };
 
   const handleRevealAuthor = async (postId: string) => {
-    if (!isAdmin || revealingAuthorId) return;
+    const reason = revealReasons[postId];
+    if (!isAdmin || revealingAuthorId || !reason) return;
     setBannerError(null);
     setRevealingAuthorId(postId);
     try {
-      const author = await fetchConfessionAuthor(postId);
+      const author = await fetchConfessionAuthor(postId, reason);
       setRevealedAuthors((prev) => ({ ...prev, [postId]: author }));
     } catch (err) {
       setBannerError(err instanceof Error ? err.message : 'Could not look up author.');
@@ -228,6 +234,12 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
 
   return (
     <div className="space-y-4">
+      {isAdmin && <div>
+        <button type="button" onClick={()=>setCommentReviewOpen(open=>!open)} aria-expanded={commentReviewOpen} className="min-h-[40px] rounded-xl border border-line bg-surface px-4 text-xs font-semibold text-ink">
+          {commentReviewOpen ? 'Close comment moderation' : 'Open comment moderation'}
+        </button>
+        {commentReviewOpen && <AnonymousCommentReview />}
+      </div>}
       {/* Header */}
       <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-4 sm:p-5 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -242,7 +254,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
               </span>
             </div>
             <p className="text-xs text-ink-muted">
-              Share campus thoughts, Off-Campus (Tumfure) gist, lecture hall moments, or shoutouts. Names and matric numbers are never displayed.
+              Share campus thoughts, lecture hall moments, or shoutouts. Your name and ID are not shown in the feed, but admins can identify the author.
             </p>
           </div>
 
@@ -511,6 +523,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   )}
 
                   <div className="flex items-center gap-1.5">
+                    {post.status === 'approved' && <button type="button" aria-expanded={commentsOpenId === post.id} onClick={()=>setCommentsOpenId(current=>current===post.id?null:post.id)} className="min-h-[36px] rounded-xl border border-line px-3 text-xs font-semibold">{commentsOpenId === post.id ? 'Hide comments' : 'Comments'}</button>}
                     {isModerator && post.status === 'pending' && (
                       <>
                         <button
@@ -535,22 +548,35 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                     )}
 
                     {isAdmin && (
-                      <button
-                        type="button"
-                        disabled={revealingAuthorId === post.id}
-                        onClick={() => handleRevealAuthor(post.id)}
-                        title="Admin-only author audit lookup"
-                        className="min-h-[36px] px-2.5 rounded-xl border border-line hover:bg-sunken text-[11px] font-semibold text-ink-body dark:text-ink-soft inline-flex items-center gap-1 cursor-pointer"
-                      >
-                        <Eye className="w-3.5 h-3.5" />
-                        <span>
-                          {revealingAuthorId === post.id
-                            ? 'Checking...'
-                            : authorChecked
-                              ? 'Lookup Again'
-                              : 'Author'}
-                        </span>
-                      </button>
+                      <div className="flex flex-col gap-1">
+                        <label htmlFor={`safety-reason-${post.id}`} className="text-[11px] text-ink-muted">
+                          Serious safety case (lookup is recorded)
+                        </label>
+                        <select
+                          id={`safety-reason-${post.id}`}
+                          value={revealReasons[post.id] || ''}
+                          onChange={(event) => setRevealReasons((previous) => ({
+                            ...previous,
+                            [post.id]: event.target.value as ConfessionSafetyReason | '',
+                          }))}
+                          className="min-h-[36px] rounded-xl border border-line bg-surface px-2 text-xs text-ink"
+                        >
+                          <option value="">Select reason</option>
+                          <option value="credible_threat">Credible threat</option>
+                          <option value="harassment_or_doxxing">Harassment or doxxing</option>
+                          <option value="minor_safety">Minor safety</option>
+                          <option value="other_serious_safety">Other serious safety issue</option>
+                        </select>
+                        <button
+                          type="button"
+                          disabled={!revealReasons[post.id] || revealingAuthorId === post.id}
+                          onClick={() => handleRevealAuthor(post.id)}
+                          className="min-h-[36px] px-2.5 rounded-xl border border-line hover:bg-sunken text-[11px] font-semibold text-ink-body dark:text-ink-soft inline-flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>{revealingAuthorId === post.id ? 'Checking...' : authorChecked ? 'Lookup again' : 'Look up author'}</span>
+                        </button>
+                      </div>
                     )}
 
                     {canDelete &&
@@ -584,6 +610,8 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                       ))}
                   </div>
                 </div>
+
+                {post.status === 'approved' && commentsOpenId === post.id && <AnonymousComments postId={post.id} />}
 
                 {isAdmin && authorChecked && (
                   <div className="rounded-xl bg-sunken dark:bg-sunken/70 border border-line/80 dark:border-line px-3 py-2 text-[11px] text-ink-soft">
@@ -637,7 +665,7 @@ export const ConfessionsView: React.FC<ConfessionsViewProps> = ({
                   Post Anonymously
                 </h3>
                 <p className="text-xs text-ink-muted">
-                  Your name, matric number &amp; department stay hidden from readers.
+                  Your name and ID are not shown in the feed. Admins can identify you. What you write may also reveal who you are.
                 </p>
               </div>
               <button

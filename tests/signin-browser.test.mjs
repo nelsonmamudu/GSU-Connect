@@ -34,6 +34,7 @@ test('Sign In submits a six-character password to Auth without browser validatio
   const page = await browser.newPage({viewport:{width:390,height:844},serviceWorkers:'block'});
   await page.route('**/*',route => new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort());
   await page.goto(`http://127.0.0.1:${server.httpServer.address().port}`);
+  await page.getByText('Connect with your classmates and find relevant notices and study materials at GSU.').waitFor({state:'visible'});
   const pw = page.locator('#password');
   await page.getByLabel('Matric number or staff ID').fill('08031234567');
   await pw.fill('123456');

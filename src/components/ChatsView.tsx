@@ -662,7 +662,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
         announcementLabel: 'University Announcements',
         announcementPreview: latestCampusNotice
           ? latestCampusNotice.title
-          : 'Official campus-wide bulletins',
+          : 'Campus-wide notices',
         groups: campusGroups,
       });
     }
@@ -5745,7 +5745,7 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                   {activeViewOnceModal.kind === 'voice'
                     ? 'View-once voice message'
                     : 'View-once photo'}{' '}
-                  · Deleted from chat once opened
+                  · Hidden after opening. This is not a guarantee that the media is erased from the server, and it cannot prevent screenshots or recording.
                 </p>
               </div>
             </div>
@@ -5865,12 +5865,10 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
             setGroupInfoOpen(false);
             onSelectChat(dmChatId);
           }}
-          onVoiceCall={async (target) => {
-            if (onStartVoiceCall) {
-              setGroupInfoOpen(false);
-              await onStartVoiceCall(target);
-            }
-          }}
+          onVoiceCall={onStartVoiceCall ? async (target) => {
+            setGroupInfoOpen(false);
+            await onStartVoiceCall(target);
+          } : undefined}
         />
       )}
 

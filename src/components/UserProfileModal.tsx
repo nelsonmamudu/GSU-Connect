@@ -30,6 +30,7 @@ import {
   UserStatus,
 } from '../types';
 import { RoleBadge } from './RoleBadge';
+import { useFounderAccount, useIsCurrentUserFounder } from '../hooks/useFounder';
 import { UserAvatar } from './UserAvatar';
 
 interface UserProfileModalProps {
@@ -40,7 +41,7 @@ interface UserProfileModalProps {
   isOnline?: boolean;
   onClose: () => void;
   onMessage: (target: AppUser) => Promise<void> | void;
-  onVoiceCall: (target: AppUser) => Promise<void> | void;
+  onVoiceCall?: (target: AppUser) => Promise<void> | void;
 }
 
 function formatLastSeen(diffMs: number): string {
@@ -64,6 +65,9 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 }) => {
   const isSelf = targetUser.uid === currentUser.uid;
   const isAdmin = currentUser.role === 'admin';
+  const founderUid = useFounderAccount();
+  const selfFounder = useIsCurrentUserFounder(isSelf);
+  const showFounder = isSelf ? selfFounder : Boolean(founderUid && founderUid === targetUser.uid);
 
   const [messagingBusy, setMessagingBusy] = useState(false);
   const [callingBusy, setCallingBusy] = useState(false);
@@ -124,7 +128,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   };
 
   const handleCallClick = async () => {
-    if (callingBusy || anyBlocked) return;
+    if (callingBusy || anyBlocked || !onVoiceCall) return;
     setCallingBusy(true);
     setErrorMsg(null);
     try {
@@ -247,7 +251,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <h3 className="text-lg font-bold text-ink break-words">
                   {targetUser.fullName}
                 </h3>
-                <RoleBadge role={roleValue} showStudent />
+                <RoleBadge role={roleValue} showStudent founder={showFounder} />
                 {statusValue === 'suspended' && (
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-danger-line dark:bg-danger-bg/70 text-ink">
                     Suspended
@@ -276,7 +280,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
           {/* Quick Actions (Message, Voice Call, Block) */}
           {!isSelf && (
-            <div className="grid grid-cols-3 gap-2.5">
+            <div className={`grid ${onVoiceCall ? 'grid-cols-3' : 'grid-cols-2'} gap-2.5`}>
               <button
                 type="button"
                 disabled={messagingBusy}
@@ -287,7 +291,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <span>{messagingBusy ? 'Opening...' : 'Message'}</span>
               </button>
 
-              <button
+              {onVoiceCall && <button
                 type="button"
                 disabled={callingBusy || anyBlocked || statusValue === 'suspended'}
                 onClick={handleCallClick}
@@ -295,7 +299,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               >
                 <Phone className="w-4 h-4" />
                 <span>{callingBusy ? 'Calling...' : 'Voice Call'}</span>
-              </button>
+              </button>}
 
               <button
                 type="button"
@@ -318,7 +322,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <Ban className="w-4 h-4 shrink-0 text-warn" />
               <span>
                 {iBlocked
-                  ? 'You blocked this member. Unblock them to resume messaging and voice calls.'
+                  ? 'You blocked this member. Unblock them to resume messaging.'
                   : peerBlockedMe
                     ? 'This conversation is blocked by the recipient.'
                     : 'Messaging is currently blocked.'}

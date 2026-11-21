@@ -843,7 +843,10 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           </div>
 
           <p className="text-ink-body dark:text-ink-soft text-base leading-relaxed max-w-md mx-auto lg:mx-0">
-            Campus messaging built for verified GSU students, class reps, departmental helpers, and lecturers.
+            Connect with your classmates and find relevant notices and study materials at GSU.
+          </p>
+          <p className="text-xs text-ink-muted max-w-md mx-auto lg:mx-0">
+            An independent, student-built app. It is not an official GSU service and is not endorsed by the university.
           </p>
 
           <div className="hidden lg:grid grid-cols-1 gap-3 pt-2 text-sm text-ink-body dark:text-ink-soft">

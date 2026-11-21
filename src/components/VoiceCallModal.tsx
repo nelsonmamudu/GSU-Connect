@@ -14,6 +14,7 @@ import {
   updateCallSession,
 } from '../services/supabaseService';
 import { AppUser, formatCompactLevelLabel, VoiceCallSession } from '../types';
+import { describeCallConnection, type CallRtcState } from '../utils/callStatus';
 import { RoleBadge } from './RoleBadge';
 import { UserAvatar } from './UserAvatar';
 
@@ -92,12 +93,11 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
   );
 
   const [muted, setMuted] = useState(false);
-  const [speakerOn, setSpeakerOn] = useState(false);
+  const [loudAudio, setLoudAudio] = useState(false);
   const [elapsedSec, setElapsedSec] = useState(0);
   const [offerPublished, setOfferPublished] = useState(Boolean(callSession.offer));
-  const [rtcConnectionState, setRtcConnectionState] = useState<
-    'idle' | 'connecting' | 'connected' | 'disconnected' | 'failed'
-  >('idle');
+  const [rtcConnectionState, setRtcConnectionState] = useState<CallRtcState>('idle');
+  const [slowConnect, setSlowConnect] = useState(false);
   const [accepting, setAccepting] = useState(false);
   const [micWarning, setMicWarning] = useState<string | null>(null);
   const [ringtoneNeedsTap, setRingtoneNeedsTap] = useState(false);
@@ -113,15 +113,15 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
   const pendingAcceptRef = useRef<boolean>(false);
   const hasLoggedCallRef = useRef<boolean>(false);
   const elapsedSecRef = useRef<number>(0);
-  const speakerOnRef = useRef<boolean>(false);
+  const loudAudioRef = useRef<boolean>(false);
 
   useEffect(() => {
     elapsedSecRef.current = elapsedSec;
   }, [elapsedSec]);
 
   useEffect(() => {
-    speakerOnRef.current = speakerOn;
-  }, [speakerOn]);
+    loudAudioRef.current = loudAudio;
+  }, [loudAudio]);
 
   const cleanupRtc = useCallback(() => {
     if (localStreamRef.current) {
@@ -314,22 +314,31 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
     return () => unsub();
   }, [callSession.id, currentUser.uid, isCaller]);
 
-  // Live call duration timer when accepted
+  // Do not count ringing or signalling as connected audio time.
   useEffect(() => {
-    if (liveCall.status !== 'accepted') return;
-    setElapsedSec(0);
+    if (liveCall.status !== 'accepted' || rtcConnectionState !== 'connected') return;
     const id = window.setInterval(() => {
       setElapsedSec((prev) => prev + 1);
     }, 1000);
     return () => window.clearInterval(id);
-  }, [liveCall.status]);
+  }, [liveCall.status, rtcConnectionState]);
 
-  // Adjust remote audio output volume when Speaker toggle changes
+  // Adjust playback volume; device audio routing is controlled by the OS.
   useEffect(() => {
     const audioEl = remoteAudioRef.current;
     if (!audioEl) return;
-    audioEl.volume = speakerOn ? 1.0 : 0.55;
-  }, [speakerOn]);
+    audioEl.volume = loudAudio ? 1.0 : 0.55;
+  }, [loudAudio]);
+
+  // Surface a slow audio connection instead of leaving "Connecting audio..." forever.
+  useEffect(() => {
+    if (liveCall.status !== 'accepted' || rtcConnectionState !== 'connecting') {
+      setSlowConnect(false);
+      return;
+    }
+    const timer = window.setTimeout(() => setSlowConnect(true), 20_000);
+    return () => window.clearTimeout(timer);
+  }, [liveCall.status, rtcConnectionState]);
 
   // Auto-mark missed after 40s of unanswered ringing by caller + log missed call
   useEffect(() => {
@@ -379,7 +388,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
       pc.ontrack = (event) => {
         if (remoteAudioRef.current && event.streams[0]) {
           remoteAudioRef.current.srcObject = event.streams[0];
-          remoteAudioRef.current.volume = speakerOnRef.current ? 1.0 : 0.55;
+          remoteAudioRef.current.volume = loudAudioRef.current ? 1.0 : 0.55;
           remoteAudioRef.current.play().catch(() => undefined);
         }
       };
@@ -459,8 +468,11 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
           setOfferPublished(true);
         }
       } catch {
-        setMicWarning('Voice signaling initialized without local audio.');
-        setOfferPublished(true);
+        if (!cancelled) {
+          cleanupRtc();
+          setRtcConnectionState('failed');
+          setMicWarning('Could not start this call. End the call and try again.');
+        }
       }
     };
 
@@ -468,7 +480,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
     return () => {
       cancelled = true;
     };
-  }, [isCaller, callSession.id, attachPeerHandlers]);
+  }, [isCaller, callSession.id, attachPeerHandlers, cleanupRtc]);
 
   // Apply remote answer on caller side
   useEffect(() => {
@@ -481,9 +493,13 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
       pcRef.current
         .setRemoteDescription(new RTCSessionDescription(parsed))
         .then(() => flushPendingRemoteCandidates())
-        .catch(() => undefined);
+        .catch(() => {
+          setRtcConnectionState('failed');
+          setMicWarning('Could not connect audio. End the call and try again.');
+        });
     } catch {
-      // Ignore malformed SDP
+      setRtcConnectionState('failed');
+      setMicWarning('Could not connect audio. End the call and try again.');
     }
   }, [isCaller, liveCall.answer, flushPendingRemoteCandidates]);
 
@@ -505,7 +521,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
             localStreamRef.current = stream;
             stream.getTracks().forEach((track) => pc.addTrack(track, stream));
           } catch {
-            setMicWarning('Microphone unavailable. Connected in listen-only mode.');
+            setMicWarning('Microphone unavailable. You can listen but the other person will not hear you.');
           }
         } else {
           setMicWarning('Microphone API unavailable in this browser.');
@@ -524,16 +540,17 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
           setAcceptedAt: true,
         });
       } catch {
-        await updateCallSession(liveCall.id, {
-          status: 'accepted',
-          setAcceptedAt: true,
-        }).catch(() => undefined);
+        cleanupRtc();
+        answerSentRef.current = false;
+        appliedRemoteSdpRef.current = false;
+        setRtcConnectionState('failed');
+        setMicWarning('Could not connect the call. Please try accepting again.');
       } finally {
         setAccepting(false);
         pendingAcceptRef.current = false;
       }
     },
-    [attachPeerHandlers, flushPendingRemoteCandidates, liveCall.id]
+    [attachPeerHandlers, cleanupRtc, flushPendingRemoteCandidates, liveCall.id]
   );
 
   // If receiver clicked Accept just before caller published offer, resume automatically
@@ -584,11 +601,13 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
 
   const handleEndCall = async () => {
     const finalElapsed = elapsedSecRef.current;
-    const wasAccepted = liveCall.status === 'accepted';
+    // Answered signalling without live audio is not a completed conversation.
+    const hadLiveAudio =
+      liveCall.status === 'accepted' && rtcConnectionState === 'connected';
     cleanupRtc();
 
     try {
-      if (wasAccepted) {
+      if (hadLiveAudio) {
         await updateCallSession(liveCall.id, { status: 'ended' });
         if (!hasLoggedCallRef.current) {
           hasLoggedCallRef.current = true;
@@ -630,50 +649,16 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
     }
   };
 
-  const handleToggleSpeaker = async () => {
-    const next = !speakerOn;
-    setSpeakerOn(next);
-    const audioEl = remoteAudioRef.current as
-      | (HTMLAudioElement & { setSinkId?: (id: string) => Promise<void> })
-      | null;
-    if (audioEl) {
-      audioEl.volume = next ? 1.0 : 0.55;
-      if (typeof audioEl.setSinkId === 'function' && navigator.mediaDevices?.enumerateDevices) {
-        try {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const outputs = devices.filter((d) => d.kind === 'audiooutput');
-          if (outputs.length > 1) {
-            const preferred = next
-              ? outputs.find((d) => /speaker|default/i.test(d.label)) || outputs[0]
-              : outputs.find((d) => /earpiece|head|communications/i.test(d.label)) || outputs[0];
-            if (preferred?.deviceId) {
-              await audioEl.setSinkId(preferred.deviceId).catch(() => undefined);
-            }
-          }
-        } catch {
-          // Ignore sink switch failures on unsupported browsers
-        }
-      }
-    }
+  // This changes playback volume only; it does not claim to switch phone audio routes.
+  const handleTogglePlaybackVolume = () => {
+    setLoudAudio(previous => !previous);
   };
 
-  const connectionLabel = (() => {
-    switch (liveCall.status) {
-      case 'ringing':
-        if (accepting) return 'Connecting...';
-        if (!isCaller) return 'Incoming voice call...';
-        return offerPublished ? 'Ringing...' : 'Calling...';
-      case 'accepted':
-        if (rtcConnectionState === 'failed') return 'Reconnecting audio...';
-        return 'Connected';
-      case 'declined':
-        return 'Call declined';
-      case 'missed':
-        return 'No answer';
-      case 'ended':
-        return 'Call ended';
-    }
-  })();
+  const connectionLabel = describeCallConnection(liveCall.status, rtcConnectionState, {
+    isCaller,
+    accepting,
+    offerPublished,
+  });
 
   return (
     <div
@@ -770,6 +755,12 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
           </p>
         )}
 
+        {slowConnect && !micWarning && rtcConnectionState === 'connecting' && (
+          <p role="status" className="text-[11px] text-on-dark-warn bg-on-dark-warn/10 border border-on-dark rounded-xl px-3 py-2">
+            Still connecting audio. Check your network, or end and try again.
+          </p>
+        )}
+
         {!isCaller && liveCall.status === 'ringing' ? (
           <div className="flex items-center justify-center gap-10 pt-2">
             <div className="flex flex-col items-center gap-1.5">
@@ -836,18 +827,18 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({
             <div className="flex flex-col items-center gap-1.5">
               <button
                 type="button"
-                onClick={handleToggleSpeaker}
-                aria-label={speakerOn ? 'Turn speaker off' : 'Turn speaker on'}
-                aria-pressed={speakerOn}
+                onClick={handleTogglePlaybackVolume}
+                aria-label={loudAudio ? 'Lower playback volume' : 'Increase playback volume'}
+                aria-pressed={loudAudio}
                 className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                  speakerOn
+                  loudAudio
                     ? 'bg-white text-ink'
                     : 'bg-on-dark-danger/15 hover:bg-on-dark-danger/25 text-on-dark'
                 }`}
               >
                 <Volume2 className="w-5 h-5" />
               </button>
-              <span className="text-[11px] font-medium text-on-dark-muted">Speaker</span>
+              <span className="text-[11px] font-medium text-on-dark-muted">{loudAudio ? 'Louder' : 'Volume'}</span>
             </div>
           </div>
         )}

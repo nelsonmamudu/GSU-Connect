@@ -1,6 +1,6 @@
 // Expected-behavior regressions discovered during the 2026-11-21 audit.
-// These tests currently FAIL against the checked-in code; run separately with:
-//   npx tsx --test tests/audit-regressions.test.ts
+// Run separately with: npx tsx --test tests/audit-regressions.test.ts
+// Regressions for funnel concurrency and calendar midnight rollover.
 // They use only local fakes, with no live database or network.
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -38,21 +38,33 @@ test('simultaneous funnel flushes do not send the same batch twice', async () =>
 });
 
 test('calendar export gives a one-hour default duration across midnight', async () => {
-  let saved: Blob | undefined;
+  const saved: Blob[] = [];
   const originalCreate=URL.createObjectURL;
   const oldDocument=Object.getOwnPropertyDescriptor(globalThis,'document');
   const oldWindow=Object.getOwnPropertyDescriptor(globalThis,'window');
   try {
-    URL.createObjectURL=((blob: Blob) => {saved=blob; return 'blob:fixture';}) as typeof URL.createObjectURL;
+    URL.createObjectURL=((blob: Blob) => {saved.push(blob); return 'blob:fixture';}) as typeof URL.createObjectURL;
     const link={href:'',download:'',click:()=>{}};
     Object.defineProperty(globalThis,'document',{configurable:true,value:{createElement:()=>link,body:{appendChild:()=>{},removeChild:()=>{}}}});
     Object.defineProperty(globalThis,'window',{configurable:true,value:{setTimeout:()=>0}});
-    downloadCalendarEventIcs({id:'fixture',title:'Late event',date:'2030-01-30',startTime:'23:30'});
-    assert.ok(saved);
-    const content=await saved.text();
-    assert.match(content,/DTSTART:20300130T233000/);
-    assert.match(content,/DTEND:20300131T003000/,
-      'an event without an end time should end one hour later, on the next date');
+    for (const [date, startTime, expectedStart, expectedEnd] of [
+      ['2030-01-30', '23:30', '20300130T233000', '20300131T003000'],
+      ['2030-01-31', '23:30', '20300131T233000', '20300201T003000'],
+      ['2030-12-31', '23:15', '20301231T231500', '20310101T001500'],
+      ['2028-02-28', '23:59', '20280228T235900', '20280229T005900'],
+      ['2030-01-30', '09:15', '20300130T091500', '20300130T101500'],
+    ]) {
+      downloadCalendarEventIcs({id:'fixture',title:'Event',date,startTime});
+      const blob=saved.pop();
+      assert.ok(blob);
+      const content=await blob.text();
+      assert.ok(content.includes(`DTSTART:${expectedStart}\r\n`));
+      assert.ok(content.includes(`DTEND:${expectedEnd}\r\n`), `wrong default end for ${date} ${startTime}`);
+    }
+    downloadCalendarEventIcs({id:'fixture',title:'Explicit end',date:'2030-01-30',startTime:'09:15',endTime:'11:30'});
+    const explicitEnd=saved.pop();
+    assert.ok(explicitEnd);
+    assert.match(await explicitEnd.text(),/DTEND:20300130T113000/);
   } finally {
     URL.createObjectURL=originalCreate;
     if(oldDocument) Object.defineProperty(globalThis,'document',oldDocument); else Reflect.deleteProperty(globalThis,'document');

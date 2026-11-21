@@ -6,10 +6,8 @@ import {
   AlertTriangle,
   BookOpen,
   CalendarDays,
-  Car,
   CheckCircle2,
   ChevronRight,
-  Flame,
   GraduationCap,
   House,
   Compass,
@@ -20,7 +18,6 @@ import {
   Moon,
   Radio,
   Shield,
-  ShoppingBag,
   Sparkles,
   Sun,
   User as UserIcon,
@@ -29,7 +26,6 @@ import {
   X,
 } from 'lucide-react';
 import {
-  createCallSession,
   fetchProfileById,
   getMyAccountStatus,
   markChatAsRead,
@@ -69,7 +65,6 @@ import {
   slugify,
   StarredMessage,
   STATUS_TTL_MS,
-  VoiceCallSession,
 } from './types';
 import { RoleBadge } from './components/RoleBadge';
 import { UserAvatar } from './components/UserAvatar';
@@ -111,26 +106,14 @@ const LazyStatusView = React.lazy(() =>
 const LazyRepositoryView = React.lazy(() =>
   import('./components/RepositoryView').then((m) => ({ default: m.RepositoryView }))
 );
-const LazyMarketplaceView = React.lazy(() =>
-  import('./components/MarketplaceView').then((m) => ({ default: m.MarketplaceView }))
-);
 const LazyCalendarView = React.lazy(() =>
   import('./components/CalendarView').then((m) => ({ default: m.CalendarView }))
-);
-const LazyRidesErrandsView = React.lazy(() =>
-  import('./components/RidesErrandsView').then((m) => ({ default: m.RidesErrandsView }))
-);
-const LazyConfessionsView = React.lazy(() =>
-  import('./components/ConfessionsView').then((m) => ({ default: m.ConfessionsView }))
 );
 const LazyProfileView = React.lazy(() =>
   import('./components/ProfileView').then((m) => ({ default: m.ProfileView }))
 );
 const LazyAdminView = React.lazy(() =>
   import('./components/AdminView').then((m) => ({ default: m.AdminView }))
-);
-const LazyVoiceCallModal = React.lazy(() =>
-  import('./components/VoiceCallModal').then((m) => ({ default: m.VoiceCallModal }))
 );
 
 const DEFAULT_PAGINATION_STATE: WorkspacePaginationState = {
@@ -154,9 +137,6 @@ type AppTab =
   | 'campus'
   | 'statuses'
   | 'repository'
-  | 'marketplace'
-  | 'rides'
-  | 'confessions'
   | 'calendar'
   | 'announcements'
   | 'people'
@@ -229,11 +209,11 @@ function MainApp() {
     nonce: number;
   } | null>(null);
   const [resources, setResources] = useState<AcademicResource[]>([]);
-  const [marketplaceListings, setMarketplaceListings] = useState<MarketplaceListing[]>([]);
+  const [, setMarketplaceListings] = useState<MarketplaceListing[]>([]);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>([]);
   const [statuses, setStatuses] = useState<CampusStatus[]>([]);
-  const [rideErrands, setRideErrands] = useState<RideErrandPost[]>([]);
-  const [confessions, setConfessions] = useState<CampusConfession[]>([]);
+  const [, setRideErrands] = useState<RideErrandPost[]>([]);
+  const [, setConfessions] = useState<CampusConfession[]>([]);
   const [radarToast, setRadarToast] = useState<{
     chatId: string;
     chatName: string;
@@ -268,7 +248,6 @@ function MainApp() {
     useState<WorkspacePaginationState>(DEFAULT_PAGINATION_STATE);
   const [loadingMoreKey, setLoadingMoreKey] =
     useState<keyof WorkspacePaginationState | null>(null);
-  const [activeVoiceCall, setActiveVoiceCall] = useState<VoiceCallSession | null>(null);
   const [theme, setTheme] = useState<AppTheme>(() => {
     try {
       const saved = localStorage.getItem('gsu_theme');
@@ -548,7 +527,6 @@ function MainApp() {
       setPaginationState(DEFAULT_PAGINATION_STATE);
       setLoadingMoreKey(null);
       setWorkspaceError(null);
-      setActiveVoiceCall(null);
       return;
     }
 
@@ -585,21 +563,8 @@ function MainApp() {
         onReports: setReports,
         onPaginationState: setPaginationState,
         onError: setWorkspaceError,
-        onIncomingCalls: (docs) => {
-          setActiveVoiceCall((prev) => {
-            if (prev) {
-              const updated = docs.find((d) => d.id === prev.id);
-              return updated || prev;
-            }
-            const now = Date.now();
-            const incoming = docs.find((d) => {
-              if (d.receiverId !== uid || d.status !== 'ringing') return false;
-              const createdMs = d.createdAt?.toMillis?.() ?? now;
-              return now - createdMs <= 90_000;
-            });
-            return incoming || null;
-          });
-        },
+        // Calls are not exposed in this build until the pilot is approved and secured.
+        onIncomingCalls: () => {},
       }
     );
     workspaceHandleRef.current = handle;
@@ -823,11 +788,6 @@ function MainApp() {
     [reports]
   );
 
-  const pendingConfessionsCount = useMemo(() => {
-    if (!hasAdminTab) return 0;
-    return confessions.filter((c) => c.status === 'pending').length;
-  }, [hasAdminTab, confessions]);
-
   const adminBadgeCount =
     currentUser?.role === 'admin'
       ? pendingUsers.length + openReportsCount
@@ -840,12 +800,6 @@ function MainApp() {
   }, [hasAdminTab, activeTab]);
 
 
-
-  const handleStartVoiceCall = async (target: AppUser) => {
-    if (!currentUser || target.uid === currentUser.uid) return;
-    const session = await createCallSession(currentUser, target);
-    setActiveVoiceCall(session);
-  };
 
   const effectiveDepartments: DepartmentItem[] = useMemo(() => {
     if (firestoreDepartments.length > 0) return firestoreDepartments;
@@ -1045,10 +999,7 @@ function MainApp() {
     { id: 'profile', label: 'Profile', icon: UserIcon },
     { id: 'statuses', label: 'Student updates', icon: Sparkles, badge: unviewedStatusCount },
     { id: 'announcements', label: 'Announcements', icon: Megaphone, dot: hasUnreadAnnouncements },
-    { id: 'rides', label: 'Rides & Errands', icon: Car },
-    { id: 'confessions', label: 'Community', icon: Flame, badge: pendingConfessionsCount },
     { id: 'repository', label: 'Repository', icon: BookOpen },
-    { id: 'marketplace', label: 'Marketplace', icon: ShoppingBag },
     { id: 'calendar', label: 'Calendar', icon: CalendarDays },
     { id: 'people', label: 'People', icon: Users },
   ];
@@ -1065,15 +1016,14 @@ function MainApp() {
   const primaryTabs: AppTab[] = ['today', 'chats', 'study', 'campus', 'profile'];
   const mobileCoreTabs = primaryTabs;
   const mobileDrawerSecondaryTabs: AppTab[] = hasAdminTab
-    ? ['calendar', 'repository', 'announcements', 'statuses', 'people', 'marketplace', 'rides', 'confessions', 'admin']
-    : ['calendar', 'repository', 'announcements', 'statuses', 'people', 'marketplace', 'rides', 'confessions'];
+    ? ['calendar', 'repository', 'announcements', 'statuses', 'people', 'admin']
+    : ['calendar', 'repository', 'announcements', 'statuses', 'people'];
   const drawerHasAttention =
     unviewedStatusCount > 0 ||
     hasUnreadAnnouncements ||
-    pendingConfessionsCount > 0 ||
     adminBadgeCount > 0;
   const drawerAttentionCount =
-    unviewedStatusCount + pendingConfessionsCount + adminBadgeCount;
+    unviewedStatusCount + adminBadgeCount;
 
   const pageTitles: Record<Exclude<AppTab, 'admin'>, string> = {
     today: 'Today',
@@ -1082,9 +1032,6 @@ function MainApp() {
     campus: 'Campus',
     statuses: 'Student updates',
     repository: 'Repository',
-    marketplace: 'Marketplace',
-    rides: 'Rides & Errands',
-    confessions: 'Community',
     calendar: 'Calendar & Timetable',
     announcements: 'Announcements',
     people: 'People',
@@ -1393,8 +1340,6 @@ function MainApp() {
                 unreadCounts={unreadCounts}
                 resources={resources}
                 statuses={statuses}
-                marketplaceListings={marketplaceListings}
-                rideErrands={rideErrands}
                 onNavigate={handleSelectTab}
               />
             </React.Suspense>
@@ -1409,8 +1354,6 @@ function MainApp() {
                 unreadCounts={unreadCounts}
                 resources={resources}
                 statuses={statuses}
-                marketplaceListings={marketplaceListings}
-                rideErrands={rideErrands}
                 onNavigate={handleSelectTab}
               />
             </React.Suspense>
@@ -1425,8 +1368,6 @@ function MainApp() {
                 unreadCounts={unreadCounts}
                 resources={resources}
                 statuses={statuses}
-                marketplaceListings={marketplaceListings}
-                rideErrands={rideErrands}
                 onNavigate={handleSelectTab}
               />
             </React.Suspense>
@@ -1461,7 +1402,6 @@ function MainApp() {
                   setActiveChatId(null);
                   setActiveTab('announcements');
                 }}
-                onStartVoiceCall={handleStartVoiceCall}
               />
             </React.Suspense>
           )}
@@ -1507,70 +1447,6 @@ function MainApp() {
                 hasMore={paginationState.hasMoreResources}
                 loadingMore={loadingMoreKey === 'hasMoreResources'}
                 onLoadMore={() => handleLoadMore('hasMoreResources')}
-              />
-            </React.Suspense>
-          )}
-
-          {activeTab === 'marketplace' && (
-            <React.Suspense
-              fallback={
-                <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center text-xs font-medium text-ink-muted">
-                  Loading marketplace...
-                </div>
-              }
-            >
-              <LazyMarketplaceView
-                currentUser={currentUser}
-                listings={marketplaceListings}
-                approvedUsers={approvedUsers}
-                hasMore={paginationState.hasMoreMarketplace}
-                loadingMore={loadingMoreKey === 'hasMoreMarketplace'}
-                onLoadMore={() => handleLoadMore('hasMoreMarketplace')}
-                onOpenDm={(chatId) => {
-                  setActiveChatId(chatId);
-                  setActiveTab('chats');
-                }}
-              />
-            </React.Suspense>
-          )}
-
-          {activeTab === 'rides' && (
-            <React.Suspense
-              fallback={
-                <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center text-xs font-medium text-ink-muted">
-                  Loading rides &amp; errands...
-                </div>
-              }
-            >
-              <LazyRidesErrandsView
-                currentUser={currentUser}
-                posts={rideErrands}
-                approvedUsers={approvedUsers}
-                hasMore={paginationState.hasMoreRideErrands}
-                loadingMore={loadingMoreKey === 'hasMoreRideErrands'}
-                onLoadMore={() => handleLoadMore('hasMoreRideErrands')}
-                onOpenDm={(chatId) => {
-                  setActiveChatId(chatId);
-                  setActiveTab('chats');
-                }}
-              />
-            </React.Suspense>
-          )}
-
-          {activeTab === 'confessions' && (
-            <React.Suspense
-              fallback={
-                <div className="bg-surface rounded-3xl border border-line/80 dark:border-line p-10 text-center text-xs font-medium text-ink-muted">
-                  Loading confessions...
-                </div>
-              }
-            >
-              <LazyConfessionsView
-                currentUser={currentUser}
-                confessions={confessions}
-                hasMore={paginationState.hasMoreConfessions}
-                loadingMore={loadingMoreKey === 'hasMoreConfessions'}
-                onLoadMore={() => handleLoadMore('hasMoreConfessions')}
               />
             </React.Suspense>
           )}
@@ -1636,7 +1512,6 @@ function MainApp() {
                   setActiveChatId(chatId);
                   setActiveTab('chats');
                 }}
-                onStartVoiceCall={handleStartVoiceCall}
               />
             </React.Suspense>
           )}
@@ -1935,24 +1810,7 @@ function MainApp() {
 
       {authUser && <RecoveryEmailConfirm />}
       {authUser && <RecoveryEmailPrompt />}
-      {activeVoiceCall && (
-        <React.Suspense fallback={null}>
-          <LazyVoiceCallModal
-            currentUser={currentUser}
-            callSession={activeVoiceCall}
-            peerUser={
-              approvedUsers.find(
-                (u) =>
-                  u.uid ===
-                  (activeVoiceCall.callerId === currentUser.uid
-                    ? activeVoiceCall.receiverId
-                    : activeVoiceCall.callerId)
-              ) || null
-            }
-            onClose={() => setActiveVoiceCall(null)}
-          />
-        </React.Suspense>
-      )}
+
     </div>
   );
 }

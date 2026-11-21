@@ -1,6 +1,7 @@
 import {proofFileName} from '../utils/proof';
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { LAUNCH_SCOPE } from '../config/launchScope';
 import {
   signUpUser as authSignUpUser,
   uploadIdCardFile,
@@ -3939,9 +3940,12 @@ export async function fetchMyConfessions(): Promise<CampusConfession[]> {
   return mapConfessionRowsWithUpvotes(rows);
 }
 
-export async function fetchConfessionAuthor(cid: string): Promise<AppUser | null> {
+export type ConfessionSafetyReason = 'credible_threat' | 'harassment_or_doxxing' | 'minor_safety' | 'other_serious_safety';
+
+export async function fetchConfessionAuthor(cid: string, reason: ConfessionSafetyReason): Promise<AppUser | null> {
   if (!cid) return null;
-  const { data, error } = await supabase.rpc('confession_author', { cid });
+  // Requires the audited lookup migration; never fall back to the legacy RPC.
+  const { data, error } = await supabase.rpc('reveal_confession_author', { cid, safety_reason: reason });
   if (error) throw new Error(error.message);
   if (!data) return null;
 
@@ -5012,7 +5016,7 @@ export function subscribeToWorkspaceData(
       return;
     }
 
-    if (key === 'hasMoreMarketplace') {
+    if (key === 'hasMoreMarketplace' && LAUNCH_SCOPE.marketplace) {
       const from = currentMarketplaceRows.length;
       const { data, error } = await supabase
         .from('marketplace_listings')
@@ -5048,7 +5052,7 @@ export function subscribeToWorkspaceData(
       return;
     }
 
-    if (key === 'hasMoreRideErrands') {
+    if (key === 'hasMoreRideErrands' && LAUNCH_SCOPE.ridesErrands) {
       const from = currentRideErrandRows.length;
       const { data, error } = await supabase
         .from('rides_errands')
@@ -5065,7 +5069,7 @@ export function subscribeToWorkspaceData(
       return;
     }
 
-    if (key === 'hasMoreConfessions') {
+    if (key === 'hasMoreConfessions' && LAUNCH_SCOPE.anonymousFeed) {
       const from = currentConfessionRows.length;
       const { data, error } = await supabase
         .from('confessions')
@@ -5112,16 +5116,18 @@ export function subscribeToWorkspaceData(
             if (!active) return;
             void refreshStarred().catch(() => undefined);
             void refreshReports().catch(() => undefined);
-            void refreshIncomingCalls().catch(() => undefined);
+            if (LAUNCH_SCOPE.voiceCalls) {
+              void refreshIncomingCalls().catch(() => undefined);
+            }
           })
           .catch(() => undefined);
         void refreshAnnouncements().catch(() => undefined);
         void refreshCalendarEvents().catch(() => undefined);
         void refreshResources().catch(() => undefined);
-        void refreshMarketplace().catch(() => undefined);
+        if (LAUNCH_SCOPE.marketplace) void refreshMarketplace().catch(() => undefined);
         void refreshStatuses().catch(() => undefined);
-        void refreshRideErrands().catch(() => undefined);
-        void refreshConfessions().catch(() => undefined);
+        if (LAUNCH_SCOPE.ridesErrands) void refreshRideErrands().catch(() => undefined);
+        if (LAUNCH_SCOPE.anonymousFeed) void refreshConfessions().catch(() => undefined);
       })
       .catch(() => undefined);
   };
@@ -5145,28 +5151,30 @@ export function subscribeToWorkspaceData(
     .on('postgres_changes', { event: '*', schema: 'public', table: 'resources' }, () =>
       refreshResources()
     )
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'marketplace_listings' }, () =>
-      refreshMarketplace()
-    )
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'marketplace_listings' }, () => {
+      if (LAUNCH_SCOPE.marketplace) refreshMarketplace();
+    })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'statuses' }, () =>
       refreshStatuses()
     )
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'rides_errands' }, () =>
-      refreshRideErrands()
-    )
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'confessions' }, () =>
-      refreshConfessions()
-    )
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'confession_upvotes' }, () =>
-      refreshConfessions()
-    )
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'rides_errands' }, () => {
+      if (LAUNCH_SCOPE.ridesErrands) refreshRideErrands();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'confessions' }, () => {
+      if (LAUNCH_SCOPE.anonymousFeed) refreshConfessions();
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'confession_upvotes' }, () => {
+      if (LAUNCH_SCOPE.anonymousFeed) refreshConfessions();
+    })
     .on('postgres_changes', { event: '*', schema: 'public', table: 'message_reports' }, () =>
       refreshReports()
     )
     .on(
       'postgres_changes',
       { event: '*', schema: 'public', table: 'calls', filter: `receiver_id=eq.${uid}` },
-      () => refreshIncomingCalls()
+      () => {
+        if (LAUNCH_SCOPE.voiceCalls) refreshIncomingCalls();
+      }
     )
     .subscribe();
 
@@ -5210,16 +5218,16 @@ export function subscribeToWorkspaceData(
           refreshResources();
           break;
         case 'marketplace_listings':
-          refreshMarketplace();
+          if (LAUNCH_SCOPE.marketplace) refreshMarketplace();
           break;
         case 'statuses':
           refreshStatuses();
           break;
         case 'rides_errands':
-          refreshRideErrands();
+          if (LAUNCH_SCOPE.ridesErrands) refreshRideErrands();
           break;
         case 'confessions':
-          refreshConfessions();
+          if (LAUNCH_SCOPE.anonymousFeed) refreshConfessions();
           break;
         case 'starred':
           refreshStarred();
@@ -5228,7 +5236,7 @@ export function subscribeToWorkspaceData(
           refreshReports();
           break;
         case 'calls':
-          refreshIncomingCalls();
+          if (LAUNCH_SCOPE.voiceCalls) refreshIncomingCalls();
           break;
         case 'messages':
           break;

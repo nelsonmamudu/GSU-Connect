@@ -112,9 +112,13 @@ export function downloadCalendarEventIcs(ev: {
 
   let dtEnd = ev.endTime ? formatIcsDateTime(ev.date, ev.endTime) : null;
   if (!dtEnd) {
-    const startHour = Number(dtStart.slice(9, 11));
-    const endHour = Math.min(23, startHour + 1);
-    dtEnd = `${dtStart.slice(0, 9)}${String(endHour).padStart(2, '0')}${dtStart.slice(11)}`;
+    // ICS times are floating local times. Use UTC arithmetic only to roll the
+    // calendar fields across midnight without applying a timezone or DST shift.
+    const end = new Date(0);
+    end.setUTCFullYear(Number(dtStart.slice(0, 4)), Number(dtStart.slice(4, 6)) - 1, Number(dtStart.slice(6, 8)));
+    end.setUTCHours(Number(dtStart.slice(9, 11)) + 1, Number(dtStart.slice(11, 13)), 0, 0);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    dtEnd = `${String(end.getUTCFullYear()).padStart(4, '0')}${pad(end.getUTCMonth() + 1)}${pad(end.getUTCDate())}T${pad(end.getUTCHours())}${pad(end.getUTCMinutes())}00`;
   }
 
   const summary = ev.courseCode ? `${ev.courseCode} — ${ev.title}` : ev.title;

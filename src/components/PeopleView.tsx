@@ -28,6 +28,7 @@ import {
   UserRole,
 } from '../types';
 import { RoleBadge } from './RoleBadge';
+import { useFounderAccount } from '../hooks/useFounder';
 import { UserAvatar } from './UserAvatar';
 import { UserProfileModal } from './UserProfileModal';
 
@@ -66,6 +67,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
   onStartVoiceCall,
 }) => {
   const isAdmin = currentUser.role === 'admin';
+  const founderUid = useFounderAccount();
   const [search, setSearch] = useState('');
   const [remoteSearchUsers, setRemoteSearchUsers] = useState<AppUser[] | null>(null);
   const [searchingRemote, setSearchingRemote] = useState(false);
@@ -605,7 +607,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
                         <span className="text-sm font-semibold text-ink truncate hover:underline">
                           {person.fullName}
                         </span>
-                        <RoleBadge role={person.role} />
+                        <RoleBadge role={person.role} founder={Boolean(founderUid && founderUid === person.uid)} />
                       </div>
                       <p className="text-xs text-ink-muted truncate mt-0.5">
                         <span>{person.department}</span>
@@ -741,13 +743,7 @@ export const PeopleView: React.FC<PeopleViewProps> = ({
             setProfileModalSnapshot(null);
           }}
           onMessage={handleMessage}
-          onVoiceCall={async (target) => {
-            if (onStartVoiceCall) {
-              await onStartVoiceCall(target);
-            } else {
-              await handleMessage(target);
-            }
-          }}
+          onVoiceCall={onStartVoiceCall}
         />
       )}
     </div>

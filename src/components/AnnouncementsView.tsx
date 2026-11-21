@@ -207,7 +207,7 @@ export const AnnouncementsView: React.FC<AnnouncementsViewProps> = ({
           <p className="text-sm text-ink-muted max-w-sm mx-auto">
             {searchQuery.trim()
               ? 'Try another keyword or clear your search filter.'
-              : 'Official notices from university admins, lecturers, class reps, and departmental helpers will appear here.'}
+              : 'Campus notices from app admins, lecturers, class reps and departmental helpers will appear here. These are not official university communications.'}
           </p>
         </div>
       ) : (

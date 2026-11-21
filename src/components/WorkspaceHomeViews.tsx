@@ -3,13 +3,11 @@ import {
   Bell,
   BookOpen,
   CalendarDays,
-  Car,
   Clock3,
   Compass,
   GraduationCap,
   MessageSquare,
   Megaphone,
-  ShoppingBag,
   Sparkles,
   Users,
 } from 'lucide-react';
@@ -20,8 +18,6 @@ import type {
   CalendarEvent,
   CampusStatus,
   ChatThread,
-  MarketplaceListing,
-  RideErrandPost,
 } from '../types';
 
 type HomeTab =
@@ -33,10 +29,7 @@ type HomeTab =
   | 'calendar'
   | 'announcements'
   | 'people'
-  | 'marketplace'
-  | 'rides'
   | 'statuses'
-  | 'confessions'
   | 'profile';
 
 type HomeIcon = typeof CalendarDays;
@@ -49,8 +42,6 @@ interface WorkspaceHomeViewsProps {
   unreadCounts: Record<string, number>;
   resources: AcademicResource[];
   statuses: CampusStatus[];
-  marketplaceListings: MarketplaceListing[];
-  rideErrands: RideErrandPost[];
   onNavigate: (tab: HomeTab) => void;
 }
 
@@ -259,7 +250,7 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
         </section>
 
         <section className="space-y-4">
-          <SectionTitle eyebrow="Official updates" title="From campus" action={{ label: 'All updates', onClick: () => onNavigate('announcements') }} />
+          <SectionTitle eyebrow="Campus notices" title="From campus" action={{ label: 'All updates', onClick: () => onNavigate('announcements') }} />
           {latestAnnouncement ? (
             <button
               type="button"
@@ -278,7 +269,7 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
             <div className="rounded-2xl border border-dashed border-line bg-white/70 p-6 dark:bg-surface/60">
               <Bell className="h-5 w-5 text-brand" aria-hidden="true" />
               <p className="mt-3 text-sm font-bold text-ink">No new notices</p>
-              <p className="mt-1 text-sm leading-6 text-ink-muted">Official announcements will appear here when they are posted.</p>
+              <p className="mt-1 text-sm leading-6 text-ink-muted">Campus notices will appear here when they are posted.</p>
             </div>
           )}
         </section>
@@ -287,10 +278,10 @@ export function TodayView(props: WorkspaceHomeViewsProps) {
       <section className="space-y-4">
         <SectionTitle eyebrow="Quick access" title="Your campus, one tap away" />
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <ShortcutCard icon={MessageSquare} label="Chats" detail={unreadTotal ? `${unreadTotal} unread across ${unreadThreads} conversations` : 'Messages, groups, and calls'} onClick={() => onNavigate('chats')} />
+          <ShortcutCard icon={MessageSquare} label="Chats" detail={unreadTotal ? `${unreadTotal} unread across ${unreadThreads} conversations` : 'Messages and groups'} onClick={() => onNavigate('chats')} />
           <ShortcutCard icon={BookOpen} label="Study resources" detail={`${resources.length} materials in the repository`} onClick={() => onNavigate('repository')} />
           <ShortcutCard icon={Users} label="People" detail="Find classmates and start a conversation" onClick={() => onNavigate('people')} />
-          <ShortcutCard icon={Compass} label="Campus life" detail="Updates, rides, and student marketplace" onClick={() => onNavigate('campus')} />
+          <ShortcutCard icon={Compass} label="Campus life" detail="Student updates and campus news" onClick={() => onNavigate('campus')} />
         </div>
       </section>
     </div>
@@ -320,9 +311,7 @@ export function StudyHubView({ currentUser, calendarEvents, resources, onNavigat
   );
 }
 
-export function CampusHubView({ statuses, announcements, marketplaceListings, rideErrands, onNavigate }: WorkspaceHomeViewsProps) {
-  const activeListings = marketplaceListings.filter((listing) => listing.status === 'available').length;
-  const openRides = rideErrands.filter((post) => post.status === 'open').length;
+export function CampusHubView({ statuses, announcements, onNavigate }: WorkspaceHomeViewsProps) {
   return (
     <div className="space-y-7 sm:space-y-9">
       <header className="max-w-2xl">
@@ -331,17 +320,13 @@ export function CampusHubView({ statuses, announcements, marketplaceListings, ri
         <p className="mt-3 text-sm leading-6 text-ink-body dark:text-ink-soft">Stay in the loop, find your people, and make campus life a little easier.</p>
       </header>
       <div className="grid gap-3 sm:grid-cols-3">
-        <CountCard icon={Megaphone} label="Official notices" value={String(announcements.length)} hint="From campus and departments" />
+        <CountCard icon={Megaphone} label="Campus notices" value={String(announcements.length)} hint="Posted by admins and course reps" />
         <CountCard icon={Sparkles} label="Student updates" value={String(statuses.length)} hint="Recent community posts" />
-        <CountCard icon={ShoppingBag} label="Marketplace" value={String(activeListings)} hint={`${openRides} rides or errands open`} />
       </div>
       <div className="grid gap-4 lg:grid-cols-2">
-        <HubFeature icon={Megaphone} eyebrow="Official information" title="Campus updates" detail="Announcements from the university and your department, with clear official labeling." actionLabel="Read announcements" onClick={() => onNavigate('announcements')} />
+        <HubFeature icon={Megaphone} eyebrow="Campus notices" title="Campus updates" detail="Notices posted by app admins, lecturers and course reps. These are not official university communications unless a verified source is shown." actionLabel="Read announcements" onClick={() => onNavigate('announcements')} />
         <HubFeature icon={Users} eyebrow="Find your community" title="People directory" detail="Discover students in your department and connect through a direct message." actionLabel="Browse people" onClick={() => onNavigate('people')} />
-        <HubFeature icon={ShoppingBag} eyebrow="Buy, sell, swap" title="Student marketplace" detail="Browse available listings shared by other students." actionLabel="Explore listings" onClick={() => onNavigate('marketplace')} />
-        <HubFeature icon={Car} eyebrow="Get around and help out" title="Rides & errands" detail="Find a ride, share a trip, or help someone with a campus errand." actionLabel="View rides & errands" onClick={() => onNavigate('rides')} />
-        <HubFeature icon={Sparkles} eyebrow="Community" title="Student updates" detail="See what classmates are sharing. Posts remain distinct from official notices." actionLabel="View updates" onClick={() => onNavigate('statuses')} />
-        <HubFeature icon={Compass} eyebrow="Community space" title="Confessions & campus gist" detail="Join student conversations, with reporting and moderation controls in place." actionLabel="Explore community" onClick={() => onNavigate('confessions')} />
+        <HubFeature icon={Sparkles} eyebrow="Community" title="Student updates" detail="See what classmates are sharing. Posts are separate from campus notices." actionLabel="View updates" onClick={() => onNavigate('statuses')} />
       </div>
     </div>
   );
