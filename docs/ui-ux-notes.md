@@ -1215,3 +1215,78 @@ worth confirming those are avatars/chips and not buttons, as §10.4.5 says.
 - Add the avatar ring.
 - Do **not** raise the radius ladder toward Pinterest's 16px: that is a consumer-image-feed
   decision, and Slack/Miro/Intercom put a product-social app exactly where we already are.
+
+---
+
+## 12. `pbakaus/impeccable` — a detector, not a spec (2026-11-21)
+
+Source: <https://github.com/pbakaus/impeccable>, Apache-2.0, 114k★, Rust. Not brand specs and
+not teaching. It is three things: a skill of 24 design commands (`bolder`, `quieter`,
+`critique`, `audit`, `polish`, `typeset`, `layout`, `harden`, …), a **`craft-floor.md` quality
+floor with explicit bans**, and a **deterministic 62-rule detector** (`npx impeccable detect`)
+that runs on a source directory or a rendered URL and needs no LLM or API key. Ran it on
+GSU-Connect; recorded here because it is a *different kind* of evidence from §10/§11 and it
+found things those readings could not.
+
+### 12.1 What it caught that the corpus readings could not
+
+`npx impeccable detect src/` → **8 findings, all advisory-or-warning, 0 blocking**; on the
+rendered app (`http://localhost:3000/` + the status harness) → **13**.
+
+| Finding | Where | Note |
+| --- | --- | --- |
+| `overused-font` ×5 | `src/index.css` `@font-face` | Names **Plus Jakarta Sans** as one of six over-converged faces (with Inter, Roboto, Fraunces, Geist, Space Grotesk). We load it at 400–800. Not a correctness bug — a distinctiveness judgement, and waivable by value. |
+| `ai-color-palette` ×2 | `src/types.ts` `PRESET_AVATARS` | `from-indigo-600 to-blue-700`, `from-violet-600 to-purple-700` in the user-choosable avatar presets. The rule targets *page* decoration; user-picked avatar colours are a different surface. |
+| `bounce-easing` ×1 | `ChatsView.tsx:4363` | the three typing dots. **Real finding** — bounce is a dated easing, and "real objects decelerate smoothly". |
+| `tiny-text` ×9 | `styles.ts` `hintClass` (`text-[11px]`), plus 10px sites | The rule is *below 12px* for body, *below 11px* for functional UI text, and it **explicitly closes the token escape hatch**: *"Being ON the DESIGN.md size ramp does not exempt a value here: adding 8px to the ramp launders the token."* |
+| `nested-cards` ×2, `icon-tile-stack` ×1, `straggler` ×1 | `StatusGateScreen.tsx` | Only on the pending/rejected/suspended gate screens. The "Checking your status…" state puts a 56×56 icon tile above its `h1`. |
+
+The valuable part is not the count. It is that **`tiny-text` is the only finding that fires on
+the app's shared system** (`hintClass` at 11px), and §10.4.3 already flagged 183 `text-[11px]`
+sites from the corpus side. Two unrelated sources, same defect, different framing. That is
+now a confirmed item rather than a judgement call.
+
+### 12.2 `craft-floor.md` — the bans, checked against us
+
+The floor is a short list, and most of it we already satisfy. Worth recording which lines
+*applied to us*:
+
+- **"Never gray on colored backgrounds — tint secondary text from that hue or the
+  foreground."** This is §3's own rule and the reason §9.4 built `<state>-on` pairs. The
+  detector's `gray-on-color` rule is the same idea mechanised. It found nothing.
+- **"Tracking stops at −0.04em. −0.02 to −0.03em usually reads better."** Direct support for
+  §10.4.2 — our −0.02em floor is in the recommended band; the failure is coverage.
+- **"Card radii stay at 12–16px; pills are for small controls."** One source says *pills are
+  for small controls*. That is the opposite of the social camp (§11.4) and it supports our
+  `radius` ladder. Worth knowing the two camps genuinely disagree, so §3 is a choice, not a
+  consensus.
+- **"Declare elevation once, border or shadow. A 1px border under a wide soft shadow is the
+  ghost card."** §9.5 chose shadows. A real tension, not a defect.
+- **"Browser surfaces: text selection, the caret, custom scrollbars, focus rings, underline
+  offset, tabular numerals."** Called *"the cheapest signal that a page was built rather than
+  assembled, and the one models skip most reliably."* We theme the focus ring (§9) but I have
+  not seen selection or scrollbar rules. **Unverified — check.**
+- **"Content visible by default; let JS enhance its entrance instead of gating its existence."**
+  The `content-hidden-at-rest` rule is the failed-reveal signature. Our screens render server-
+  side-less React with no scroll reveals, so this should be clean, but it is untested.
+- **A kicker/eyebrow above a heading is a ban, not a default.** We do not use kickers.
+
+### 12.3 How to use it
+
+`npx impeccable detect src/` for pattern rules (no browser needed), and
+`npx impeccable detect <url> --json` for rendered rules (contrast, tiny text, overflow) —
+which needs a Chromium, satisfied in this sandbox by `/tmp/chromium` + `IMPECCABLE_BROWSER`.
+`scripts/impeccable-scan.mjs` runs both. Exit 2 = findings, 1 = target unreadable, 0 = clean.
+
+**Its real value here is the two rules we did not already have:** `undersized-ui-text` with the
+explicit "a token does not launder a size" clause, and the browser-surfaces checklist. The
+rest is corroboration of §3/§9/§10/§11.
+
+### 12.4 Open items this raises
+
+1. **`hintClass` at 11px** — either raise to 12px (the corpus floor) or record a deliberate
+   exception. Two independent sources now say the same thing.
+2. **Typing dots use `animate-bounce`** — switch to a smooth deceleration; the rule is
+   advisory but the reasoning is right.
+3. **Browser surfaces unthemed** — check `::selection`, the caret, and scrollbars.
+4. **`content-hidden-at-rest`** — untested; worth one pass.
