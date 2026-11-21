@@ -70,6 +70,12 @@ test('launch scope flags keep deferred tables out of normal loading', () => {
   assert.match(service, /if \(LAUNCH_SCOPE\.voiceCalls\) \{\s*void refreshIncomingCalls\(\)/);
 });
 
+test('GPA calculator clearly labels estimates as unofficial', () => {
+  const source = readFileSync(new URL('../src/components/GpaCalculatorScreen.tsx', import.meta.url), 'utf8');
+  assert.match(source, /Estimate only\.<\/strong> This calculator is not an official GSU result or transcript/);
+  assert.match(source, /Check your grades, credit units, and the applicable grading rules/);
+});
+
 test('notification settings do not present controls that do nothing', () => {
   const profile = readFileSync(new URL('../src/components/ProfileView.tsx', import.meta.url), 'utf8');
   assert.doesNotMatch(profile, /gsu_notification_prefs_/);

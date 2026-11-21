@@ -71,7 +71,7 @@ This is the verification sheet for the latest implementation pass. It is deliber
 | `npm run test:author-audit` | 3 synthetic PGlite suites pass (author audit, comments, Founder) |
 | `npm run test:browser` (temporary Chromium) | 9/9 mocked tests pass |
 | `npm run test:launch-scope:browser` | 9/9 mocked tests pass, including non-pilot denial and student/moderator comment flows |
-| `npm run test:launch-scope` | 7/7 render/source tests pass |
+| `npm run test:launch-scope` | 8/8 render/source tests pass, including the unofficial GPA estimate disclaimer |
 | `npm run test:fixture-access` | 100 synthetic actors / 600 checks pass |
 | `npm run test:calls` / funnel suites | pass (call state, persistence, reload, malformed storage, concurrency) |
 | `git diff --check` | clean |
@@ -80,12 +80,13 @@ Browser tests required temporary Chromium at `/tmp/gsu-audit-chromium` with `LD_
 
 ## 3. What is not done and cannot be claimed
 
-- No live deployment check. None of the copy, hidden features, comments, calls, Founder badge or metadata changes are on the live site.
+- Deployment status is tracked in the latest dated note in `PROGRESS.md`; a successful frontend deployment does not imply that database drafts were applied or that authenticated journeys were live-tested.
 - No real Auth/RLS/MFA test of the comment or Founder SQL. PGlite uses stubbed `auth.uid()`/JWT claims.
 - The anonymous comments draft is outside `supabase/migrations`. It protects only the new comment RPCs; the existing post APIs are not behind the pilot check.
 - No real reviewer has operated comment moderation. Appeals, escalation, retention and audit review are unwritten.
 - No physical-device, mobile-network, background, interruption or TURN-capacity call test. TURN credentials and relay cost are unassessed.
 - No live Founder badge check; the public lookup is not deployed. Authority, transfer/recovery and exact label remain owner decisions.
+- The GPA screen now clearly calls the output an estimate, not an official GSU result or transcript; the grading scale has still not been verified against current departmental rules.
 - No server-side enforcement of deferred features (P95).
 - No exactly-once analytics guarantee.
 - Live test access (P86) and the 100-scenario campaign (P87) are still blocked: this workspace cannot reach the live app/Auth, and privileged SQL is not a signed-in session.

@@ -326,6 +326,13 @@ export const GpaCalculatorScreen: React.FC<GpaCalculatorScreenProps> = ({
           </div>
         </div>
 
+        <div
+          role="note"
+          className="rounded-2xl border border-warn-line bg-warn-bg px-3.5 py-3 text-xs text-warn dark:border-warn/70 dark:bg-warn-bg/50 dark:text-warn-line"
+        >
+          <strong>Estimate only.</strong> This calculator is not an official GSU result or transcript. Check your grades, credit units, and the applicable grading rules with your department or official student records before relying on the figures.
+        </div>
+
         {/* Device-only storage notice */}
         <div className="rounded-2xl bg-sunken dark:bg-sunken/70 border border-line/70 px-3.5 py-2.5 flex items-start gap-2.5 text-xs text-ink-body dark:text-ink-soft">
           <Info className="w-4 h-4 text-ink-muted shrink-0 mt-0.5" />
