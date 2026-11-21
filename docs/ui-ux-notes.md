@@ -957,9 +957,22 @@ both because the fragment composites over `bg-brand`, not over `surface`.
 
 ### 9.6 Still open
 
-- **390px visual verification.** Static checks pass — no fixed width ≥390px, no
-  `w-screen` — but the actual rendering needs a browser.
+- **390px visual verification.** Partly closed 2026-11-21: `scripts/capture-auth-shots.mjs`
+  renders the real app in headless Chromium and asserts **no horizontal overflow at 390px**
+  on every captured screen (all 28 Auth / pending states pass, `capture issues: 0`). Still
+  open for the rest of the app — only the Auth and status surfaces have been rendered and
+  measured.
 - **`tests/proof-card-browser.test.mjs`** still never executed.
 - **Breadth discipline (§7.1).** About six patterns per screen; the per-screen
   pattern inventory was never written down.
 - **Mobile bottom nav** has five tabs; §5.5 prefers 3–4. Product decision.
+
+### 9.7 New divergence found 2026-11-21
+
+- **`StaffVerification.tsx` is still hand-rolled.** The `<select>` and `<button>` in
+  `StaffPathPicker` / `StaffProofAction` use one-off class strings
+  (`w-full min-h-[44px] rounded-lg p-2 border text-sm`, `min-h-[44px] font-semibold`) rather
+  than `ui/Select`, `ui/Button` and `inputClass`. It is the one control in
+  `qa-screenshots/signup-02-proof-staff-paths.png` that visibly does not match the design
+  system. Found while capturing the Auth screenshots; the earlier unstyled-markup sweep
+  looked for `onClick` on non-interactive elements and so missed it.
