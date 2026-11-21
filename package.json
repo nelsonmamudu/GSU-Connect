@@ -10,6 +10,7 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:phase1": "node supabase/tests/phase1-access.mjs",
+    "test:fixture-access": "node tests/100-fixture-access.mjs",
     "test:entry": "tsx --test tests/entry.test.ts tests/funnel.test.ts tests/cleanup.test.mjs tests/staff-email.test.ts tests/password-reset.test.mjs tests/recovery-email.test.mjs && node supabase/tests/funnel-events.mjs && npm run test:phase1",
     "test:funnel": "tsx --test tests/funnel.test.ts && node supabase/tests/funnel-events.mjs",
     "test:signin": "node --test tests/signin-browser.test.mjs",

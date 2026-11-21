@@ -46,7 +46,7 @@ test('mobile proof card states and transitions', async t => {
     await page.goto(`http://127.0.0.1:${server.httpServer.address().port}/tests/fixtures/proof-card.html`);
     const card=page.getByRole('region',{name:'Verification proof'});
     const replace=card.getByRole('button',{name:'Replace file'});
-    const choose=card.getByRole('button',{name:'Choose replacement'});
+    const choose=card.getByRole('button',{name:status==='rejected'?'Choose replacement':'Choose photo or PDF'});
     const fileInput=card.locator('input[type=file]');
     if(status==='pending') await page.getByRole('heading',{name:attached?'Waiting for Approval':'Finish Verification'}).waitFor();
     if(status==='suspended') {
@@ -61,10 +61,10 @@ test('mobile proof card states and transitions', async t => {
     } else if(attached===false) {
       await choose.waitFor(); assert.equal(await replace.count(),0);
     }
-    if(status==='rejected' && attached===false) await card.getByText('Upload a replacement to resubmit').waitFor();
+    if(status==='rejected' && attached===true) await card.getByText('Upload a replacement to resubmit').waitFor();
     if(status==='pending') {
       await page.getByText('Review timing depends on admin availability').waitFor();
-      await page.getByRole('heading',{name:'Review decision'}).waitFor();
+      await page.getByText('Review decision',{exact:true}).waitFor();
     }
     if(process.env.PROOF_SCREENSHOTS && state!=='pending-empty') {
       await card.evaluate(el=>el.scrollIntoView({block:'center'}));
@@ -92,7 +92,9 @@ test('mobile proof card states and transitions', async t => {
     }
     // Every initial state converges on the compact pending card after upload.
     await fileInput.setInputFiles({name:'new-proof.pdf',mimeType:'application/pdf',buffer:Buffer.from('%PDF-test')});
-    await page.getByText('Proof uploaded. Waiting for review.').waitFor();
+    await page.getByText(status==='rejected'
+      ? 'Replacement submitted — your request is back in the review queue.'
+      : 'Proof uploaded. Waiting for review.').waitFor();
     await card.getByText('Attached for reviewer verification').waitFor(); await replace.waitFor();
     assert.equal(await fileInput.count(),0);
     assert.deepEqual(writes,status==='rejected'?['upload','attach','submit']:['upload','attach']);
