@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>GSU Connect — Auth &amp; pending screenshots</title>
+    <style>
+      :root { color-scheme: light; }
+      body { margin: 0; padding: 28px; background: #f8f7f4; color: #1d1b17;
+             font-family: "DM Sans", ui-sans-serif, system-ui, sans-serif; }
+      h1 { font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+           font-size: 24px; margin: 0 0 4px; }
+      .sub { color: #57534b; font-size: 13px; margin: 0 0 22px; }
+      section { break-before: page; }
+      section:first-of-type { break-before: auto; }
+      h2 { font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+           font-size: 16px; margin: 0 0 12px; padding-bottom: 6px;
+           border-bottom: 1px solid #e6e3da; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      figure { margin: 0; }
+      img { width: 100%; height: auto; display: block; background: #fff;
+            border: 1px solid #e6e3da; border-radius: 8px; }
+      figcaption { font-size: 12px; color: #57534b; margin-top: 6px; }
+      @media print { body { padding: 0; } }
+    </style>
+  </head>
+  <body>
+    <h1>GSU Connect — Auth &amp; account-status screenshots</h1>
+    <p class="sub">Captured from the real components in headless Chromium. Supabase was answered by a
+      local double, so the states are the app's own but the data is sample data.</p>
+    <section>
+      <h2>Sign in</h2>
+      <div class="grid">
+      <figure>
+        <img src="/qa-screenshots/auth-01-login.png" alt="Sign-in, empty" />
+        <figcaption>Sign-in, empty</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/auth-02-login-filled.png" alt="Sign-in, filled" />
+        <figcaption>Sign-in, filled</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/auth-03-login-validation.png" alt="Sign-in, blur validation" />
+        <figcaption>Sign-in, blur validation</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/auth-04-login-error.png" alt="Sign-in, wrong credentials" />
+        <figcaption>Sign-in, wrong credentials</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/auth-05-login-busy.png" alt="Sign-in, submitting" />
+        <figcaption>Sign-in, submitting</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/auth-06-login-dark.png" alt="Sign-in, dark theme" />
+        <figcaption>Sign-in, dark theme</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/auth-07-login-desktop.png" alt="Sign-in, desktop" />
+        <figcaption>Sign-in, desktop</figcaption>
+      </figure>
+      </div>
+    </section>
+    <section>
+      <h2>Create account</h2>
+      <div class="grid">
+      <figure>
+        <img src="/qa-screenshots/signup-01-proof-student.png" alt="Create account · step 1, student" />
+        <figcaption>Create account · step 1, student</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-02-proof-staff-paths.png" alt="Create account · step 1, staff paths" />
+        <figcaption>Create account · step 1, staff paths</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-03-details-empty.png" alt="Create account · step 2, empty" />
+        <figcaption>Create account · step 2, empty</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-04-department-picker.png" alt="Create account · step 2, department picker" />
+        <figcaption>Create account · step 2, department picker</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-05-details-filled-nolevel.png" alt="Create account · step 2, level not chosen" />
+        <figcaption>Create account · step 2, level not chosen</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-06-details-level-error.png" alt="Create account · step 2, level validation" />
+        <figcaption>Create account · step 2, level validation</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-07-details-filled.png" alt="Create account · step 2, complete" />
+        <figcaption>Create account · step 2, complete</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-08-account-empty.png" alt="Create account · step 3, empty" />
+        <figcaption>Create account · step 3, empty</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-09-account-filled.png" alt="Create account · step 3, complete" />
+        <figcaption>Create account · step 3, complete</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-10-account-dark.png" alt="Create account · step 3, dark theme" />
+        <figcaption>Create account · step 3, dark theme</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/signup-11-account-desktop.png" alt="Create account · step 3, desktop" />
+        <figcaption>Create account · step 3, desktop</figcaption>
+      </figure>
+      </div>
+    </section>
+    <section>
+      <h2>Forgot password</h2>
+      <div class="grid">
+      <figure>
+        <img src="/qa-screenshots/forgot-01-form.png" alt="Forgot password, form" />
+        <figcaption>Forgot password, form</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/forgot-02-sent.png" alt="Forgot password, link sent" />
+        <figcaption>Forgot password, link sent</figcaption>
+      </figure>
+      </div>
+    </section>
+    <section>
+      <h2>Account status (pending / rejected / suspended)</h2>
+      <div class="grid">
+      <figure>
+        <img src="/qa-screenshots/status-pending-desktop.png" alt="Pending student, desktop" />
+        <figcaption>Pending student, desktop</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-pending-edit-details.png" alt="Pending, editing department and level" />
+        <figcaption>Pending, editing department and level</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-pending-student-dark.png" alt="Pending student, dark theme" />
+        <figcaption>Pending student, dark theme</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-pending-student.png" alt="Pending student" />
+        <figcaption>Pending student</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-rejected-student-dark.png" alt="Rejected, dark theme" />
+        <figcaption>Rejected, dark theme</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-rejected-student.png" alt="Rejected, with reason" />
+        <figcaption>Rejected, with reason</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-suspended-student-dark.png" alt="Suspended, dark theme" />
+        <figcaption>Suspended, dark theme</figcaption>
+      </figure>
+      <figure>
+        <img src="/qa-screenshots/status-suspended-student.png" alt="Suspended" />
+        <figcaption>Suspended</figcaption>
+      </figure>
+      </div>
+    </section>
+  </body>
+</html>

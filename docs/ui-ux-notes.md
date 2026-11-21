@@ -1,14 +1,17 @@
 # UI/UX notes
 
 A working reference for the auth, status-gate and admin-queue screens. Built from the
-`ux-patterns-master` library (112 patterns), 17 short reel transcripts, and one 2026
-design-trends guide, absorbed 2026-11-20. Nothing here has been applied to the code yet —
-this is the spec we will build from, and the shortlist we agreed to keep to.
+`ux-patterns-master` library (112 patterns), 17 short reel transcripts, one 2026
+design-trends guide, and — from §10/§11 — 17 `DESIGN.md` brand design systems (11
+technical/product, 6 social/messaging). §8 and §9 record what has already been applied to the
+code; §10 and §11 are reading only.
 
 > **Sources.** Pattern teaching is @designmotionhq's; the library is
 > `YourFutureSiteDev/ux-patterns`, whose own components are their implementation of the
 > ideas (not a copy of the reels). Per-pattern source links live in that repo's
 > `catalog.json`. The reels referenced in `all_transcripts.txt` are also @designmotionhq.
+> §10 draws on `VoltAgent/awesome-design-md` (Google Stitch's `DESIGN.md` format); the
+> per-brand files carry their own front matter and source pages.
 > If any of this is shown publicly, credit the pattern by name and link the reel.
 
 ---
@@ -268,6 +271,9 @@ Secondary: `bulk-actions`, `search-experience-system`, `inline-editing`, `contex
 - Cap the **measure**, not the box: paragraph ≤ 66ch (45-75 comfort band) inside any
   container width.
 - `font-variant-numeric: tabular-nums` on figures.
+- **Selected ≠ accent.** A selected filter/chip inverts to the ink surface (`ink` /
+  `on-dark`), it does not take the brand colour. The accent is spent on actions only. Named
+  by Pinterest (`filter-chip-active`) and Figma (`pricing-tab-selected`); see §11.2 and §11.5.
 
 **Hierarchy (`visual-hierarchy`)** — size, colour, contrast, whitespace and weight stack to
 one focal point. Headline ≈ 2× body. **One accent colour**, spent only where it matters.
@@ -401,7 +407,10 @@ hierarchy signal: strongest on the element that matters most.
 
 ## 4. Divergences from our current code (found while reading, not yet fixed)
 
-These are the gaps worth closing first. Nothing here has been changed.
+These are the gaps worth closing first. **The §11 reading added two more, both named rules:
+`ui/Chip.tsx` spends the accent on a selected state (§11.5.1), and 139 interactive elements
+sit below 44px because §3 specified a visual height rather than a hit area (§11.3).**
+Everything here is still unapplied unless §8 or §9 says otherwise.
 
 1. **Validation timing.** We validate per step on Continue. The rule is **blur → then live**.
    Different model, and the rule is right for the email / matric / staff-ID fields.
@@ -957,9 +966,359 @@ both because the fragment composites over `bg-brand`, not over `surface`.
 
 ### 9.6 Still open
 
-- **390px visual verification.** Static checks pass — no fixed width ≥390px, no
-  `w-screen` — but the actual rendering needs a browser.
+- **390px visual verification.** Partly closed 2026-11-21: `scripts/capture-auth-shots.mjs`
+  renders the real app in headless Chromium and asserts **no horizontal overflow at 390px**
+  on every captured screen (all 28 Auth / pending states pass, `capture issues: 0`). Still
+  open for the rest of the app — only the Auth and status surfaces have been rendered and
+  measured.
 - **`tests/proof-card-browser.test.mjs`** still never executed.
 - **Breadth discipline (§7.1).** About six patterns per screen; the per-screen
   pattern inventory was never written down.
 - **Mobile bottom nav** has five tabs; §5.5 prefers 3–4. Product decision.
+
+### 9.7 New divergence found 2026-11-21
+
+- **`StaffVerification.tsx` is still hand-rolled.** The `<select>` and `<button>` in
+  `StaffPathPicker` / `StaffProofAction` use one-off class strings
+  (`w-full min-h-[44px] rounded-lg p-2 border text-sm`, `min-h-[44px] font-semibold`) rather
+  than `ui/Select`, `ui/Button` and `inputClass`. It is the one control in
+  `qa-screenshots/signup-02-proof-staff-paths.png` that visibly does not match the design
+  system. Found while capturing the Auth screenshots; the earlier unstyled-markup sweep
+  looked for `onClick` on non-interactive elements and so missed it.
+
+---
+
+## 10. `awesome-design-md` — 84 brand design systems as token tables (2026-11-21)
+
+Source: `VoltAgent/awesome-design-md`, `design-md/` — 84 `DESIGN.md` files extracted from
+real product websites. Read 2026-11-21: `supabase`, `linear.app`, `stripe`, `notion`,
+`jobright`, `spotify`, `figma`, `vercel`, `nerdwallet`, `revolut`, `uber`. That is a
+deliberate selection — Supabase is our backend, Linear/Stripe/Notion are the closest
+product-UI references, Jobright is the closest to a student audience, and Spotify is the
+dark-theme reference. The other 73 are unread.
+
+### 10.1 The format is itself the finding
+
+Every file shares one schema, which is the point of the collection (it is Google Stitch's
+`DESIGN.md` convention — a plain-text spec an agent reads to generate consistent UI):
+
+1. YAML front matter with token maps: `colors`, `typography`, `spacing`, `rounded`,
+   `elevation`, `component`.
+2. Prose sections in a fixed order: Overview → Colors (Brand & Accent / Surface / Text /
+   Semantic) → Typography (Font Family / Hierarchy / Principles / **Note on Font
+   Substitutes**) → Layout (Spacing / Grid / Whitespace) → Elevation → Shapes → Components
+   (Buttons / Cards / Inputs / Navigation / …) → Do's and Don'ts → Responsive Behavior
+   (Breakpoints / **Touch Targets** / Collapsing Strategy).
+3. Token references inline as `{colors.primary}`, `{typography.body-md}`, `{rounded.sm}`.
+
+Three things worth stealing as practice, independent of the values: a **font-substitute
+note** (every brand face is proprietary, so each file names the open fallback);
+**touch targets as their own section**, not a footnote; and **Do's and Don'ts**, which is
+where the actual constraints live — the token tables are descriptive, the Don'ts are
+prescriptive.
+
+### 10.2 Read this corpus with one caveat
+
+These are **marketing-surface** analyses. Supabase's own Overview says "the marketing
+surfaces sit on `{colors.canvas}`"; the type scales run to 56–136px heroes; the spacing
+ladders go to 96–192px sections. GSU-Connect is a dense product UI on a 390px phone.
+So the *ratios and rules* transfer; the absolute display sizes do not. §10.4 separates the
+two.
+
+### 10.3 What all twelve agree on (and we already do)
+
+| Rule | The evidence | Us |
+| --- | --- | --- |
+| **Radius ladder 4 / 6 / 8 / 12 / 16** (sometimes 20/24) | Supabase, Linear, Stripe, Notion, NerdWallet, Revolut all list exactly this; Figma and Spotify shift the top end but keep 4/6/8 | `radius` = badge 4, input/button 8, card/alert 12, sheet 16 — **matches**, minus the 6 step |
+| **Buttons are a stated brand decision, not a default** | Supabase/Stripe/Notion/Linear: 6–8px, "square-ish, never pill-shaped". Uber/Spotify/Revolut/Jobright: pill, "the pill IS the signature" | `rounded-lg` 8px — we sit in the technical camp, defensibly |
+| **One accent, spent on actions only** | "Reserve `{colors.primary}` for filled CTAs … it should appear sparingly" (Supabase, Stripe, NerdWallet, Figma, Vercel, Uber, Revolut — seven of twelve say this in as many words) | `brand` is used for CTAs, focus and links; §9's palette already holds this |
+| **Never a second chromatic accent** | "Don't introduce a sixth accent colour" (Vercel), "Don't introduce a second brand accent" (Uber, Revolut), "no atmospheric gradients" (Supabase, Linear) | we have no second accent; the semantic quadruple is state, not decoration |
+| **Semantic colour is a separate family with soft/on triples** | Vercel `success/link-deep/link-bg-soft/error/error-soft/error-deep/warning`; NerdWallet `link/info/error`; Revolut splits seven accent roles and marks which are "illustrations only" | `danger/warn/success/info` each with `-bg`/`-line`/`-on` (§9.4) — the corpus validates the shape |
+| **Elevation is levelled, and dark mode needs more** | Vercel: "stacked small offsets + inset hairline, rather than single heavy drops". Spotify: "on dark backgrounds, shadows need to be heavy to be visible" (0.3–0.5). NerdWallet/Revolut/Uber: "don't add drop shadows to cards — elevation is luminance/border" | `shadow-resting/-raised/-overlay` with `html.dark` overrides (§9.5) — same idea, we took the shadow route |
+| **44px targets are a floor, and the honest version admits the misses** | Jobright "≥44px tap height"; Uber "chips inflate to ≥44px through extra padding on touch viewports"; **NerdWallet: "`{button-outline}` sits close to the minimum and needs its hit area extended on touch widths"**; Vercel: "nav buttons inflate touch area on mobile" | §3 states 44px; the corpus adds the *technique* — pad the hit area, don't shrink the visual |
+| **Tabular figures for anything numeric** | Stripe is the loudest: `font-feature-settings: "tnum"` on every money cell, "don't render money cells without `tnum` — it breaks the quiet financial-data signature" | §3 already requires tabular figures |
+| **Dark canvas is near-black, never pure black** | Linear: "Don't use `#000000` true black as the canvas". Spotify: `#121212`–`#1f1f1f`, "depth through shade variation". Revolut is the outlier and says the opposite ("the brand is `#000000`, not `#0a0a0a`") | `#141310` / `#1d1b17` — warm near-black, so we are deliberately in the majority camp |
+
+### 10.4 Where we diverge from §3 — quantified
+
+The corpus is useful here because it independently confirms §3. These are not
+"another brand does it differently" findings; they are §3 rules the code does not follow.
+
+1. **§3 says "Two weights: 400 reads, 600 scans. No 700." The code uses 700.**
+   `font-bold` appears **196** times against `font-semibold` 422. The corpus agrees with §3,
+   not with us: Linear caps display at 600 ("Linear resists 700+ display weights"), Vercel's
+   ceiling is 600 ("don't promote the geometric sans to weight 700"), Supabase 500, Stripe 300.
+   Plus Jakarta Sans is chunky enough that 700 reads fine — but the rule is explicit and 196
+   sites ignore it. This is the largest single gap in the app against its own spec.
+2. **§3 says "titles > 24px get −0.02em". That is applied 10 times.**
+   `tracking-tight` appears **10** times across the whole app. The corpus scales tracking
+   with size rather than fixing it: Supabase −1.92px @64 down to −0.42px @28 (≈ −0.03em),
+   Stripe −1.4px @56, Linear −3.0px @80, Vercel −2.4px @48 — a band of about
+   **−0.03em to −0.04em**. Our −0.02em floor is in the right neighbourhood; the failure is
+   coverage, not the value.
+3. **§3's smallest size is 13px. The code's second-most-used size is 12px, and 11px is
+   everywhere.** `text-xs` (12px) appears **519** times, `text-[11px]` **183** times, while
+   `text-base` (16px) appears only 56. Every corpus entry floors secondary text at 12px
+   (caption) and prefers 13–14px; 11px is below all twelve. Density is a legitimate product
+   call for a campus messaging app, but 183 sites is a default, not a decision.
+4. **§3 fixes five sizes: 13, 16, 20, 25, 32. The code uses eight, plus an arbitrary.**
+   In use: 12, 14, 16, 18, 20, 24, 28, 36 — and `text-[13px]` appears nowhere even though
+   13 is §3's floor. Either §3 is wrong or the code drifted; both cannot stand.
+5. **`rounded-full` 117 times.** Mostly avatars and chips, which §3 sanctions. Worth a
+   confirmation pass that none of them are buttons: §3 fixes buttons at 8, and the corpus is
+   absolute that button radius is the brand signature (Supabase "never pill-shaped"; Uber
+   "the pill IS the brand's geometric signature").
+
+### 10.5 What I would actually take
+
+- **Fix the weight rule first.** 196 `font-bold` sites against an explicit "no 700" is the
+  cheapest large win, and §10.4.1 shows the reference systems agree with our own spec.
+- **Apply tracking to display sizes.** The rule exists; it just needs to run on anything
+  ≥24px, ideally proportional (−0.03em at the top of the scale, easing to 0 by 20px).
+- **Resolve the size-scale question once.** Either re-state §3 to the sizes the app really
+  uses (and drop "stop adding sizes"), or migrate to 13/16/20/25/32. Today §3 describes a
+  system the code does not have, which is worse than either option.
+- **Raise 11px to 12px**, or record why it survives. 183 sites is too many to leave implicit.
+- **Leave the radius ladder alone.** §3's 4/8/12/16 is deliberate and matches the technical
+  camp of the corpus (Supabase, Stripe, Notion, Linear all use 6–8px controls). The corpus's
+  extra 6px step was considered and dropped; write that down so it is not re-litigated.
+- **Do not import the absolute type scale or section spacing.** That is §10.2's caveat — a
+  56px hero and a 96px section rhythm have no place on a 390px messaging surface.
+- **Nothing here changes the palette.** §9's ramps already sit where the corpus says:
+  near-black warm dark canvas, one emerald accent spent on actions, semantic triples.
+
+---
+
+## 11. Social & messaging surfaces — second reading (2026-11-21)
+
+GSU-Connect is a social product (messaging, groups, confessions, marketplace, radar), so the
+consumer-social question is fair. Asked for, so done.
+
+### 11.1 What the collection actually contains
+
+Be honest about the corpus first: it is **84 developer-marketing sites**, not a social-app
+sampler. There is **no Discord, Reddit, TikTok, X, Instagram, LinkedIn, Snap, Threads,
+WhatsApp, Telegram or YouTube**. What exists that is adjacent:
+
+| Entry | What it is | Read |
+| --- | --- | --- |
+| `meta` | Meta's commerce surfaces — the only true social *company*, but the file covers storefront UX | 683 ln |
+| `pinterest` | The only pure social platform; image-first feed + masonry | 597 ln |
+| `slack` | Team messaging — the closest chat reference in the set | 482 ln |
+| `intercom` | Customer messaging / support inbox | 546 ln |
+| `mydealz` | Community deal platform — the only *community-voting* reference | 551 ln |
+| `miro` | Collaborative canvas — group/board surface | 825 ln |
+
+`spotify` (read in §10) is also partly social. Treat the social conclusions as **six sources,
+two of them genuinely social** — weaker evidence than §10's eleven, and I have labelled it
+that way rather than inflating it.
+
+### 11.2 Social-surface patterns, at component level
+
+**Status badges — a four-tone pill system.** Meta is the most useful: `badge-promo-yellow`,
+`badge-attention`, `badge-success` ("In stock", "Verified", "Free shipping"), `badge-critical`
+("Out of stock"), every one `rounded.full`, `4px 10px`, `caption-bold`, **solid fill with a
+contrasting `on` text**. Ours: `ui/Badge.tsx` — five tones but `rounded` (4px), `text-[11px]`,
+`px-2 py-0.5`, and *tinted* fills with a border. Two differences: radius (4 vs full) and the
+fact that ours reserves solid fills for nothing.
+
+**Filter chips — selected inverts to ink, it does not go brand-coloured.**
+Pinterest `filter-chip`: default `surface-card`/`ink`; active **`ink`/`on-dark` — "the chip
+flips fully inverted on selection"**, `rounded.full`, `8px 16px`. Figma states the rule
+generally: *"Don't replace the `pricing-tab-selected` black fill with a colored tab; the brand
+pattern is 'selected = primary surface'."*
+Ours: `ui/Chip.tsx` active = **`bg-brand border-brand text-on-brand`** — the accent fill. See
+§11.4; this is the sharpest single conflict in the two readings.
+
+**Avatars carry a ring, not just a circle.** mydealz `avatar`: circle on `canvas` **with a
+white ring** — the ring is what separates an avatar from the feed background, not the shape.
+
+**Links are role-paired, per surface.** Slack defines `link-on-light` *and* `link-on-aubergine`
+as separate tokens (blue no-underline on light; `on-primary` with persistent underline on the
+aubergine band). Intercom separates `semantic-error/success` from a `report-*` chart palette and
+says the report colours *"appear INSIDE product UI mockups — not marketing surface colors"*.
+This is the same instinct as §9.4's `<state>-on` pairs, applied to links.
+
+**Focus is a stack, not a ring.** Pinterest defines `focus-outer` **and** `focus-inner`
+(`#ffffff`) — "a 2px outer outline around focused inputs and buttons" with a white gap inside.
+That is exactly `focusRing` (`ring-2` + `ring-offset-2` + `ring-offset-surface`). Independent
+confirmation of a detail we chose for contrast reasons.
+
+**Community sentiment is a named component.** mydealz `temperature-control`: a pill with
+`cold` down-arrow, `hot` reading, `hot` up-arrow — *"the crowd's price vote made visible"*.
+Nothing in our app has an equivalent for the confession/helpful affordances; noted, not
+recommended.
+
+**Content-first chrome.** Pinterest's opening principle: *"get out of the photograph's way"* —
+the chrome recedes and the feed carries the page. Relevant if GSU gains an image feed.
+
+### 11.3 Correction to §10.3: the touch target is an *area*, not a *visual height*
+
+§10.3 recorded "44px floor" from Jobright/Uber. Reading the social entries closely, the corpus
+is more precise and more forgiving:
+
+- **Meta**: pill buttons 40–44px; **circular icon buttons 40×40 — "at the AA floor; bumps to
+  44×44 on mobile via override"**; colour swatches **32×32** that *"carry a 12px clear hit zone
+  around it (effective hit target ~56px)"*.
+- **Pinterest**: `filter-chip` **36–40px** height — *"extends to 44px tappable via inline
+  padding"*; `button-icon-circular` exactly **40×40** — *"extended hit-target padding to
+  48×48 inside the parent"*.
+- **Slack**: pills ≥48×48, but *"form fields stay at the 44px minimum height"*.
+- **Intercom**: CTAs and pricing pills **≥40px**; only inputs ≥44px.
+
+So the real rule is **44px effective hit area**, achieved by extending the hit zone past the
+visual — and the corpus says so explicitly rather than shrinking the design to fit. §3's
+"targets ≥ 44px" is therefore not wrong but **incomplete**: it specifies a visual height where
+the reference systems specify an area. Our `ui/Chip.tsx` at `min-h-[40px]` is defensible under
+the corpus rule *if* it extends its hit area; today it does not.
+
+Measured in our code: `min-h-[40px]` **93**, `min-h-[36px]` **34**, `min-h-[32px]` **12** —
+**139 elements below 44px**, against 123 at 44px and 6 at 48px, plus 58 icon buttons sized
+`w-8/9/10 h-8/9/10`. §10.4 did not catch this; it is the largest quantitative gap found in
+either reading.
+
+### 11.4 Radius: the social fork
+
+§10.3 found the SaaS camp unanimous on 4/6/8/12/16. The social entries split:
+
+- **Pinterest is the outlier**: *"essentially three values: 16px for most things, 32px for big
+  cards and modals, and pill for circular elements"* — buttons, inputs, pin cards all 16px.
+- **mydealz** `rounded.full` (540px) for *"buttons, search pill, temperature control, filter
+  chips — the pill signature"*, content cards at 8px.
+- **Meta** 2/4/6/8/16/24; **Slack** 2/4/8/12/16/48; **Miro** 4/6/8/12/16/20; **Intercom**
+  4/6/8/12/16/24 (identical to the SaaS ladder).
+
+So a consumer-social app leans pill or 16px; a product-social app (Slack, Miro, Intercom) sits
+right on our ladder. GSU-Connect is the second kind, which supports §3 as written. **But the
+pill is the social signature in three of six entries, and our `rounded-full` count is 117** —
+worth confirming those are avatars/chips and not buttons, as §10.4.5 says.
+
+### 11.5 What this changes for GSU-Connect
+
+1. **Selected chips should invert to ink, not fill with brand.** This is a named rule in two
+   independent sources (Pinterest's spec, Figma's Don't) and it is consistent with §3's "one
+   accent, spent only where it matters" — a filter selection is a *state*, not an action.
+   `ui/Chip.tsx` is the one component that spends the accent on a non-action. Highest-value
+   finding of this reading.
+2. **Badges want a pill and a slightly larger label.** Corpus: `rounded.full`, 12–13px bold,
+   4px 10px, solid fill + `on` text. Ours: 4px, 11px, tinted + border.
+3. **Extend hit areas rather than assume 44px is met.** 139 sub-44px elements is the concrete
+   backlog; the corpus gives the technique (padding the hit zone, not the visual).
+4. **Avatars should carry a ring** so they separate from feed chrome.
+
+### 11.6 What I would take, in order
+
+- Rework `Chip` active state to the ink inversion, and `Badge` to a pill at 12px. Two small
+  components, both directly contradicted by named rules.
+- Audit the 139 sub-44px targets and extend hit zones — and re-state §3 as an **area** rule so
+  the next component does not repeat it.
+- Add the avatar ring.
+- Do **not** raise the radius ladder toward Pinterest's 16px: that is a consumer-image-feed
+  decision, and Slack/Miro/Intercom put a product-social app exactly where we already are.
+
+---
+
+## 12. `pbakaus/impeccable` — a detector, not a spec (2026-11-21)
+
+Source: <https://github.com/pbakaus/impeccable>, Apache-2.0, 114k★, Rust. Not brand specs and
+not teaching. It is three things: a skill of 24 design commands (`bolder`, `quieter`,
+`critique`, `audit`, `polish`, `typeset`, `layout`, `harden`, …), a **`craft-floor.md` quality
+floor with explicit bans**, and a **deterministic 62-rule detector** (`npx impeccable detect`)
+that runs on a source directory or a rendered URL and needs no LLM or API key. Ran it on
+GSU-Connect; recorded here because it is a *different kind* of evidence from §10/§11 and it
+found things those readings could not.
+
+### 12.1 What it caught that the corpus readings could not
+
+`npx impeccable detect src/` → **8 findings, all advisory-or-warning, 0 blocking**; on the
+rendered app (`http://localhost:3000/` + the status harness) → **13**.
+
+| Finding | Where | Note |
+| --- | --- | --- |
+| `overused-font` ×5 | `src/index.css` `@font-face` | Names **Plus Jakarta Sans** as one of six over-converged faces (with Inter, Roboto, Fraunces, Geist, Space Grotesk). We load it at 400–800. Not a correctness bug — a distinctiveness judgement, and waivable by value. |
+| `ai-color-palette` ×2 | `src/types.ts` `PRESET_AVATARS` | `from-indigo-600 to-blue-700`, `from-violet-600 to-purple-700` in the user-choosable avatar presets. The rule targets *page* decoration; user-picked avatar colours are a different surface. |
+| `bounce-easing` ×1 | `ChatsView.tsx:4363` | the three typing dots. **Real finding** — bounce is a dated easing, and "real objects decelerate smoothly". |
+| `tiny-text` ×9 | `styles.ts` `hintClass` (`text-[11px]`), plus 10px sites | The rule is *below 12px* for body, *below 11px* for functional UI text, and it **explicitly closes the token escape hatch**: *"Being ON the DESIGN.md size ramp does not exempt a value here: adding 8px to the ramp launders the token."* |
+| `nested-cards` ×2, `icon-tile-stack` ×1, `straggler` ×1 | `StatusGateScreen.tsx` | Only on the pending/rejected/suspended gate screens. The "Checking your status…" state puts a 56×56 icon tile above its `h1`. |
+
+The valuable part is not the count. It is that **`tiny-text` is the only finding that fires on
+the app's shared system** (`hintClass` at 11px), and §10.4.3 already flagged 183 `text-[11px]`
+sites from the corpus side. Two unrelated sources, same defect, different framing. That is
+now a confirmed item rather than a judgement call.
+
+### 12.2 `craft-floor.md` — the bans, checked against us
+
+The floor is a short list, and most of it we already satisfy. Worth recording which lines
+*applied to us*:
+
+- **"Never gray on colored backgrounds — tint secondary text from that hue or the
+  foreground."** This is §3's own rule and the reason §9.4 built `<state>-on` pairs. The
+  detector's `gray-on-color` rule is the same idea mechanised. It found nothing.
+- **"Tracking stops at −0.04em. −0.02 to −0.03em usually reads better."** Direct support for
+  §10.4.2 — our −0.02em floor is in the recommended band; the failure is coverage.
+- **"Card radii stay at 12–16px; pills are for small controls."** One source says *pills are
+  for small controls*. That is the opposite of the social camp (§11.4) and it supports our
+  `radius` ladder. Worth knowing the two camps genuinely disagree, so §3 is a choice, not a
+  consensus.
+- **"Declare elevation once, border or shadow. A 1px border under a wide soft shadow is the
+  ghost card."** §9.5 chose shadows. A real tension, not a defect.
+- **"Browser surfaces: text selection, the caret, custom scrollbars, focus rings, underline
+  offset, tabular numerals."** Called *"the cheapest signal that a page was built rather than
+  assembled, and the one models skip most reliably."* We theme the focus ring (§9) but I have
+  not seen selection or scrollbar rules. **Unverified — check.**
+- **"Content visible by default; let JS enhance its entrance instead of gating its existence."**
+  The `content-hidden-at-rest` rule is the failed-reveal signature. Our screens render server-
+  side-less React with no scroll reveals, so this should be clean, but it is untested.
+- **A kicker/eyebrow above a heading is a ban, not a default.** We do not use kickers.
+
+### 12.3 How to use it
+
+`npx impeccable detect src/` for pattern rules (no browser needed), and
+`npx impeccable detect <url> --json` for rendered rules (contrast, tiny text, overflow) —
+which needs a Chromium, satisfied in this sandbox by `/tmp/chromium` + `IMPECCABLE_BROWSER`.
+`scripts/impeccable-scan.mjs` runs both. Exit 2 = findings, 1 = target unreadable, 0 = clean.
+
+**Its real value here is the two rules we did not already have:** `undersized-ui-text` with the
+explicit "a token does not launder a size" clause, and the browser-surfaces checklist. The
+rest is corroboration of §3/§9/§10/§11.
+
+### 12.4 The status-gate pass (done 2026-11-21)
+
+The gate screens carried 12 of the 13 URL-scan findings. All are fixed except one
+deliberate exception:
+
+- **`tiny-text` ×9** — `StatusGateScreen` 11px → `text-xs`, `ProofDropzone` 10/11px →
+  `text-xs`. The rule's own clause is the reason: a token does not launder a size.
+- **`nested-cards` ×2** — the three inner panels (timeline, verification proof, details
+  table) were bordered, rounded, sunken boxes inside the outer card. Flattened to
+  divider-delimited groups (`border-t` + `pt-4`), which is the craft floor's own
+  prescription: "use spacing, typography, and dividers instead of nesting containers."
+- **`icon-tile-stack` ×1** — the 56×56 rounded-square tile above the "Checking your
+  status…" `h1`. Removed the container; the icon now sits in flow, coloured by state.
+- **`straggler` ×1** — `text-wrap: pretty` on `p`/`li` and `text-wrap: balance` on
+  headings (progressive; the typeset reference recommends exactly this).
+
+**Remaining, deliberately:** `nested-cards` fires once on the dashed file drop target in
+`ProofDropzone`. It is a file control, not a card — the rule's own exemptions cover field
+boxes, control strips, media frames and output blocks for the same reason, and a drop
+target is the same case. Two things make this a documented exception rather than a fix:
+`nested-cards` is a **browser/layout rule**, and URL scans do not read source, so an
+inline `impeccable-disable` comment cannot waive it (verified: the comment had no
+effect). Removing the border to satisfy the heuristic would mean replacing the standard
+dashed drop affordance with an `outline`, which is not reliably rounded in WebKit — a
+real regression on the Capacitor iOS build, for a cosmetic scan result.
+
+Also verified clean: `content-hidden-at-rest` does not apply (the only `opacity-0` in the
+app is a hover-reveal on a marketplace card image, which is not gated content), and
+`gray-on-color` fires nowhere.
+
+### 12.5 What is still open
+
+- **`overused-font` (Plus Jakarta Sans)** — waivable by value. It is the display face and
+  the corpus's technical camp uses similar geometric sanses; changing it is a brand
+  decision, not a defect.
+- **`ai-color-palette` in `PRESET_AVATARS`** — user-picked avatar gradients, not page
+  decoration. Leave unless the preset set is redesigned.
+- **The 139 sub-44px targets (§11.3)** — untouched. That is the largest quantitative gap
+  and the next real piece of work.
+- **§11.5.1 (selected chips invert to ink)** — untouched. Two-line change, named rule.

@@ -39,8 +39,12 @@ export const controlClass =
 export const labelClass =
   'block text-xs font-semibold text-ink-soft mb-1.5';
 
+// 12px, not 11px: the corpus floors caption text at 12px (§10.4.3) and the
+// Impeccable `undersized-ui-text` rule fails anything under 12px for content
+// and under 11px for functional text — and it explicitly refuses to accept a
+// token as an excuse ("adding 8px to the ramp launders the token").
 export const hintClass =
-  'mt-1.5 text-[11px] text-ink-muted leading-relaxed';
+  'mt-1.5 text-xs text-ink-muted leading-relaxed';
 
 export const errorTextClass = 'mt-1.5 text-xs font-medium text-danger';
 

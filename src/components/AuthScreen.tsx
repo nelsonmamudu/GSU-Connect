@@ -613,12 +613,12 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
           note={ocrHint || 'Only you and authorized reviewers can access your proof.'}
         />
       ) : (
-        <div className="rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 p-3.5 text-left space-y-1">
+        <div className="border-t border-line/70 dark:border-line pt-4 text-left space-y-1">
           <div className="flex items-start gap-2">
             <ShieldCheck className="w-4 h-4 text-brand shrink-0 mt-0.5" />
             <p className="text-xs font-semibold text-ink">Verify after sign-in</p>
           </div>
-          <p className="text-[11px] text-ink-muted leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             {staffPath === 'email'
               ? 'We’ll email a confirmation link to your @gsu.edu.ng inbox after you create your account.'
               : 'After sign-in, ask a verified staff member in your department to confirm your affiliation.'}
@@ -718,7 +718,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ departments }) => {
             {fieldErrors.level && (
               <p id="level-error" className={errorTextClass}>{fieldErrors.level}</p>
             )}
-            <p className="text-[11px] text-ink-muted mt-1.5 leading-relaxed">
+            <p className="text-xs text-ink-muted mt-1.5 leading-relaxed">
               Select your actual level{sessionLabel ? ` for ${sessionLabel}` : ''}, not the level on an older document.
             </p>
           </div>

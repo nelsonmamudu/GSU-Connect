@@ -95,11 +95,7 @@ export function ProofDropzone({
       onDragLeave={() => setDragOver(false)}
       onDrop={handleDrop}
       onPaste={handlePaste}
-      className={`rounded-2xl border bg-sunken/70 dark:bg-sunken/60 p-3.5 space-y-3 text-left transition-colors ${
-        dragOver
-          ? 'border-brand ring-2 ring-success/20'
-          : 'border-line/80 dark:border-line'
-      }`}
+      className="space-y-3 text-left"
     >
       <div className="flex items-start gap-2">
         <IdCard className="w-4 h-4 text-brand shrink-0 mt-0.5" />
@@ -138,11 +134,11 @@ export function ProofDropzone({
           ) : (
             <div className="h-24 w-24 rounded-xl border border-line bg-surface flex flex-col items-center justify-center gap-1 shrink-0">
               <IdCard className="w-6 h-6 text-ink-muted" />
-              <span className="text-[10px] font-semibold text-ink-muted">PDF</span>
+              <span className="text-xs font-semibold text-ink-muted">PDF</span>
             </div>
           )}
           <div className="min-w-0 flex-1 space-y-1.5">
-            <p className="text-[11px] font-semibold text-ink break-all leading-snug">
+            <p className="text-xs font-semibold text-ink break-all leading-snug">
               {file.name} ({formatFileSize(file.size)})
             </p>
             <Button
@@ -158,9 +154,13 @@ export function ProofDropzone({
           </div>
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-line bg-white/60 dark:bg-surface/40 px-3 py-4 text-center">
+        <div className={`flex flex-col items-center gap-1.5 rounded-xl border border-dashed px-3 py-4 text-center transition-colors ${
+            dragOver
+              ? 'border-brand bg-brand-subtle/50 dark:bg-brand-subtle/20'
+              : 'border-line bg-white/60 dark:bg-surface/40'
+          }`}>
           <Upload className="w-5 h-5 text-ink-muted" />
-          <p className="text-[11px] text-ink-muted leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             Drag &amp; drop a file here, paste it, or
           </p>
           <Button
@@ -176,14 +176,14 @@ export function ProofDropzone({
           >
             {chooseLabel}
           </Button>
-          <p className="text-[10px] text-ink-muted leading-relaxed">
+          <p className="text-xs text-ink-muted leading-relaxed">
             {acceptHint}. Redact unrelated personal information.
           </p>
         </div>
       )}
 
       {note && (
-        <p className="text-[11px] text-ink-muted leading-relaxed">{note}</p>
+        <p className="text-xs text-ink-muted leading-relaxed">{note}</p>
       )}
       {error && (
         <p id="proof-error" className="text-xs font-medium text-danger">
