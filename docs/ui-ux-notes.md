@@ -1,14 +1,16 @@
 # UI/UX notes
 
 A working reference for the auth, status-gate and admin-queue screens. Built from the
-`ux-patterns-master` library (112 patterns), 17 short reel transcripts, and one 2026
-design-trends guide, absorbed 2026-11-20. Nothing here has been applied to the code yet —
-this is the spec we will build from, and the shortlist we agreed to keep to.
+`ux-patterns-master` library (112 patterns), 17 short reel transcripts, one 2026
+design-trends guide, and — from §10 — 11 `DESIGN.md` brand design systems. §8 and §9 record
+what has already been applied to the code; §10 is reading only.
 
 > **Sources.** Pattern teaching is @designmotionhq's; the library is
 > `YourFutureSiteDev/ux-patterns`, whose own components are their implementation of the
 > ideas (not a copy of the reels). Per-pattern source links live in that repo's
 > `catalog.json`. The reels referenced in `all_transcripts.txt` are also @designmotionhq.
+> §10 draws on `VoltAgent/awesome-design-md` (Google Stitch's `DESIGN.md` format); the
+> per-brand files carry their own front matter and source pages.
 > If any of this is shown publicly, credit the pattern by name and link the reel.
 
 ---
@@ -976,3 +978,104 @@ both because the fragment composites over `bg-brand`, not over `surface`.
   `qa-screenshots/signup-02-proof-staff-paths.png` that visibly does not match the design
   system. Found while capturing the Auth screenshots; the earlier unstyled-markup sweep
   looked for `onClick` on non-interactive elements and so missed it.
+
+---
+
+## 10. `awesome-design-md` — 84 brand design systems as token tables (2026-11-21)
+
+Source: `VoltAgent/awesome-design-md`, `design-md/` — 84 `DESIGN.md` files extracted from
+real product websites. Read 2026-11-21: `supabase`, `linear.app`, `stripe`, `notion`,
+`jobright`, `spotify`, `figma`, `vercel`, `nerdwallet`, `revolut`, `uber`. That is a
+deliberate selection — Supabase is our backend, Linear/Stripe/Notion are the closest
+product-UI references, Jobright is the closest to a student audience, and Spotify is the
+dark-theme reference. The other 73 are unread.
+
+### 10.1 The format is itself the finding
+
+Every file shares one schema, which is the point of the collection (it is Google Stitch's
+`DESIGN.md` convention — a plain-text spec an agent reads to generate consistent UI):
+
+1. YAML front matter with token maps: `colors`, `typography`, `spacing`, `rounded`,
+   `elevation`, `component`.
+2. Prose sections in a fixed order: Overview → Colors (Brand & Accent / Surface / Text /
+   Semantic) → Typography (Font Family / Hierarchy / Principles / **Note on Font
+   Substitutes**) → Layout (Spacing / Grid / Whitespace) → Elevation → Shapes → Components
+   (Buttons / Cards / Inputs / Navigation / …) → Do's and Don'ts → Responsive Behavior
+   (Breakpoints / **Touch Targets** / Collapsing Strategy).
+3. Token references inline as `{colors.primary}`, `{typography.body-md}`, `{rounded.sm}`.
+
+Three things worth stealing as practice, independent of the values: a **font-substitute
+note** (every brand face is proprietary, so each file names the open fallback);
+**touch targets as their own section**, not a footnote; and **Do's and Don'ts**, which is
+where the actual constraints live — the token tables are descriptive, the Don'ts are
+prescriptive.
+
+### 10.2 Read this corpus with one caveat
+
+These are **marketing-surface** analyses. Supabase's own Overview says "the marketing
+surfaces sit on `{colors.canvas}`"; the type scales run to 56–136px heroes; the spacing
+ladders go to 96–192px sections. GSU-Connect is a dense product UI on a 390px phone.
+So the *ratios and rules* transfer; the absolute display sizes do not. §10.4 separates the
+two.
+
+### 10.3 What all twelve agree on (and we already do)
+
+| Rule | The evidence | Us |
+| --- | --- | --- |
+| **Radius ladder 4 / 6 / 8 / 12 / 16** (sometimes 20/24) | Supabase, Linear, Stripe, Notion, NerdWallet, Revolut all list exactly this; Figma and Spotify shift the top end but keep 4/6/8 | `radius` = badge 4, input/button 8, card/alert 12, sheet 16 — **matches**, minus the 6 step |
+| **Buttons are a stated brand decision, not a default** | Supabase/Stripe/Notion/Linear: 6–8px, "square-ish, never pill-shaped". Uber/Spotify/Revolut/Jobright: pill, "the pill IS the signature" | `rounded-lg` 8px — we sit in the technical camp, defensibly |
+| **One accent, spent on actions only** | "Reserve `{colors.primary}` for filled CTAs … it should appear sparingly" (Supabase, Stripe, NerdWallet, Figma, Vercel, Uber, Revolut — seven of twelve say this in as many words) | `brand` is used for CTAs, focus and links; §9's palette already holds this |
+| **Never a second chromatic accent** | "Don't introduce a sixth accent colour" (Vercel), "Don't introduce a second brand accent" (Uber, Revolut), "no atmospheric gradients" (Supabase, Linear) | we have no second accent; the semantic quadruple is state, not decoration |
+| **Semantic colour is a separate family with soft/on triples** | Vercel `success/link-deep/link-bg-soft/error/error-soft/error-deep/warning`; NerdWallet `link/info/error`; Revolut splits seven accent roles and marks which are "illustrations only" | `danger/warn/success/info` each with `-bg`/`-line`/`-on` (§9.4) — the corpus validates the shape |
+| **Elevation is levelled, and dark mode needs more** | Vercel: "stacked small offsets + inset hairline, rather than single heavy drops". Spotify: "on dark backgrounds, shadows need to be heavy to be visible" (0.3–0.5). NerdWallet/Revolut/Uber: "don't add drop shadows to cards — elevation is luminance/border" | `shadow-resting/-raised/-overlay` with `html.dark` overrides (§9.5) — same idea, we took the shadow route |
+| **44px targets are a floor, and the honest version admits the misses** | Jobright "≥44px tap height"; Uber "chips inflate to ≥44px through extra padding on touch viewports"; **NerdWallet: "`{button-outline}` sits close to the minimum and needs its hit area extended on touch widths"**; Vercel: "nav buttons inflate touch area on mobile" | §3 states 44px; the corpus adds the *technique* — pad the hit area, don't shrink the visual |
+| **Tabular figures for anything numeric** | Stripe is the loudest: `font-feature-settings: "tnum"` on every money cell, "don't render money cells without `tnum` — it breaks the quiet financial-data signature" | §3 already requires tabular figures |
+| **Dark canvas is near-black, never pure black** | Linear: "Don't use `#000000` true black as the canvas". Spotify: `#121212`–`#1f1f1f`, "depth through shade variation". Revolut is the outlier and says the opposite ("the brand is `#000000`, not `#0a0a0a`") | `#141310` / `#1d1b17` — warm near-black, so we are deliberately in the majority camp |
+
+### 10.4 Where we diverge from §3 — quantified
+
+The corpus is useful here because it independently confirms §3. These are not
+"another brand does it differently" findings; they are §3 rules the code does not follow.
+
+1. **§3 says "Two weights: 400 reads, 600 scans. No 700." The code uses 700.**
+   `font-bold` appears **196** times against `font-semibold` 422. The corpus agrees with §3,
+   not with us: Linear caps display at 600 ("Linear resists 700+ display weights"), Vercel's
+   ceiling is 600 ("don't promote the geometric sans to weight 700"), Supabase 500, Stripe 300.
+   Plus Jakarta Sans is chunky enough that 700 reads fine — but the rule is explicit and 196
+   sites ignore it. This is the largest single gap in the app against its own spec.
+2. **§3 says "titles > 24px get −0.02em". That is applied 10 times.**
+   `tracking-tight` appears **10** times across the whole app. The corpus scales tracking
+   with size rather than fixing it: Supabase −1.92px @64 down to −0.42px @28 (≈ −0.03em),
+   Stripe −1.4px @56, Linear −3.0px @80, Vercel −2.4px @48 — a band of about
+   **−0.03em to −0.04em**. Our −0.02em floor is in the right neighbourhood; the failure is
+   coverage, not the value.
+3. **§3's smallest size is 13px. The code's second-most-used size is 12px, and 11px is
+   everywhere.** `text-xs` (12px) appears **519** times, `text-[11px]` **183** times, while
+   `text-base` (16px) appears only 56. Every corpus entry floors secondary text at 12px
+   (caption) and prefers 13–14px; 11px is below all twelve. Density is a legitimate product
+   call for a campus messaging app, but 183 sites is a default, not a decision.
+4. **§3 fixes five sizes: 13, 16, 20, 25, 32. The code uses eight, plus an arbitrary.**
+   In use: 12, 14, 16, 18, 20, 24, 28, 36 — and `text-[13px]` appears nowhere even though
+   13 is §3's floor. Either §3 is wrong or the code drifted; both cannot stand.
+5. **`rounded-full` 117 times.** Mostly avatars and chips, which §3 sanctions. Worth a
+   confirmation pass that none of them are buttons: §3 fixes buttons at 8, and the corpus is
+   absolute that button radius is the brand signature (Supabase "never pill-shaped"; Uber
+   "the pill IS the brand's geometric signature").
+
+### 10.5 What I would actually take
+
+- **Fix the weight rule first.** 196 `font-bold` sites against an explicit "no 700" is the
+  cheapest large win, and §10.4.1 shows the reference systems agree with our own spec.
+- **Apply tracking to display sizes.** The rule exists; it just needs to run on anything
+  ≥24px, ideally proportional (−0.03em at the top of the scale, easing to 0 by 20px).
+- **Resolve the size-scale question once.** Either re-state §3 to the sizes the app really
+  uses (and drop "stop adding sizes"), or migrate to 13/16/20/25/32. Today §3 describes a
+  system the code does not have, which is worse than either option.
+- **Raise 11px to 12px**, or record why it survives. 183 sites is too many to leave implicit.
+- **Leave the radius ladder alone.** §3's 4/8/12/16 is deliberate and matches the technical
+  camp of the corpus (Supabase, Stripe, Notion, Linear all use 6–8px controls). The corpus's
+  extra 6px step was considered and dropped; write that down so it is not re-litigated.
+- **Do not import the absolute type scale or section spacing.** That is §10.2's caveat — a
+  56px hero and a 96px section rhythm have no place on a 390px messaging surface.
+- **Nothing here changes the palette.** §9's ramps already sit where the corpus says:
+  near-black warm dark canvas, one emerald accent spent on actions, semantic triples.
