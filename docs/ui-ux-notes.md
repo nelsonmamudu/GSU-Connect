@@ -2,8 +2,9 @@
 
 A working reference for the auth, status-gate and admin-queue screens. Built from the
 `ux-patterns-master` library (112 patterns), 17 short reel transcripts, one 2026
-design-trends guide, and — from §10 — 11 `DESIGN.md` brand design systems. §8 and §9 record
-what has already been applied to the code; §10 is reading only.
+design-trends guide, and — from §10/§11 — 17 `DESIGN.md` brand design systems (11
+technical/product, 6 social/messaging). §8 and §9 record what has already been applied to the
+code; §10 and §11 are reading only.
 
 > **Sources.** Pattern teaching is @designmotionhq's; the library is
 > `YourFutureSiteDev/ux-patterns`, whose own components are their implementation of the
