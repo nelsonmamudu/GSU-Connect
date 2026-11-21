@@ -4360,9 +4360,9 @@ export const ChatsView: React.FC<ChatsViewProps> = ({
                 className="px-4 py-1.5 bg-[#FAFBFB] dark:bg-canvas/60 border-t border-line/80 dark:border-line/70 flex items-center gap-2"
               >
                 <span className="inline-flex items-center gap-0.5" aria-hidden="true">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-bounce [animation-delay:-0.3s]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-bounce [animation-delay:-0.15s]" />
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-bounce" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-typing [animation-delay:-0.45s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-typing [animation-delay:-0.2s]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand dark:bg-brand-subtle animate-typing" />
                 </span>
                 <span className="text-xs font-medium text-brand truncate">
                   {typingSummary}
