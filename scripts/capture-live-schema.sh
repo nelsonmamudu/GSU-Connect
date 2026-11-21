@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+# WARNING (2026-11-21): This script fails bash syntax validation and is unverified.
+# It does NOT produce a complete staging baseline. It excludes auth/storage schemas, including the app's trigger
+# on auth.users and storage policies; it omits grants; and a current live snapshot
+# must not be blindly replayed before historical migrations. Do not run or apply
+# its output without a reviewed schema/history and managed-service restore plan.
 # Capture the live database into a baseline migration.
 #
 #   SUPABASE_DB_URL="postgresql://postgres:[pw]@db.<ref>.supabase.co:5432/postgres" \
@@ -9,8 +14,8 @@
 # The file is ordered before every existing migration so a fresh database replays
 # baseline -> hardening -> Phase 1 in that order.
 #
-# Requires pg_dump 16+ (Postgres 17 server). This sandbox has no psql/pg_dump, so the
-# script is UNVERIFIED here; run it from a machine that has them.
+# A pg_dump client must be at least as new as the PostgreSQL server major version
+# (17 for the inspected project). The script is UNVERIFIED in this sandbox.
 
 set -euo pipefail
 

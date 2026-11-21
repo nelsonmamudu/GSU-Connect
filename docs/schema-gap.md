@@ -1,5 +1,7 @@
 # Repo vs production schema — gap report (Batch 1, Task 1b)
 
+> **Safety update, 2026-11-21:** This is a historical audit, not a tested restoration recipe. Do not follow the recommendations below to run the capture script or replay a live snapshot before historical migrations. The script fails Bash syntax validation, is unverified, excludes managed-schema objects including the app's `auth.users` trigger and Storage policies, and omits grants. A complete schema/history and staging isolation plan is still required. `pg_dump` must be at least as new as the server major version (17 for the inspected project).
+
 Read-only audit, 2026-11-19. Nothing applied; no DDL executed.
 
 ## Headline
