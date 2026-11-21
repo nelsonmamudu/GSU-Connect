@@ -270,6 +270,9 @@ Secondary: `bulk-actions`, `search-experience-system`, `inline-editing`, `contex
 - Cap the **measure**, not the box: paragraph ≤ 66ch (45-75 comfort band) inside any
   container width.
 - `font-variant-numeric: tabular-nums` on figures.
+- **Selected ≠ accent.** A selected filter/chip inverts to the ink surface (`ink` /
+  `on-dark`), it does not take the brand colour. The accent is spent on actions only. Named
+  by Pinterest (`filter-chip-active`) and Figma (`pricing-tab-selected`); see §11.2 and §11.5.
 
 **Hierarchy (`visual-hierarchy`)** — size, colour, contrast, whitespace and weight stack to
 one focal point. Headline ≈ 2× body. **One accent colour**, spent only where it matters.
@@ -403,7 +406,10 @@ hierarchy signal: strongest on the element that matters most.
 
 ## 4. Divergences from our current code (found while reading, not yet fixed)
 
-These are the gaps worth closing first. Nothing here has been changed.
+These are the gaps worth closing first. **The §11 reading added two more, both named rules:
+`ui/Chip.tsx` spends the accent on a selected state (§11.5.1), and 139 interactive elements
+sit below 44px because §3 specified a visual height rather than a hit area (§11.3).**
+Everything here is still unapplied unless §8 or §9 says otherwise.
 
 1. **Validation timing.** We validate per step on Continue. The rule is **blur → then live**.
    Different model, and the rule is right for the email / matric / staff-ID fields.
@@ -1079,3 +1085,132 @@ The corpus is useful here because it independently confirms §3. These are not
   56px hero and a 96px section rhythm have no place on a 390px messaging surface.
 - **Nothing here changes the palette.** §9's ramps already sit where the corpus says:
   near-black warm dark canvas, one emerald accent spent on actions, semantic triples.
+
+---
+
+## 11. Social & messaging surfaces — second reading (2026-11-21)
+
+GSU-Connect is a social product (messaging, groups, confessions, marketplace, radar), so the
+consumer-social question is fair. Asked for, so done.
+
+### 11.1 What the collection actually contains
+
+Be honest about the corpus first: it is **84 developer-marketing sites**, not a social-app
+sampler. There is **no Discord, Reddit, TikTok, X, Instagram, LinkedIn, Snap, Threads,
+WhatsApp, Telegram or YouTube**. What exists that is adjacent:
+
+| Entry | What it is | Read |
+| --- | --- | --- |
+| `meta` | Meta's commerce surfaces — the only true social *company*, but the file covers storefront UX | 683 ln |
+| `pinterest` | The only pure social platform; image-first feed + masonry | 597 ln |
+| `slack` | Team messaging — the closest chat reference in the set | 482 ln |
+| `intercom` | Customer messaging / support inbox | 546 ln |
+| `mydealz` | Community deal platform — the only *community-voting* reference | 551 ln |
+| `miro` | Collaborative canvas — group/board surface | 825 ln |
+
+`spotify` (read in §10) is also partly social. Treat the social conclusions as **six sources,
+two of them genuinely social** — weaker evidence than §10's eleven, and I have labelled it
+that way rather than inflating it.
+
+### 11.2 Social-surface patterns, at component level
+
+**Status badges — a four-tone pill system.** Meta is the most useful: `badge-promo-yellow`,
+`badge-attention`, `badge-success` ("In stock", "Verified", "Free shipping"), `badge-critical`
+("Out of stock"), every one `rounded.full`, `4px 10px`, `caption-bold`, **solid fill with a
+contrasting `on` text**. Ours: `ui/Badge.tsx` — five tones but `rounded` (4px), `text-[11px]`,
+`px-2 py-0.5`, and *tinted* fills with a border. Two differences: radius (4 vs full) and the
+fact that ours reserves solid fills for nothing.
+
+**Filter chips — selected inverts to ink, it does not go brand-coloured.**
+Pinterest `filter-chip`: default `surface-card`/`ink`; active **`ink`/`on-dark` — "the chip
+flips fully inverted on selection"**, `rounded.full`, `8px 16px`. Figma states the rule
+generally: *"Don't replace the `pricing-tab-selected` black fill with a colored tab; the brand
+pattern is 'selected = primary surface'."*
+Ours: `ui/Chip.tsx` active = **`bg-brand border-brand text-on-brand`** — the accent fill. See
+§11.4; this is the sharpest single conflict in the two readings.
+
+**Avatars carry a ring, not just a circle.** mydealz `avatar`: circle on `canvas` **with a
+white ring** — the ring is what separates an avatar from the feed background, not the shape.
+
+**Links are role-paired, per surface.** Slack defines `link-on-light` *and* `link-on-aubergine`
+as separate tokens (blue no-underline on light; `on-primary` with persistent underline on the
+aubergine band). Intercom separates `semantic-error/success` from a `report-*` chart palette and
+says the report colours *"appear INSIDE product UI mockups — not marketing surface colors"*.
+This is the same instinct as §9.4's `<state>-on` pairs, applied to links.
+
+**Focus is a stack, not a ring.** Pinterest defines `focus-outer` **and** `focus-inner`
+(`#ffffff`) — "a 2px outer outline around focused inputs and buttons" with a white gap inside.
+That is exactly `focusRing` (`ring-2` + `ring-offset-2` + `ring-offset-surface`). Independent
+confirmation of a detail we chose for contrast reasons.
+
+**Community sentiment is a named component.** mydealz `temperature-control`: a pill with
+`cold` down-arrow, `hot` reading, `hot` up-arrow — *"the crowd's price vote made visible"*.
+Nothing in our app has an equivalent for the confession/helpful affordances; noted, not
+recommended.
+
+**Content-first chrome.** Pinterest's opening principle: *"get out of the photograph's way"* —
+the chrome recedes and the feed carries the page. Relevant if GSU gains an image feed.
+
+### 11.3 Correction to §10.3: the touch target is an *area*, not a *visual height*
+
+§10.3 recorded "44px floor" from Jobright/Uber. Reading the social entries closely, the corpus
+is more precise and more forgiving:
+
+- **Meta**: pill buttons 40–44px; **circular icon buttons 40×40 — "at the AA floor; bumps to
+  44×44 on mobile via override"**; colour swatches **32×32** that *"carry a 12px clear hit zone
+  around it (effective hit target ~56px)"*.
+- **Pinterest**: `filter-chip` **36–40px** height — *"extends to 44px tappable via inline
+  padding"*; `button-icon-circular` exactly **40×40** — *"extended hit-target padding to
+  48×48 inside the parent"*.
+- **Slack**: pills ≥48×48, but *"form fields stay at the 44px minimum height"*.
+- **Intercom**: CTAs and pricing pills **≥40px**; only inputs ≥44px.
+
+So the real rule is **44px effective hit area**, achieved by extending the hit zone past the
+visual — and the corpus says so explicitly rather than shrinking the design to fit. §3's
+"targets ≥ 44px" is therefore not wrong but **incomplete**: it specifies a visual height where
+the reference systems specify an area. Our `ui/Chip.tsx` at `min-h-[40px]` is defensible under
+the corpus rule *if* it extends its hit area; today it does not.
+
+Measured in our code: `min-h-[40px]` **93**, `min-h-[36px]` **34**, `min-h-[32px]` **12** —
+**139 elements below 44px**, against 123 at 44px and 6 at 48px, plus 58 icon buttons sized
+`w-8/9/10 h-8/9/10`. §10.4 did not catch this; it is the largest quantitative gap found in
+either reading.
+
+### 11.4 Radius: the social fork
+
+§10.3 found the SaaS camp unanimous on 4/6/8/12/16. The social entries split:
+
+- **Pinterest is the outlier**: *"essentially three values: 16px for most things, 32px for big
+  cards and modals, and pill for circular elements"* — buttons, inputs, pin cards all 16px.
+- **mydealz** `rounded.full` (540px) for *"buttons, search pill, temperature control, filter
+  chips — the pill signature"*, content cards at 8px.
+- **Meta** 2/4/6/8/16/24; **Slack** 2/4/8/12/16/48; **Miro** 4/6/8/12/16/20; **Intercom**
+  4/6/8/12/16/24 (identical to the SaaS ladder).
+
+So a consumer-social app leans pill or 16px; a product-social app (Slack, Miro, Intercom) sits
+right on our ladder. GSU-Connect is the second kind, which supports §3 as written. **But the
+pill is the social signature in three of six entries, and our `rounded-full` count is 117** —
+worth confirming those are avatars/chips and not buttons, as §10.4.5 says.
+
+### 11.5 What this changes for GSU-Connect
+
+1. **Selected chips should invert to ink, not fill with brand.** This is a named rule in two
+   independent sources (Pinterest's spec, Figma's Don't) and it is consistent with §3's "one
+   accent, spent only where it matters" — a filter selection is a *state*, not an action.
+   `ui/Chip.tsx` is the one component that spends the accent on a non-action. Highest-value
+   finding of this reading.
+2. **Badges want a pill and a slightly larger label.** Corpus: `rounded.full`, 12–13px bold,
+   4px 10px, solid fill + `on` text. Ours: 4px, 11px, tinted + border.
+3. **Extend hit areas rather than assume 44px is met.** 139 sub-44px elements is the concrete
+   backlog; the corpus gives the technique (padding the hit zone, not the visual).
+4. **Avatars should carry a ring** so they separate from feed chrome.
+
+### 11.6 What I would take, in order
+
+- Rework `Chip` active state to the ink inversion, and `Badge` to a pill at 12px. Two small
+  components, both directly contradicted by named rules.
+- Audit the 139 sub-44px targets and extend hit zones — and re-state §3 as an **area** rule so
+  the next component does not repeat it.
+- Add the avatar ring.
+- Do **not** raise the radius ladder toward Pinterest's 16px: that is a consumer-image-feed
+  decision, and Slack/Miro/Intercom put a product-social app exactly where we already are.
