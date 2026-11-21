@@ -172,6 +172,23 @@
   }
 
   /*
+   * Wrapping. `pretty` pulls a lone last word up beside the one above it;
+   * `balance` evens a multi-line heading. Both are progressive — a browser that
+   * ignores them keeps its default wrap.
+   */
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    text-wrap: balance;
+  }
+
+  /*
    * Most of the app's buttons are hand-rolled and carry no focus style of their
    * own, so keyboard users could not see where they were. Elements that already
    * use a Tailwind ring are left to it; everything else gets the shared ring.

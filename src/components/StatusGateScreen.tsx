@@ -97,7 +97,7 @@ function TimelineRow({
           {label}
         </p>
         {hint && (
-          <p className="text-[11px] text-ink-muted leading-relaxed">{hint}</p>
+          <p className="text-xs text-ink-muted leading-relaxed">{hint}</p>
         )}
       </div>
     </li>
@@ -478,9 +478,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
       ? XCircle
       : Clock;
   const iconTone =
-    isSuspended || isRejected
-      ? 'bg-danger-bg dark:bg-danger-bg/60 text-danger dark:text-danger'
-      : 'bg-warn-bg dark:bg-warn-bg/60 text-warn dark:text-warn';
+    isSuspended || isRejected ? 'text-danger dark:text-danger' : 'text-warn dark:text-warn';
 
   const title = isSuspended
     ? 'Account Suspended'
@@ -512,9 +510,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md bg-surface rounded-3xl border border-line/80 dark:border-line shadow-resting p-6 sm:p-8 text-center space-y-5">
-        <div className={`w-14 h-14 rounded-2xl mx-auto flex items-center justify-center ${iconTone}`}>
-          <Icon className="w-7 h-7" />
-        </div>
+        <Icon className={`w-8 h-8 mx-auto ${iconTone}`} />
 
         <div className="space-y-2">
           <h1 className="text-xl font-bold text-ink">{title}</h1>
@@ -525,7 +521,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           <p role="status" className="rounded-xl bg-warn-bg p-3 font-semibold text-warn">Upload proof to enter the review queue.</p>
         )}
         {isPending && (
-          <div className="rounded-2xl bg-sunken dark:bg-sunken/60 border border-line/70 dark:border-line px-4 py-3.5 text-left space-y-3">
+          <div className="border-t border-line/70 dark:border-line pt-4 text-left space-y-3">
             <p className="text-xs font-bold text-ink">What happens next</p>
             <ol className="space-y-2">
               <TimelineRow done label="Account created" />
@@ -542,7 +538,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 hint={isLecturerRequest ? 'An admin will review your staff submission.' : 'An authorized reviewer will check your submission.'}
               />
             </ol>
-            <p className="text-[11px] text-ink-muted leading-relaxed">
+            <p className="text-xs text-ink-muted leading-relaxed">
               Review timing depends on admin availability, so there is no fixed
               deadline. This page updates automatically once a decision is made —
               or tap “Check status” to look again.
@@ -580,7 +576,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           {method && <p>Evidence received: {method}. Final admin review is required.</p>}
           <StaffProofAction path={staffPath} state={vouchState} onUpdate={()=>void check()}/></>}
         {!isSuspended && authUser && (!isLecturerRequest || staffPath==='id' || staffPath==='document') && (
-          <section aria-label="Verification proof" className="rounded-2xl border border-line/80 dark:border-line bg-sunken/70 dark:bg-sunken/60 p-3.5 space-y-2 text-left">
+          <section aria-label="Verification proof" className="border-t border-line/70 dark:border-line pt-4 text-left space-y-2">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex items-start gap-2.5 min-w-0">
                 <IdCard className="w-4 h-4 text-brand shrink-0 mt-0.5" />
@@ -598,17 +594,17 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                           href={proofPreviewUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-1 inline-flex items-center gap-1.5 text-[11px] font-semibold text-brand hover:underline"
+                          className="mt-1 inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:underline"
                         >
                           <IdCard className="w-3.5 h-3.5" /> Open PDF
                         </a>
                       ) : proofPreviewLoading ? (
-                        <p className="mt-1 text-[11px] text-ink-muted">Loading preview…</p>
+                        <p className="mt-1 text-xs text-ink-muted">Loading preview…</p>
                       ) : null}
                       <p className="text-xs font-semibold text-ink leading-snug break-all">
                         {attachedFileName}
                       </p>
-                      <p className="text-[11px] text-ink-muted leading-relaxed">
+                      <p className="text-xs text-ink-muted leading-relaxed">
                         {needsReplacement ? 'Upload a replacement to resubmit' : 'Attached for reviewer verification'}
                       </p>
                     </>
@@ -618,7 +614,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                         {user.accountType === 'staff'
                           ? staffProof : studentProof}
                       </p>
-                      <p className="text-[11px] text-ink-muted leading-relaxed">
+                      <p className="text-xs text-ink-muted leading-relaxed">
                         {isLecturerRequest && staffPath === 'id' ? 'JPEG, PNG or WebP' : 'JPEG, PNG, WebP or PDF'} · photos resized under 1 MB{(!isLecturerRequest || staffPath !== 'id') && ' · PDFs up to 3 MB'}
                       </p>
                     </>
@@ -657,8 +653,8 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
               </div>
             )}
             {uploadStep && <p role="status" className="text-sm font-semibold">{uploadStep}</p>}
-            {compressionNote && <p role="status" className="text-[11px] text-ink-muted">{compressionNote}</p>}
-            {showPickers && <p className="text-[11px] text-ink-muted leading-relaxed">
+            {compressionNote && <p role="status" className="text-xs text-ink-muted">{compressionNote}</p>}
+            {showPickers && <p className="text-xs text-ink-muted leading-relaxed">
               Private verification file. Deleted within 24 hours after approval; replaced copies too.
             </p>}
           </section>
@@ -670,7 +666,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
           </Alert>
         )}
 
-        <div className="bg-sunken dark:bg-sunken/70 rounded-2xl p-4 text-left space-y-2.5 text-sm border border-line dark:border-line/80">
+        <div className="border-t border-line/70 dark:border-line pt-4 text-left space-y-2.5 text-sm">
           <div className="flex justify-between gap-3">
             <span className="text-ink-muted">Full Name</span>
             <span className="font-semibold text-ink text-right">
@@ -829,7 +825,7 @@ export const StatusGateScreen: React.FC<StatusGateScreenProps> = ({
                 </div>
               </form>
             )}
-            <p className="text-[11px] text-ink-muted">
+            <p className="text-xs text-ink-muted">
               Password reset links are sent here. You’ll be asked to verify this inbox after approval.
             </p>
           </div>

@@ -100,6 +100,21 @@ npm run capture:auth
 node scripts/make-shot-pdf.mjs                        # rebuild the PDF
 ```
 
+The four contact sheets are an ImageMagick `montage` of the same files, three
+to a row, mobile shots at their native 390 px and desktop shots scaled down to
+fit:
+
+```sh
+for g in auth signup forgot status; do
+  montage -font DejaVu-Sans -label '%f' -tile 3x -geometry 390x>+6+24 \
+    -background white -fill '#1d1b17' \
+    qa-screenshots/$g-*.png qa-screenshots/00-$g-contact-sheet.png
+done
+```
+
+`-font DejaVu-Sans` is required in this sandbox: the default `helvetica` is not
+readable, and `montage` fails with it.
+
 `CAPTURE_BASE_URL` points the harness at a `vite preview` server instead, and
 `CAPTURE_ONLY=login|signup|forgot|status` captures one group.
 

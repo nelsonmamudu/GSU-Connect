@@ -1282,11 +1282,43 @@ which needs a Chromium, satisfied in this sandbox by `/tmp/chromium` + `IMPECCAB
 explicit "a token does not launder a size" clause, and the browser-surfaces checklist. The
 rest is corroboration of §3/§9/§10/§11.
 
-### 12.4 Open items this raises
+### 12.4 The status-gate pass (done 2026-11-21)
 
-1. **`hintClass` at 11px** — either raise to 12px (the corpus floor) or record a deliberate
-   exception. Two independent sources now say the same thing.
-2. **Typing dots use `animate-bounce`** — switch to a smooth deceleration; the rule is
-   advisory but the reasoning is right.
-3. **Browser surfaces unthemed** — check `::selection`, the caret, and scrollbars.
-4. **`content-hidden-at-rest`** — untested; worth one pass.
+The gate screens carried 12 of the 13 URL-scan findings. All are fixed except one
+deliberate exception:
+
+- **`tiny-text` ×9** — `StatusGateScreen` 11px → `text-xs`, `ProofDropzone` 10/11px →
+  `text-xs`. The rule's own clause is the reason: a token does not launder a size.
+- **`nested-cards` ×2** — the three inner panels (timeline, verification proof, details
+  table) were bordered, rounded, sunken boxes inside the outer card. Flattened to
+  divider-delimited groups (`border-t` + `pt-4`), which is the craft floor's own
+  prescription: "use spacing, typography, and dividers instead of nesting containers."
+- **`icon-tile-stack` ×1** — the 56×56 rounded-square tile above the "Checking your
+  status…" `h1`. Removed the container; the icon now sits in flow, coloured by state.
+- **`straggler` ×1** — `text-wrap: pretty` on `p`/`li` and `text-wrap: balance` on
+  headings (progressive; the typeset reference recommends exactly this).
+
+**Remaining, deliberately:** `nested-cards` fires once on the dashed file drop target in
+`ProofDropzone`. It is a file control, not a card — the rule's own exemptions cover field
+boxes, control strips, media frames and output blocks for the same reason, and a drop
+target is the same case. Two things make this a documented exception rather than a fix:
+`nested-cards` is a **browser/layout rule**, and URL scans do not read source, so an
+inline `impeccable-disable` comment cannot waive it (verified: the comment had no
+effect). Removing the border to satisfy the heuristic would mean replacing the standard
+dashed drop affordance with an `outline`, which is not reliably rounded in WebKit — a
+real regression on the Capacitor iOS build, for a cosmetic scan result.
+
+Also verified clean: `content-hidden-at-rest` does not apply (the only `opacity-0` in the
+app is a hover-reveal on a marketplace card image, which is not gated content), and
+`gray-on-color` fires nowhere.
+
+### 12.5 What is still open
+
+- **`overused-font` (Plus Jakarta Sans)** — waivable by value. It is the display face and
+  the corpus's technical camp uses similar geometric sanses; changing it is a brand
+  decision, not a defect.
+- **`ai-color-palette` in `PRESET_AVATARS`** — user-picked avatar gradients, not page
+  decoration. Leave unless the preset set is redesigned.
+- **The 139 sub-44px targets (§11.3)** — untouched. That is the largest quantitative gap
+  and the next real piece of work.
+- **§11.5.1 (selected chips invert to ink)** — untouched. Two-line change, named rule.
