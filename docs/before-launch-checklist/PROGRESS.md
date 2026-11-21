@@ -344,3 +344,10 @@ A fresh scoped, read-only campaign aggregate showed 100 marked pending students,
 - Decision: deploy only the frontend commit to Vercel production from the current Arena branch after pushing that branch; do not merge or alter the production database. Verify the resulting deployment status and URL before claiming it is live.
 - Verification before deployment: `npm run test:all` passed (60 Node tests, all local SQL suites, 8/8 launch-scope checks, 600 synthetic fixture checks); `npm run build` passed; browser suites passed (9/9 entry/proof/Turnstile and 9/9 launch-scope/funnel/comments mock tests). These are local/mock evidence, not real signed-in production checks.
 - Remaining limitations: server-side enforcement of launch scope (P95), real Auth/RLS/MFA and user-journey checks, Founder public lookup, anonymous-feed author audit migration, comments migration, call network/device verification, and GPA grading-scale validation remain open.
+
+
+### Production deployment verification — 21 November 2026
+
+- Pushed `9cccf98b8f670c144c417e67ab5866aa841aed4a` to `origin/arena/cad8fbff-gsu-connect` and deployed that branch to Vercel production. Deployment `dpl_5CtMEpdSdGVrccDvT6VP98FdrsvQ` completed successfully with `READY` / `PROMOTED`; Vercel assigned the production alias `https://gsu-connect.vercel.app`.
+- Fetched the public production URL after promotion and verified that it serves the GSU Connect landing page with the independent-operation wording. The build events show Vercel cloned the pushed branch at the expected commit and completed the Vite production build.
+- This verifies the frontend commit is live, not signed-in flows, Supabase RLS/MFA, data operations, or any SQL draft. No database changes were made.

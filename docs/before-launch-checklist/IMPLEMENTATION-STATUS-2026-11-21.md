@@ -2,7 +2,7 @@
 
 This is the verification sheet for the latest implementation pass. It is deliberately explicit about what is local-only.
 
-**Nothing in this pass has been deployed, merged or applied to the production database.** No account, proof, message or content was created, changed or deleted. The connected Supabase project was read only.
+**Frontend deployed:** Vercel reports the production deployment for this branch as `READY` and `PROMOTED`; the production alias served the GSU Connect landing page after deployment. This does not mean the staged database drafts were applied or that authenticated journeys were live-tested. Supabase access remained read-only; no account, proof, message or content was changed or deleted.
 
 ## 1. What is implemented
 
@@ -80,7 +80,7 @@ Browser tests required temporary Chromium at `/tmp/gsu-audit-chromium` with `LD_
 
 ## 3. What is not done and cannot be claimed
 
-- Deployment status is tracked in the latest dated note in `PROGRESS.md`; a successful frontend deployment does not imply that database drafts were applied or that authenticated journeys were live-tested.
+- No real Auth/RLS/MFA or signed-in production journey was tested. The Vercel deployment and public landing-page check only verify the frontend deployment path.
 - No real Auth/RLS/MFA test of the comment or Founder SQL. PGlite uses stubbed `auth.uid()`/JWT claims.
 - The anonymous comments draft is outside `supabase/migrations`. It protects only the new comment RPCs; the existing post APIs are not behind the pilot check.
 - No real reviewer has operated comment moderation. Appeals, escalation, retention and audit review are unwritten.
